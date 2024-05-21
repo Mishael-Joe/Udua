@@ -6,7 +6,15 @@ import bcryptjs from "bcryptjs";
 export async function POST(request: NextRequest) {
   const requestBody = await request.json();
   console.log("requestBody", requestBody);
-  const { name, email, password, address, phoneNumber } = requestBody;
+  const {
+    firstName,
+    lastName,
+    otherNames,
+    email,
+    password,
+    address,
+    phoneNumber,
+  } = requestBody;
 
   try {
     connectToDB();
@@ -25,7 +33,9 @@ export async function POST(request: NextRequest) {
 
     // create a new user in the database
     const newUser = new User({
-      name,
+      firstName,
+      lastName,
+      otherNames,
       email,
       password: hashedPassword,
       address,

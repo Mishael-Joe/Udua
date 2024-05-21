@@ -1,30 +1,24 @@
 import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema({
-  id: { type: "string", required: true },
-  userName: { type: "string", required: true, unique: true },
-  name: { type: "string", required: true },
-  image: String,
-  bio: String,
-  threads: [
+  accountId: { type: String, required: true },
+  productName: { type: String, required: true },
+  productPrice: { type: Number, required: true },
+  productSizes: { type: [String], required: true },
+  productQuantity: { type: Number, required: true, default: 0 },
+  productImage: { type: [String], default: [] },
+  productDescription: { type: String, required: true },
+  productSpecification: { type: String, required: true },
+  productCategory: { type: [String], required: true },
+  owner: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Thread",
-    },
-  ],
-  onboarded: {
-    type: Boolean,
-    default: false,
-  },
-  communities: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Community",
+      ref: "User",
     },
   ],
 });
 
 const Product =
-  mongoose.models.User || mongoose.model("products", productSchema);
+  mongoose.models.Product || mongoose.model("Product", productSchema);
 
 export default Product;

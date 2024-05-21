@@ -1,13 +1,4 @@
-import { connectToDB } from "@/lib/mongoose";
-import User from "@/lib/models/user.model";
-import { NextRequest, NextResponse } from "next/server";
-import bcryptjs from "bcryptjs";
-import jwt from "jsonwebtoken";
-
-interface userData {
-  id: string;
-  userName: string;
-}
+import { NextResponse } from "next/server";
 
 export async function GET() {
   try {

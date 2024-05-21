@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 
 interface userData {
   id: string;
-  userName: string;
+  userFirstName: string;
 }
 
 export async function POST(request: NextRequest) {
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     // create tokenData
     const tokenData: userData = {
       id: user._id,
-      userName: user.name,
+      userFirstName: user.firstName,
     };
 
     // One week in seconds
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     });
 
     const response = NextResponse.json(
-      { message: "Login successful", success: true },
+      { message: "Login successful", success: true, tokenData },
       { status: 200 }
     );
 

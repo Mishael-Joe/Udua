@@ -1,12 +1,24 @@
 import * as z from "zod";
 
 export const userSignUpInfoValidation = z.object({
-  name: z
+  firstName: z
     .string({
       required_error: "Required",
     })
     .min(3, { message: "Minimum 3 Characters" })
-    .max(30),
+    .max(15),
+  lastName: z
+    .string({
+      required_error: "Required",
+    })
+    .min(3, { message: "Minimum 3 Characters" })
+    .max(15),
+  otherNames: z
+    .string({
+      required_error: "Required",
+    })
+    .min(3, { message: "Minimum 3 Characters" })
+    .max(15),
   email: z.string({
     required_error: "Required",
   }),

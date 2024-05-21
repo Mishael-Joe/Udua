@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MainNav } from "@/components/main-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
+import UserAvater from "./userAvater";
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -64,6 +65,8 @@ export function SiteHeader() {
           </Link>
 
           <ThemeToggle />
+
+          <UserAvater />
         </div>
       </div>
     </header>

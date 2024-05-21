@@ -16,9 +16,9 @@ export function middleware(request: NextRequest) {
   }
 
   // if the pathname is not public and user does not have the token then you cann't visit the sign-in & sign-up page
-  if (!isPublic && !token) {
-    return NextResponse.redirect(new URL("/sign-in", request.url));
-  }
+  // if (!isPublic && !token) {
+  //   return NextResponse.redirect(new URL("/sign-in", request.url));
+  // }
 }
 
 // See "Matching Paths" below to learn more

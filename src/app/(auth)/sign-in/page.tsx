@@ -45,7 +45,16 @@ function SignIn() {
     try {
       const response = await axios.post(`/api/users/signIn`, userInput);
 
+      // TODO: add user first name and _id to LocalStorage
+      console.log(`response`, response);
+
       if (response.data.success === true || response.status === 200) {
+        const { id, userFirstName } = response.data.tokenData;
+        const userData = {
+          id: id,
+          firstName: userFirstName,
+        };
+        localStorage.setItem("userData", JSON.stringify(userData));
         toast({
           title: `Success`,
           description: `You have Successfully signed In.`,
