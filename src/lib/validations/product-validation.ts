@@ -18,9 +18,7 @@ export const productValidation = z.object({
   productQuantity: z.string({
     required_error: "Required",
   }),
-  productImage: z.string({
-    required_error: "Required",
-  }),
+  productImage: z.array(z.string()).nonempty({ message: "Required" }),
   productDescription: z.string({
     required_error: "Required",
   }),
