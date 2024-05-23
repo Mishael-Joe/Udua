@@ -1,15 +1,19 @@
 import LeftSidebar from "@/components/LeftSidebar";
+import { ProductGrid } from "@/components/product-grid";
+import { fetchProducts } from "@/lib/actions/product.action";
 import SkeletonLoader from "@/lib/loaders/skeletonLoader";
 import { Suspense } from "react";
-import { wait } from "wait";
+// import { wait } from "wait";
 
 const HomePage = async () => {
-  await wait(1000);
+  // await wait(1000);
 
   return <div className="w-full bg-purple-600">Home</div>;
 };
 
 export default async function Home() {
+  const products = await fetchProducts();
+  console.log(products);
   return (
     <main className="min-h-screen px-5 md:px-4 py-4 flex flex-row gap-4 max-w-[75rem] mx-auto">
       <aside className="w-1/4 max-md:hidden">
@@ -17,7 +21,7 @@ export default async function Home() {
       </aside>
 
       <Suspense fallback={<SkeletonLoader />}>
-        <HomePage />
+        <ProductGrid products={products} />
       </Suspense>
     </main>
   );

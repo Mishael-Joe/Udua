@@ -1,62 +1,37 @@
-import { connectToDB } from "@/lib/mongoose";
-import User from "@/lib/models/user.model";
 import { NextRequest, NextResponse } from "next/server";
-import bcryptjs from "bcryptjs";
-import jwt from "jsonwebtoken";
+import { v2 as cloudinary } from "cloudinary";
 
-interface userData {
-  id: string;
-  userFirstName: string;
+interface Image {
+  type: "image/jpeg" | "image/png";
+  webkitRelativePath: string;
+  name: string;
+  lastModified: number;
+  lastModifiedDate: Date;
+  size: number;
 }
 
 export async function POST(request: NextRequest) {
   const requestBody = await request.json();
   // console.log("requestBody", requestBody);
-  const { email, password } = requestBody;
+  // const {} = requestBody;
 
   try {
-    connectToDB();
-    // Check if the user exist
-    const user = await User.findOne({ email });
-    if (!user) {
-      return NextResponse.json(
-        { error: "Make sure you provide the write Email" },
-        { status: 500 }
-      );
-    }
-
-    // check it password is correct
-    const validatePassword = await bcryptjs.compare(password, user.password);
-
-    if (!validatePassword) {
-      return NextResponse.json({ error: "Invalid password" }, { status: 500 });
-    }
-
-    // create tokenData
-    const tokenData: userData = {
-      id: user._id,
-      userFirstName: user.firstName,
-    };
-
-    // One week in seconds
-    const oneWeekInSeconds = 7 * 24 * 60 * 60;
-
-    // create token
-    const token = await jwt.sign(tokenData, process.env.JWT_SECRET_KEY!, {
-      expiresIn: oneWeekInSeconds,
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
     });
 
-    const response = NextResponse.json(
-      { message: "Login successful", success: true, tokenData },
-      { status: 200 }
+    const files = requestBody.files; // This assumes you send an array of file paths
+    const uploadPromises = files.map((file: any) =>
+      cloudinary.uploader.upload(file, { resource_type: "image" })
     );
 
-    response.cookies.set("token", token, {
-      httpOnly: true,
-      maxAge: oneWeekInSeconds,
-    });
-
-    return response;
+    const results = await Promise.all(uploadPromises);
+    return NextResponse.json(
+      { message: `successfull`, results },
+      { status: 200 }
+    );
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

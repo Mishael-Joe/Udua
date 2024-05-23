@@ -4,12 +4,13 @@ import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
-import Image from "next/image";
+import axios from "axios";
+import { createProduct } from "@/lib/actions/product.action";
 
 interface Image {
-  type: "image/jpeg" | "image/png";
+  type: "image/jpg" | "image/png";
   webkitRelativePath: string;
   name: string;
   lastModified: number;
@@ -22,7 +23,7 @@ interface Product {
   productPrice: string;
   productSizes: string;
   productQuantity: string;
-  productImage: Image[];
+  productImage: File[];
   productDescription: string;
   productSpecification: string;
   productCategory: string;
@@ -39,7 +40,7 @@ function CreateProduct() {
 
   const [product, setProduct] = useState<Product>({
     productName: "",
-    productPrice: "",
+    productPrice: "4500",
     productSizes: "",
     productQuantity: "",
     productImage: [],
@@ -49,15 +50,15 @@ function CreateProduct() {
     accountId: userId,
   });
 
-  // const DisplayProductImage = ({ image }) => {
-  //   image.map((img) => {
-  //     return (
-  //       <div>
-  //         <Image src={img.name} width={200} height={200} alt={img.name} />
-  //       </div>
-  //     );
-  //   });
-  // };
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]); // This will store the image URLs
+  const [imageUrls, setImageUrls] = useState<string[]>([]); // Store Cloudinary URLs
+
+  useEffect(() => {
+    return () => {
+      // Cleanup object URLs when the component unmounts
+      imagePreviews.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [imagePreviews]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -68,6 +69,9 @@ function CreateProduct() {
 
     setProduct((prev) => {
       if (type === "file" && files) {
+        const fileArray = Array.from(files);
+        const urls = fileArray.map((file) => URL.createObjectURL(file));
+        setImagePreviews(urls); // Create and store image URLs
         return {
           ...prev,
           [name]: Array.from(files), // or files if you want to handle multiple files
@@ -80,8 +84,31 @@ function CreateProduct() {
       }
     });
 
-    console.log(type === "file" && files ? Array.from(files) : "no file");
-    console.log(product);
+    // console.log(type === "file" && files ? Array.from(files) : "no file");
+    // console.log(product);
+  }; // dhngvbjtz
+
+  const uploadImagesToCloudinary = async (images: File[]) => {
+    const url = `https://api.cloudinary.com/v1_1/dhngvbjtz/image/upload`;
+    const formData = new FormData();
+    const uploadedImageUrls = [];
+
+    for (let image of images) {
+      formData.append("file", image);
+      formData.append("upload_preset", "images_preset"); // Replace with your upload preset
+
+      const response = await axios.post(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      // console.log(response);
+
+      uploadedImageUrls.push(response.data.secure_url);
+    }
+
+    return uploadedImageUrls;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -91,19 +118,37 @@ function CreateProduct() {
       return;
     } else {
       product.productImage.map((image) => {
-        if (image.type !== "image/png") {
+        if (image.type !== "image/png" || image.size > 10485760) {
           return;
         }
       });
     }
 
-    // await createThread({
-    //   text: values.thread,
-    //   author: userId,
-    //   communityId: organization ? organization.id : null,
-    //   path: pathname,
-    // });
-    // router.push("/");
+    // Upload images to Cloudinary
+    const urls = await uploadImagesToCloudinary(product.productImage);
+
+    try {
+    } catch (error) {}
+    setImageUrls(urls);
+    // Add logic to handle form submission, e.g., send product data along with URLs to the server
+    console.log("Product submitted with URLs:", {
+      ...product,
+      productImage: urls,
+    });
+
+    await createProduct({
+      productName: product.productName,
+      productPrice: product.productPrice,
+      productSizes: product.productSizes,
+      productQuantity: product.productQuantity,
+      productImage: urls,
+      productDescription: product.productDescription,
+      productSpecification: product.productSpecification,
+      productCategory: product.productCategory,
+      path: pathname,
+      accountId: product.accountId,
+    });
+    router.push("/");
   };
 
   return (
@@ -194,15 +239,6 @@ function CreateProduct() {
             />
           </div>
 
-          {/* {product.productImage.length > 0 &&
-            product.productImage.map((name, index) => (
-              <img key={index} src={name} alt={`Product Image ${index + 1}`} />
-            ))} */}
-
-          {/* {product.productImage[0] && (
-            <DisplayProductImage image={product.productImage} />
-          )} */}
-
           <div>
             <Label className="text-base-semibold text-light-2">
               Product Description
@@ -249,6 +285,27 @@ function CreateProduct() {
             </svg>
           </Button>
         </form>
+
+        {/* Display selected images */}
+        {imagePreviews && (
+          <div className="flex flex-row gap-4 flex-wrap items-center justify-center">
+            {imagePreviews.map((src, index) => (
+              <img
+                key={index}
+                src={src}
+                alt={`Selected Preview ${index + 1}`}
+                style={{
+                  width: "200px",
+                  height: "200px",
+                  objectFit: "cover",
+                  margin: "5px",
+                  border: "1px solid #FFFFFF",
+                  borderRadius: "5px",
+                }}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
