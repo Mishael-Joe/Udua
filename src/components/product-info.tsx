@@ -12,7 +12,7 @@ import { useToast } from "@/components/ui/use-toast";
 
 import ShareButton from "../utils/shareBTN";
 import { useRouter, usePathname } from "next/navigation";
-import { ForProductInfo } from "@/types";
+import { ForProductInfo, Product } from "@/types";
 
 export function ProductInfo({ product }: ForProductInfo) {
   const router = useRouter();
@@ -26,7 +26,7 @@ export function ProductInfo({ product }: ForProductInfo) {
     if (product.productSizes === undefined || product.productSizes === null) {
       return null;
     }
-    return product.productSizes[0];
+    return product.productSizes;
   });
 
   // const [selectedColor, setSelectedColor] = useState(() => {
@@ -40,9 +40,9 @@ export function ProductInfo({ product }: ForProductInfo) {
   const { addToCart, quantity, incrementQuantity, decrementQuantity } =
     useStateContext();
 
-  const notify = (product: any) => {
+  const notify = (product: Product) => {
     toast({
-      title: `${product.name}. Quantity: ${quantity}`,
+      title: `${product.productName}. Quantity: ${quantity}`,
       description: `Product added to cart`,
       action: (
         <Link href={`/cart`}>
@@ -57,18 +57,20 @@ export function ProductInfo({ product }: ForProductInfo) {
 
   return (
     <div className="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0">
-      <h1 className="text-3xl font-bold tracking-tight">{product.name}</h1>
+      <h1 className="text-3xl font-bold tracking-tight">
+        {product.productName}
+      </h1>
 
       <div className="mt-3">
         <h2 className="sr-only">Product information</h2>
         <p className="text-3xl tracking-tight">
-          &#8358; {addCommasToNumber(product.price)}
+          &#8358; {addCommasToNumber(product.productPrice as number)}
         </p>
       </div>
 
       <div className="mt-6">
         <h3 className="sr-only">Description</h3>
-        <div className="space-y-6 text-base">{product.description}</div>
+        <div className="space-y-6 text-base">{product.productDescription}</div>
       </div>
 
       <div className="mt-4">
@@ -101,10 +103,10 @@ export function ProductInfo({ product }: ForProductInfo) {
         </div>
         <p>
           {/* Size: <strong>{selectedSize && getSizeName(selectedSize)}</strong> */}
-          {selectedSize ? `size: ${getSizeName(selectedSize)}` : ""}
+          {selectedSize ? `size: ${selectedSize}` : ""}
         </p>
-        {product.sizes &&
-          product.sizes.map((size: any) => (
+        {/* {product.productSizes &&
+          product.productSizes.map((size: any) => (
             <Button
               onClick={() => setSelectedSize(size)}
               key={size}
@@ -113,13 +115,13 @@ export function ProductInfo({ product }: ForProductInfo) {
             >
               {size && getSizeName(size)}
             </Button>
-          ))}
+          ))} */}
 
         <p>
           {/* Size: <strong>{selectedSize && getSizeName(selectedSize)}</strong> */}
-          {selectedColor ? `Color: ${selectedColor}` : ""}
+          {/* {selectedColor ? `Color: ${selectedColor}` : ""} */}
         </p>
-        {product.colors &&
+        {/* {product.colors &&
           product.colors.map((color: any) => (
             <Button
               onClick={() => setSelectedColor(color)}
@@ -129,7 +131,7 @@ export function ProductInfo({ product }: ForProductInfo) {
             >
               {color && color}
             </Button>
-          ))}
+          ))} */}
       </div>
 
       <form className="mt-6">

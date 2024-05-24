@@ -22,7 +22,7 @@ export default async function Page({ params }: Props) {
           {/* Product gallery */}
           <ProductGallery product={product} />
           {/* Product info */}
-          {/* <ProductInfo product={product} /> */}
+          <ProductInfo product={product} />
         </div>
 
         {/* Product Specification */}

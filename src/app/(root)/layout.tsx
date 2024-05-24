@@ -10,6 +10,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { ThemeProvider } from "@/components/theme-provider";
 
+import { StateContext } from "@/context/stateContext";
+
 export const metadata: Metadata = {
   title: siteConfig.siteName,
   description: siteConfig.description,
@@ -27,14 +29,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`scroll-smooth`}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <SiteHeader />
-          <SiteBlob />
-          <Toaster />
-          <div>{children}</div>
-          <SiteFooter />
-          <TailwindIndicator />
-        </ThemeProvider>
+        <StateContext>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <SiteHeader />
+            <SiteBlob />
+            <Toaster />
+            <div>{children}</div>
+            <SiteFooter />
+            <TailwindIndicator />
+          </ThemeProvider>
+        </StateContext>
       </body>
     </html>
   );

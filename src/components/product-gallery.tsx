@@ -2,12 +2,10 @@
 
 import { useState } from "react";
 import Image from "next/image";
-
 import { shimmer, toBase64 } from "@/lib/image";
+import { ForProductGallery } from "@/types";
 
-interface Props {}
-
-export function ProductGallery({ product }: any) {
+export function ProductGallery({ product }: ForProductGallery) {
   const [selectedImage, setSelectedImage] = useState(0);
   return (
     <div className="flex flex-col-reverse">
@@ -50,7 +48,7 @@ export function ProductGallery({ product }: any) {
           priority
           // src={urlForImage(product.images[selectedImage]).url()}
           src={product.productImage[selectedImage]}
-          alt={`Main ${product.name} image`}
+          alt={`Main ${product.productName} image`}
           width={600}
           height={750}
           placeholder="blur"

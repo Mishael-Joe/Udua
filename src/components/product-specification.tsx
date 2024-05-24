@@ -1,5 +1,5 @@
 export function ProductSpecification({ product }: any) {
-  console.log("product.specifications.length", product);
+  // console.log("product.specifications.length", product);
   if (product.productSpecification === "") return;
 
   return (
