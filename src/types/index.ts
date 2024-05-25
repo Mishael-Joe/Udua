@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 export type Product = {
   _id?: string;
   productName: string;
-  productPrice: string | number;
+  productPrice: number;
   productSizes: string;
   productQuantity: string;
   productImage: string[];
@@ -12,13 +12,16 @@ export type Product = {
   productCategory: string;
   accountId: string;
   path: string;
+  quantity?: number;
 };
 
-type CartItems = Pick<Product, "_id" | "productName" | "productPrice">;
+export type CartItems = Partial<Product>;
+
+export type ProductFromLocalStorage = Partial<Product>;
 
 // Define types for the context
 export type ContextType = {
-  onRemove: (product: Product) => void;
+  onRemove: (product: CartItems) => void;
   quantity: number;
   addToCart: (product: ProductFromLocalStorage, quantity: number) => void;
   cartItems: CartItems[];
@@ -35,12 +38,6 @@ export type ContextType = {
     itemId: string,
     value: "increase" | "decrease"
   ) => void;
-};
-
-export type ProductFromLocalStorage = CartItems & {
-  productPrice: number;
-  quantity: number;
-  // [key: string]: any;
 };
 
 export type StateContextProps = {

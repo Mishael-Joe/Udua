@@ -6,7 +6,7 @@ import {
   ProductFromLocalStorage,
   ContextType,
   StateContextProps,
-  Product,
+  CartItems,
 } from "@/types";
 
 export const Context = createContext<ContextType | null>(null);
@@ -80,14 +80,19 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
 
   const addToCart = (product: ProductFromLocalStorage, quantity: number) => {
     const existingProductIndex = cartItems.findIndex(
-      (item) => item._id === product._id
+      (item) => item._id!.toString() === product._id!.toString()
     );
-    setTotalPriceFromStorage(totalPrice + product.productPrice * quantity);
+    {
+      /*This ensures that you are comparing the string representations of the _id properties, which is necessary because ObjectId instances need to be converted to strings to be compared correctly.*/
+    }
+
+    setTotalPriceFromStorage(totalPrice + product.productPrice! * quantity);
     setTotalQuantityFromStorage(totalQuantity + quantity);
 
+    // if the product is not in the cart, then run this function
     if (existingProductIndex !== -1) {
       const updatedCartItems = [...cartItems];
-      updatedCartItems[existingProductIndex].quantity += quantity;
+      updatedCartItems[existingProductIndex].quantity! += quantity;
       setCartItems(updatedCartItems);
       setCartItemsFromStorage(updatedCartItems);
     } else {
@@ -97,12 +102,12 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
     }
 
     setTotalPrice(
-      (prevTotalPrice) => prevTotalPrice + product.productPrice * quantity
+      (prevTotalPrice) => prevTotalPrice + product.productPrice! * quantity
     );
     setTotalQuantity((prevTotalQuantity) => prevTotalQuantity + quantity);
   };
 
-  const onRemove = (product: Product) => {
+  const onRemove = (product: CartItems) => {
     const foundProduct = cartItems.find((item) => item._id === product._id);
     if (!foundProduct) return;
 
@@ -112,12 +117,12 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
 
     setCartItems(updatedCartItems);
     setTotalPrice(
-      totalPrice - foundProduct.productPrice * foundProduct.quantity
+      totalPrice - foundProduct.productPrice! * foundProduct.quantity!
     );
-    setTotalQuantity(totalQuantity - foundProduct.quantity);
-    setTotalQuantityFromStorage(totalQuantity - foundProduct.quantity);
+    setTotalQuantity(totalQuantity - foundProduct.quantity!);
+    setTotalQuantityFromStorage(totalQuantity - foundProduct.quantity!);
     setTotalPriceFromStorage(
-      totalPrice - foundProduct.productPrice * foundProduct.quantity
+      totalPrice - foundProduct.productPrice! * foundProduct.quantity!
     );
     setCartItemsFromStorage(updatedCartItems);
   };
@@ -136,15 +141,15 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
     if (value === "increase") {
       updatedCartItems[foundProductIndex] = {
         ...foundProduct,
-        quantity: foundProduct.quantity + 1,
+        quantity: foundProduct.quantity! + 1,
       };
       setCartItems(updatedCartItems);
       setTotalPrice(
-        (prevTotalPrice) => prevTotalPrice + foundProduct.productPrice
+        (prevTotalPrice) => prevTotalPrice + foundProduct.productPrice!
       );
       setTotalQuantity((prevTotalQuantity) => prevTotalQuantity + 1);
       setTotalQuantityFromStorage(totalQuantity + 1);
-      setTotalPriceFromStorage(totalPrice + foundProduct.productPrice);
+      setTotalPriceFromStorage(totalPrice + foundProduct.productPrice!);
       setCartItemsFromStorage(updatedCartItems);
     }
 
@@ -152,15 +157,15 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
       if (updatedCartItems[foundProductIndex].quantity === 1) return;
       updatedCartItems[foundProductIndex] = {
         ...foundProduct,
-        quantity: foundProduct.quantity - 1,
+        quantity: foundProduct.quantity! - 1,
       };
       setCartItems(updatedCartItems);
       setTotalPrice(
-        (prevTotalPrice) => prevTotalPrice - foundProduct.productPrice
+        (prevTotalPrice) => prevTotalPrice - foundProduct.productPrice!
       );
       setTotalQuantity((prevTotalQuantity) => prevTotalQuantity - 1);
       setTotalQuantityFromStorage(totalQuantity - 1);
-      setTotalPriceFromStorage(totalPrice - foundProduct.productPrice);
+      setTotalPriceFromStorage(totalPrice - foundProduct.productPrice!);
       setCartItemsFromStorage(updatedCartItems);
     }
   };

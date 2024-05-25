@@ -7,18 +7,11 @@ import { connectToDB } from "../mongoose";
 import User from "../models/user.model";
 import Product from "../models/product.model";
 
-interface Product {
-  productName: string;
+import { Product as Products } from "@/types";
+
+type Product = Omit<Products, "productPrice"> & {
   productPrice: string;
-  productSizes: string;
-  productQuantity: string;
-  productImage: string[];
-  productDescription: string;
-  productSpecification: string;
-  productCategory: string;
-  accountId: string;
-  path: string;
-}
+};
 
 export async function createProduct({
   productName,

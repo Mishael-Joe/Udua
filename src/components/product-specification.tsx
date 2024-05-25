@@ -1,4 +1,6 @@
-export function ProductSpecification({ product }: any) {
+import { ForProductInfo } from "@/types";
+
+export function ProductSpecification({ product }: ForProductInfo) {
   // console.log("product.specifications.length", product);
   if (product.productSpecification === "") return;
 

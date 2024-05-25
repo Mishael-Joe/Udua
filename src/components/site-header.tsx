@@ -9,11 +9,13 @@ import { Input } from "@/components/ui/input";
 import { MainNav } from "@/components/main-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import UserAvater from "./userAvater";
+import { useStateContext } from "@/context/stateContext";
 
 export function SiteHeader() {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { totalQuantity } = useStateContext();
 
   const defaultSearchQuery = searchParams.get("search") ?? "";
 
@@ -58,7 +60,7 @@ export function SiteHeader() {
             <Button size="sm" variant="ghost">
               <ShoppingBag className="h-5 w-5" />
 
-              <span className="ml-2 text-sm font-bold">0</span>
+              <span className="ml-2 text-sm font-bold">{totalQuantity}</span>
 
               <span className="sr-only">Cart</span>
             </Button>

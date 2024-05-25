@@ -12,9 +12,9 @@ export function ProductGallery({ product }: ForProductGallery) {
       {/* Image Grid */}
       <div className="mx-auto mt-6 hidden w-full max-w-2xl sm:block lg:max-w-none">
         <ul className="grid grid-cols-4 gap-6">
-          {product.productImage.map((image: any, imageIndex: any) => (
+          {product.productImage.map((image, imageIndex) => (
             <div
-              key={imageIndex as string}
+              key={imageIndex}
               onClick={() => setSelectedImage(imageIndex)}
               className="relative flex h-24 cursor-pointer items-center justify-center rounded-md bg-white text-sm font-medium uppercase hover:bg-gray-50"
             >

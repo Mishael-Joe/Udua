@@ -1,20 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 
-interface Image {
-  type: "image/jpeg" | "image/png";
-  webkitRelativePath: string;
-  name: string;
-  lastModified: number;
-  lastModifiedDate: Date;
-  size: number;
-}
-
-export async function POST(request: NextRequest) {
-  const requestBody = await request.json();
-  // console.log("requestBody", requestBody);
-  // const {} = requestBody;
-
+export async function POST() {
   try {
     cloudinary.config({
       cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -22,14 +9,14 @@ export async function POST(request: NextRequest) {
       api_secret: process.env.CLOUDINARY_API_SECRET,
     });
 
-    const files = requestBody.files; // This assumes you send an array of file paths
-    const uploadPromises = files.map((file: any) =>
-      cloudinary.uploader.upload(file, { resource_type: "image" })
+    const timestamp = Math.round(new Date().getTime() / 1000);
+    const signature = cloudinary.utils.api_sign_request(
+      { timestamp: timestamp },
+      process.env.CLOUDINARY_API_SECRET!
     );
 
-    const results = await Promise.all(uploadPromises);
     return NextResponse.json(
-      { message: `successfull`, results },
+      { message: `successfull`, timestamp, signature },
       { status: 200 }
     );
   } catch (error: any) {

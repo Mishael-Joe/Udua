@@ -8,27 +8,13 @@ import { ChangeEvent, useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import axios from "axios";
 import { createProduct } from "@/lib/actions/product.action";
+import { Product } from "@/types";
 
-interface Image {
-  type: "image/jpg" | "image/png";
-  webkitRelativePath: string;
-  name: string;
-  lastModified: number;
-  lastModifiedDate: Date;
-  size: number;
-}
-
-interface Product {
-  productName: string;
+type Products = Omit<Product, "productImage" | "path" | "productPrice"> & {
   productPrice: string;
-  productSizes: string;
-  productQuantity: string;
   productImage: File[];
-  productDescription: string;
-  productSpecification: string;
-  productCategory: string;
-  accountId: string;
-}
+  path?: string;
+};
 
 function CreateProduct() {
   const router = useRouter();
@@ -38,9 +24,9 @@ function CreateProduct() {
 
   const userId = parsedUserData.id;
 
-  const [product, setProduct] = useState<Product>({
+  const [product, setProduct] = useState<Products>({
     productName: "",
-    productPrice: "4500",
+    productPrice: "",
     productSizes: "",
     productQuantity: "",
     productImage: [],
@@ -171,6 +157,22 @@ function CreateProduct() {
               type="text"
               placeholder="Product Name"
               aria-label="Product Name"
+            />
+          </div>
+
+          <div>
+            <Label className="text-base-semibold text-light-2">
+              Product Price
+            </Label>
+
+            <Input
+              name="productPrice"
+              value={product.productPrice}
+              onChange={(e) => handleChange(e)}
+              className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+              type="text"
+              placeholder="Product Price"
+              aria-label="Product Price"
             />
           </div>
 
