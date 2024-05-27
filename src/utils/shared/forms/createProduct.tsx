@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import axios from "axios";
 import { createProduct } from "@/lib/actions/product.action";
 import { Product } from "@/types";
+import { uploadImagesToCloudinary } from "@/lib/utils";
 
 type Products = Omit<Product, "productImage" | "path" | "productPrice"> & {
   productPrice: string;
@@ -27,7 +28,7 @@ function CreateProduct() {
   const [product, setProduct] = useState<Products>({
     productName: "",
     productPrice: "",
-    productSizes: "",
+    productSizes: [],
     productQuantity: "",
     productImage: [],
     productDescription: "",
@@ -36,6 +37,14 @@ function CreateProduct() {
     accountId: userId,
   });
 
+  const possibleSizes = [
+    "X-Small",
+    "Small",
+    "Medium",
+    "Large",
+    "X-Large",
+    "One Size",
+  ];
   const [imagePreviews, setImagePreviews] = useState<string[]>([]); // This will store the image URLs
   const [imageUrls, setImageUrls] = useState<string[]>([]); // Store Cloudinary URLs
 
@@ -72,29 +81,20 @@ function CreateProduct() {
 
     // console.log(type === "file" && files ? Array.from(files) : "no file");
     // console.log(product);
-  }; // dhngvbjtz
+  };
 
-  const uploadImagesToCloudinary = async (images: File[]) => {
-    const url = `https://api.cloudinary.com/v1_1/dhngvbjtz/image/upload`;
-    const formData = new FormData();
-    const uploadedImageUrls = [];
+  const handleSizeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { value, checked } = e.target;
+    setProduct((prev) => {
+      const sizes = checked
+        ? [...prev.productSizes, value] // Add size if checked
+        : prev.productSizes.filter((size) => size !== value); // Remove size if unchecked
 
-    for (let image of images) {
-      formData.append("file", image);
-      formData.append("upload_preset", "images_preset"); // Replace with your upload preset
-
-      const response = await axios.post(url, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      // console.log(response);
-
-      uploadedImageUrls.push(response.data.secure_url);
-    }
-
-    return uploadedImageUrls;
+      return {
+        ...prev,
+        productSizes: sizes,
+      };
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -112,6 +112,8 @@ function CreateProduct() {
 
     // Upload images to Cloudinary
     const urls = await uploadImagesToCloudinary(product.productImage);
+
+    console.log(`urls`, urls);
 
     try {
     } catch (error) {}
@@ -141,7 +143,7 @@ function CreateProduct() {
     <section>
       <div className=" max-w-4xl mx-auto px-6">
         <form
-          className="grid grid-cols-1 gap-6 mt-8 md:grid-cols-2"
+          className="sm:grid grid-cols-1 flex flex-col gap-6 mt-8 md:grid-cols-2"
           onSubmit={handleSubmit}
         >
           <div>
@@ -178,22 +180,6 @@ function CreateProduct() {
 
           <div>
             <Label className="text-base-semibold text-light-2">
-              Product Sizes
-            </Label>
-
-            <Input
-              name="productSizes"
-              value={product.productSizes}
-              onChange={(e) => handleChange(e)}
-              className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
-              type="text"
-              placeholder="Product Sizes"
-              aria-label="Product Sizes"
-            />
-          </div>
-
-          <div>
-            <Label className="text-base-semibold text-light-2">
               product Quantity
             </Label>
 
@@ -224,7 +210,27 @@ function CreateProduct() {
             />
           </div>
 
-          <div className="col-span-2">
+          <div>
+            <Label className="text-base-semibold text-light-2">
+              Product Sizes
+            </Label>
+            <div className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100">
+              {possibleSizes.map((size) => (
+                <label key={size} className="block">
+                  <input
+                    type="checkbox"
+                    value={size}
+                    checked={product.productSizes.includes(size)}
+                    onChange={handleSizeChange}
+                    className="mr-2 text-slate-100"
+                  />
+                  {size}
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div className="">
             <Label className="text-base-semibold text-light-2">
               Product Image
             </Label>

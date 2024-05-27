@@ -1,10 +1,30 @@
 import { ReactNode } from "react";
 
+export type User = {
+  firstName: string;
+  lastName: string;
+  otherNames: string;
+  email: string;
+  password: string;
+  phoneNumber: string;
+  address: string;
+  cityOfResidence: string;
+  stateOfResidence: string;
+  postalCode: string;
+  isVarified: boolean;
+  isSeller: boolean;
+  userProducts: {}[];
+  forgotpasswordToken: string;
+  forgotpasswordTokenExpiry: Date;
+  varifyToken: string;
+  varifyTokenExpiry: Date;
+};
+
 export type Product = {
   _id?: string;
   productName: string;
   productPrice: number;
-  productSizes: string;
+  productSizes: string[];
   productQuantity: string;
   productImage: string[];
   productDescription: string;

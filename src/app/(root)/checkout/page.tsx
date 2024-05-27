@@ -1,138 +1,137 @@
-"use client"
+"use client";
 
 import { CheckoutSummary } from "@/components/checkout-cart-summary";
-import { useStateContext } from "@/context/stateContext"
-import { useUser } from "@clerk/nextjs";
+import { User } from "@/types";
+import axios from "axios";
+import { Loader } from "lucide-react";
 import { redirect } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const LoginForm = () => {
-    const { isSignedIn, user } = useUser();
-    if (!isSignedIn) redirect('/sign-in');
-    const { cartItems, totalPrice, formData, handleChange, updateUser } = useStateContext();
-    if (isSignedIn) updateUser(user);
-    const disableNameInput = user.fullName !== undefined || null || '' ? true : false;
-    const disableEmailInput = user.primaryEmailAddress?.emailAddress !== undefined || null || '' ? true : false;
+  const [userData, setUserData] = useState<User | null>(null);
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get<User>(`/api/users/userData`);
+        console.log("userdata", response);
+        setUserData(response.data.data);
+      } catch (error: any) {
+        console.log(error);
+        throw new Error(`Failed to fetch user data`, error.Message);
+      }
+    };
 
-    // console.log('isSignedIn', isSignedIn);
-    // console.log('user', user);
-    // console.log('user', user.phoneNumbers[0].phoneNumber);
+    fetchUserData();
+  }, []);
 
-    return (        
-        <div>
-            <main className="mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 lg:max-w-7xl lg:px-8">
-                <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                Ready To Pay
-                </h1>
+  // Logic to disable inputs based on user data
+  //    const disableNameInput = !!userData?.firstName;
+  //    const disableEmailInput = !!userData?.email;
 
-                <form className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
-                    <section aria-labelledby="cart-heading" className="lg:col-span-7">
-                        <h2 id="cart-heading" className="sr-only">Pleasa, Fill out your Information</h2>
-                        {/* Cart Items */}
-                        {/* <CartItems /> */}
-                        <div className="mt-4">
-                            <input 
-                            name="name"
-                            value={formData.name}
-                            type="text"
-                            onChange={handleChange}
-                            placeholder="Your Name "
-                            required
-                            className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 bg-white border-2 dark:border-1 border-gray-300 rounded-lg dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-gray-200 dark:focus:border-gray-200 focus:ring-green-100 focus:outline-none focus:ring focus:ring-opacity-10 focus:border-2" 
-                            disabled={disableNameInput}
-                            />
-                        </div>
-                        
-                        <div className="mt-4">
-                            <input 
-                            name="email"
-                            value={formData.email}
-                            type="email"
-                            onChange={handleChange}
-                            placeholder="E-Mail"
-                            required
-                            className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 bg-white border-2 dark:border-1 border-gray-300 rounded-lg dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-gray-200 dark:focus:border-gray-200 focus:ring-green-100 focus:outline-none focus:ring focus:ring-opacity-10 focus:border-2" 
-                            disabled={disableEmailInput}
-                            />
-                        </div>
-
-                        <div className="mt-4">
-                            <input 
-                            name="primaryPhoneNumber"
-                            value={formData.primaryPhoneNumber}
-                            type="text"
-                            onChange={handleChange}
-                            placeholder="primary Phone Number"
-                            required
-                            className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 bg-white border-2 dark:border-1 border-gray-300 rounded-lg dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-gray-200 dark:focus:border-gray-200 focus:ring-green-100 focus:outline-none focus:ring focus:ring-opacity-10 focus:border-2" 
-                            />
-                        </div>
-
-                        <div className="mt-4">
-                            <input 
-                            name="secondaryPhoneNumber"
-                            value={formData.secondaryPhoneNumber}
-                            type="text"
-                            onChange={handleChange}
-                            placeholder="secondary Phone Number"
-                            className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 bg-white border-2 dark:border-1 border-gray-300 rounded-lg dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-gray-200 dark:focus:border-gray-200 focus:ring-green-100 focus:outline-none focus:ring focus:ring-opacity-10 focus:border-2" 
-                            />
-                        </div>
-
-                        <div className="mt-4">
-                            <input 
-                            name="address"
-                            value={formData.address}
-                            type="text"
-                            onChange={handleChange}
-                            required
-                            placeholder="Your address" 
-                            className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 bg-white border-2 dark:border-1 border-gray-300 rounded-lg dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-gray-200 dark:focus:border-gray-200 focus:ring-green-100 focus:outline-none focus:ring focus:ring-opacity-10 focus:border-2" 
-                            />
-                        </div>
-
-                        <div className="mt-4">
-                            <input 
-                            name="postalcode"
-                            value={formData.postalcode}
-                            type="text"
-                            onChange={handleChange}
-                            placeholder="Your postal code" 
-                            className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 bg-white border-2 dark:border-1 border-gray-300 rounded-lg dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-gray-200 dark:focus:border-gray-200 focus:ring-green-100 focus:outline-none focus:ring focus:ring-opacity-10 focus:border-2" 
-                            />
-                        </div>
-
-                        <div className="mt-4">
-                            <input 
-                            name="city"
-                            value={formData.city}
-                            type="text"
-                            onChange={handleChange}
-                            required
-                            placeholder="Your city" 
-                            className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 bg-white border-2 dark:border-1 border-gray-300 rounded-lg dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-gray-200 dark:focus:border-gray-200 focus:ring-green-100 focus:outline-none focus:ring focus:ring-opacity-10 focus:border-2" 
-                            />
-                        </div>
-
-                        <div className="mt-4">
-                            <input 
-                            name="state"
-                            value={formData.state}
-                            type="text"
-                            onChange={handleChange}
-                            required
-                            placeholder="Your state" 
-                            className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 bg-white border-2 dark:border-1 border-gray-300 rounded-lg dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-gray-200 dark:focus:border-gray-200 focus:ring-green-100 focus:outline-none focus:ring focus:ring-opacity-10 focus:border-2" 
-                            />
-                        </div>
-
-                    </section>
-                    {/* Cart Summary */}
-                    <CheckoutSummary />
-                </form>
-            </main>
+  if (userData === null) {
+    return (
+      <>
+        <div className="w-full min-h-screen flex items-center justify-center">
+          <p className="w-full h-full flex items-center justify-center">
+            <Loader className=" animate-spin" /> Loading
+          </p>
         </div>
-    )
-}
+      </>
+    );
+  }
 
-export default LoginForm
+  return (
+    <div>
+      <main className="mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 lg:max-w-7xl lg:px-8">
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+          Ready To Pay
+        </h1>
+
+        <form className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
+          <section aria-labelledby="cart-heading" className="lg:col-span-7">
+            <h2 id="cart-heading" className="sr-only">
+              Pleasa, Fill out your Information
+            </h2>
+            {/* Cart Items */}
+            {/* <CartItems /> */}
+            <div className="mt-4">
+              <input
+                name="name"
+                value={`${userData.firstName} ${userData.otherNames} ${userData.lastName}`}
+                type="text"
+                placeholder="Your Name "
+                required
+                className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 bg-white border-2 dark:border-1 border-gray-300 rounded-lg dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-gray-200 dark:focus:border-gray-200 focus:ring-green-100 focus:outline-none focus:ring focus:ring-opacity-10 focus:border-2"
+                disabled={true}
+              />
+            </div>
+
+            <div className="mt-4">
+              <input
+                name="email"
+                value={userData.email}
+                type="email"
+                placeholder="E-Mail"
+                required
+                className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 bg-white border-2 dark:border-1 border-gray-300 rounded-lg dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-gray-200 dark:focus:border-gray-200 focus:ring-green-100 focus:outline-none focus:ring focus:ring-opacity-10 focus:border-2"
+                disabled={true}
+              />
+            </div>
+
+            <div className="mt-4">
+              <input
+                name="primaryPhoneNumber"
+                value={userData.phoneNumber}
+                type="text"
+                disabled={true}
+                placeholder="primary Phone Number"
+                required
+                className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 bg-white border-2 dark:border-1 border-gray-300 rounded-lg dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-gray-200 dark:focus:border-gray-200 focus:ring-green-100 focus:outline-none focus:ring focus:ring-opacity-10 focus:border-2"
+              />
+            </div>
+
+            <div className="mt-4">
+              <input
+                name="address"
+                value={userData.address}
+                type="text"
+                disabled={true}
+                required
+                placeholder="Your address"
+                className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 bg-white border-2 dark:border-1 border-gray-300 rounded-lg dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-gray-200 dark:focus:border-gray-200 focus:ring-green-100 focus:outline-none focus:ring focus:ring-opacity-10 focus:border-2"
+              />
+            </div>
+
+            <div className="mt-4">
+              <input
+                name="postalcode"
+                value={userData.postalCode}
+                type="text"
+                disabled={true}
+                placeholder="Your postal code"
+                className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 bg-white border-2 dark:border-1 border-gray-300 rounded-lg dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-gray-200 dark:focus:border-gray-200 focus:ring-green-100 focus:outline-none focus:ring focus:ring-opacity-10 focus:border-2"
+              />
+            </div>
+
+            <div className="mt-4">
+              <input
+                name="city"
+                value={`${userData.cityOfResidence}, ${userData.stateOfResidence}`}
+                type="text"
+                disabled={true}
+                required
+                placeholder="Your city"
+                className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 bg-white border-2 dark:border-1 border-gray-300 rounded-lg dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-gray-200 dark:focus:border-gray-200 focus:ring-green-100 focus:outline-none focus:ring focus:ring-opacity-10 focus:border-2"
+              />
+            </div>
+          </section>
+          {/* Cart Summary */}
+          <CheckoutSummary userData={userData} />
+        </form>
+      </main>
+    </div>
+  );
+};
+
+export default LoginForm;

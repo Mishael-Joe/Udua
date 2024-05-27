@@ -1,22 +1,23 @@
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
- 
+import axios from "axios";
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
-export function addCommasToNumber(number : number) {
+export function addCommasToNumber(number: number) {
   if (typeof number !== "number") {
     return number; // Return unchanged if it's not a number
   }
-  
+
   const numberStr = number.toString();
   const parts = numberStr.split(".");
-  
+
   // Split the number into its integer and decimal parts
   const integerPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   const decimalPart = parts[1] ? "." + parts[1] : "";
-  
+
   // Combine the integer and decimal parts
   return integerPart + decimalPart;
 }
@@ -24,16 +25,54 @@ export function addCommasToNumber(number : number) {
 export function getSizeName(value: string) {
   switch (value) {
     case "xs":
-      return "X-Small"
+      return "X-Small";
     case "s":
-      return "Small"
+      return "Small";
     case "m":
-      return "Medium"
+      return "Medium";
     case "l":
-      return "Large"
+      return "Large";
     case "xl":
-      return "X-Large"
+      return "X-Large";
     case "one-size":
-      return "One Size"
+      return "One Size";
   }
 }
+
+export const uploadImagesToCloudinary = async (images: File[]) => {
+  try {
+    // Fetch the timestamp and signature from the server
+    const {
+      data: { timestamp, signature },
+    } = await axios.post("/api/cloudinaryImages");
+
+    const url = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`;
+    const uploadedImageUrls = [];
+
+    for (let image of images) {
+      const formData = new FormData();
+      formData.append("file", image);
+      formData.append("api_key", process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY!);
+      formData.append("timestamp", timestamp);
+      formData.append("signature", signature);
+
+      try {
+        const uploadResponse = await axios.post(url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        uploadedImageUrls.push(uploadResponse.data.secure_url);
+      } catch (uploadError) {
+        console.error(`Error uploading image ${image.name}:`, uploadError);
+        throw new Error(`Error uploading image ${image.name}: ${uploadError}`);
+      }
+    }
+
+    return uploadedImageUrls;
+  } catch (error: any) {
+    console.error("Error uploading images to Cloudinary:", error);
+    throw new Error(`Error uploading images to Cloudinary: ${error.message}`);
+  }
+};
