@@ -34,6 +34,9 @@ function SignUp() {
       confirmPassword: "",
       address: "",
       phoneNumber: "",
+      cityOfResidence: "",
+      stateOfResidence: "",
+      postalCode: "",
     },
   });
 
@@ -56,6 +59,9 @@ function SignUp() {
       password: values.password,
       address: values.address,
       phoneNumber: values.phoneNumber,
+      cityOfResidence: values.cityOfResidence,
+      stateOfResidence: values.stateOfResidence,
+      postalCode: values.postalCode,
     };
 
     try {
@@ -95,12 +101,12 @@ function SignUp() {
             </div>
 
             <h3 className="mt-3 text-xl font-medium text-center text-gray-600 dark:text-gray-200">
-              Welcome Back
+              Create an Account
             </h3>
 
-            <p className="mt-1 text-center text-gray-500 dark:text-gray-400">
+            {/* <p className="mt-1 text-center text-gray-500 dark:text-gray-400">
               Login or create account
-            </p>
+            </p> */}
 
             <Form {...form}>
               <form
@@ -267,6 +273,69 @@ function SignUp() {
                           type="text"
                           placeholder="090******35"
                           aria-label="Enter your phone number"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  // className="w-full mt-4"
+                  control={form.control}
+                  name="cityOfResidence"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>City Of Residence</FormLabel>
+                      <FormControl>
+                        <Input
+                          className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+                          type="text"
+                          placeholder="Enter your city of Residence"
+                          aria-label="Enter your city of Residence"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  // className="w-full mt-4"
+                  control={form.control}
+                  name="stateOfResidence"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>State of Residence</FormLabel>
+                      <FormControl>
+                        <Input
+                          className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+                          type="text"
+                          placeholder="Enter your state of Residence"
+                          aria-label="Enter your state of Residence"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  // className="w-full mt-4"
+                  control={form.control}
+                  name="postalCode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>postalCode</FormLabel>
+                      <FormControl>
+                        <Input
+                          className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+                          type="text"
+                          placeholder="Enter your postal Code"
+                          aria-label="Enter your postal Code"
                           {...field}
                         />
                       </FormControl>

@@ -7,13 +7,17 @@ import { Loader } from "lucide-react";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 
+type user = {
+  data: User;
+};
+
 const LoginForm = () => {
   const [userData, setUserData] = useState<User | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get<User>(`/api/users/userData`);
+        const response = await axios.get<user>(`/api/users/userData`);
         console.log("userdata", response);
         setUserData(response.data.data);
       } catch (error: any) {
@@ -34,7 +38,7 @@ const LoginForm = () => {
       <>
         <div className="w-full min-h-screen flex items-center justify-center">
           <p className="w-full h-full flex items-center justify-center">
-            <Loader className=" animate-spin" /> Loading
+            <Loader className=" animate-spin" /> Loading...
           </p>
         </div>
       </>
@@ -47,6 +51,13 @@ const LoginForm = () => {
         <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
           Ready To Pay
         </h1>
+
+        <p className="mt-4">
+          To ensure a smooth and timely delivery, please make sure your contact
+          information is up to date. If any details have changed, kindly update
+          them before proceeding with your payment. You can do so under the
+          account settings in your profile page.
+        </p>
 
         <form className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
           <section aria-labelledby="cart-heading" className="lg:col-span-7">
@@ -125,6 +136,8 @@ const LoginForm = () => {
                 className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 bg-white border-2 dark:border-1 border-gray-300 rounded-lg dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-gray-200 dark:focus:border-gray-200 focus:ring-green-100 focus:outline-none focus:ring focus:ring-opacity-10 focus:border-2"
               />
             </div>
+
+            {/* <p>Thank you for helping us serve you better!</p> */}
           </section>
           {/* Cart Summary */}
           <CheckoutSummary userData={userData} />

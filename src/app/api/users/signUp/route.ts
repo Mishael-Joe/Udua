@@ -5,7 +5,7 @@ import bcryptjs from "bcryptjs";
 
 export async function POST(request: NextRequest) {
   const requestBody = await request.json();
-  console.log("requestBody", requestBody);
+  // console.log("requestBody", requestBody);
   const {
     firstName,
     lastName,
@@ -14,6 +14,9 @@ export async function POST(request: NextRequest) {
     password,
     address,
     phoneNumber,
+    cityOfResidence,
+    stateOfResidence,
+    postalCode,
   } = requestBody;
 
   try {
@@ -40,6 +43,9 @@ export async function POST(request: NextRequest) {
       password: hashedPassword,
       address,
       phoneNumber,
+      cityOfResidence,
+      stateOfResidence,
+      postalCode,
     });
 
     const savedUser = await newUser.save();

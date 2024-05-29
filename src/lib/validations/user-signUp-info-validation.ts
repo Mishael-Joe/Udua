@@ -37,4 +37,13 @@ export const userSignUpInfoValidation = z.object({
     })
     .min(11)
     .max(14),
+  cityOfResidence: z.string({
+    required_error: "Required",
+  }),
+  stateOfResidence: z.string({
+    required_error: "Required",
+  }),
+  postalCode: z.string({
+    required_error: "Required",
+  }),
 });

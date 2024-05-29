@@ -21,7 +21,6 @@ function UserAvater() {
 
   if (parsedUserData !== "") {
     const userFirstName = parsedUserData.firstName;
-    const userId = parsedUserData.id;
 
     return (
       <Fragment>
@@ -29,11 +28,15 @@ function UserAvater() {
           <DropdownMenuTrigger>{userFirstName}</DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <Link href={`/profile/${userId}`}>
+            <Link href={`/profile?tab=profile`}>
               <DropdownMenuItem>Profile</DropdownMenuItem>
             </Link>
-            <DropdownMenuItem>Billing</DropdownMenuItem>
-            <DropdownMenuItem>Team</DropdownMenuItem>
+            <Link href={`/profile?tab=wishlist`}>
+              <DropdownMenuItem>Wishlist</DropdownMenuItem>
+            </Link>
+            <Link href={`/profile?tab=order-history`}>
+              <DropdownMenuItem>Orders</DropdownMenuItem>
+            </Link>
             <DropdownMenuSeparator />
             <DropdownMenuLabel>
               <Button onClick={signOut} className="w-full">

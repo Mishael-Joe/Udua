@@ -38,32 +38,3 @@ export const getUserDataFromToken = (request: NextRequest): string | null => {
     throw new Error(`Error getting user data from token: ${error.message}`);
   }
 };
-
-// import { NextRequest } from "next/server";
-// import jwt from "jsonwebtoken";
-
-// interface userID {
-//     id: string;
-// }
-
-// // Create a type guard to check if the payload is of type UserID
-// function isUserID(payload: any): payload is UserID {
-//     return (payload as UserID).id !== undefined;
-//   }
-
-// export const getUserDataFromToken = (request: NextRequest) => {
-//   try {
-//     const encodedToken = request.cookies.get("token")?.value || ``;
-
-//     console.log(`encodedToken`, encodedToken);
-
-//     const decodedToken: userID = jwt.verify(encodedToken, process.env.JWT_SECRET_KEY!);
-
-//     console.log(`decodedToken`, decodedToken);
-
-//     return decodedToken.id;
-//   } catch (error: any) {
-//     console.error(error);
-//     throw new Error(`Error getting user data from token:`, error.message);
-//   }
-// };

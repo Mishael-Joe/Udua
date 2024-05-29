@@ -76,7 +76,7 @@ export function CheckoutSummary({ userData }: userData) {
       });
 
       const data = await response.json();
-      // console.log(data)
+      console.log(`data`, data);
 
       if (response.status === 200) {
         // console.log(data.data.link);

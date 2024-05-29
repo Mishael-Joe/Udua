@@ -14,7 +14,7 @@ export default async function Home() {
   return (
     <main className="min-h-screen px-5 md:px-4 py-4 flex flex-row gap-4 max-w-[75rem] mx-auto">
       <aside className="w-1/4 max-md:hidden">
-        <LeftSidebar onCategoryData={handleCategoryData} />
+        <LeftSidebar />
         {/* <DropdownMenu /> */}
       </aside>
 
