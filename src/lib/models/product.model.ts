@@ -1,6 +1,19 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 
-const productSchema = new mongoose.Schema({
+interface IProduct extends Document {
+  accountId: string;
+  productName: string;
+  productPrice: number;
+  productSizes: string[];
+  productQuantity: number;
+  productImage: string[];
+  productDescription: string;
+  productSpecification: string;
+  productCategory: string[];
+  isVerifiedProduct: boolean;
+} // NOTE: accountId serves as the owner of the product i.e ownerID
+
+const productSchema = new Schema<IProduct>({
   accountId: { type: String, required: true },
   productName: { type: String, required: true },
   productPrice: { type: Number, required: true },
@@ -10,15 +23,10 @@ const productSchema = new mongoose.Schema({
   productDescription: { type: String, required: true },
   productSpecification: { type: String, required: true },
   productCategory: { type: [String], required: true },
-  owner: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-  ],
+  isVerifiedProduct: { type: Boolean, default: false },
 });
 
 const Product =
-  mongoose.models.Product || mongoose.model("Product", productSchema);
+  mongoose.models.Product || mongoose.model<IProduct>("Product", productSchema);
 
 export default Product;

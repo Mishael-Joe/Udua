@@ -17,7 +17,7 @@ import { Button } from "./ui/button";
 
 function UserAvater() {
   const userData = localStorage.getItem("userData");
-  const parsedUserData = JSON.parse(userData || "");
+  const parsedUserData = JSON.parse(userData || "{}");
 
   if (parsedUserData !== "") {
     const userFirstName = parsedUserData.firstName;

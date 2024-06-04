@@ -6,7 +6,7 @@ import { Product } from "@/types";
 import { Suspense } from "react";
 
 export default async function Home() {
-  // const products: Product[] = await fetchProducts();
+  const products: Product[] = await fetchProducts();
   // console.log(products);
   const handleCategoryData = (categoryData: string) => {
     // setData(categoryData);
@@ -19,8 +19,10 @@ export default async function Home() {
       </aside>
 
       <Suspense fallback={<SkeletonLoader />}>
-        {/* <ProductGrid products={products} /> */}
+        <ProductGrid products={products} />
       </Suspense>
     </main>
   );
 }
+
+// ngrok http 3000

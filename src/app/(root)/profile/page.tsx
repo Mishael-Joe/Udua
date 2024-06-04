@@ -10,6 +10,7 @@ import { useSearchParams } from "next/navigation";
 import { Loader } from "lucide-react";
 import { WishlistEmpty } from "@/components/wishlist";
 import { OrderHistory } from "@/components/order-history";
+import AccountSettings from "@/components/account-settings";
 
 const Profile = () => {
   const searchParams = useSearchParams();
@@ -46,7 +47,8 @@ const Profile = () => {
         return <UserProfile user={userData!} />;
       // return `<UserProfile user={userData} />`;
       case "account-settings":
-        return "Account Settings Component";
+        // return "Account Settings Component";
+        return <AccountSettings user={userData!} />;
       case "order-history":
         return <OrderHistory />;
       case "wishlist":
@@ -54,7 +56,7 @@ const Profile = () => {
       case "supports":
         return "Support and Help Component";
       default:
-        return "Default Component";
+        return <UserProfile user={userData!} />;
     }
   }
 

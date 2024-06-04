@@ -16,7 +16,12 @@ type user = {
 function UserProfile({ user }: user) {
   return (
     <div className="p-4 bg-black border rounded w-full">
-      <h1 className="pb-4">My Profile</h1>
+      <div className="pb-4 flex flex-row justify-between gap-3">
+        <h1>My Profile</h1>
+        {user.isVerified !== false && (
+          <span className="text-sm text-green-600">verified</span>
+        )}
+      </div>
 
       <div className="flex flex-row gap-6 flex-wrap items-cente justify-center lg:justify-between">
         <div className="w-[47%] p-3 border rounded">
@@ -47,20 +52,21 @@ function UserProfile({ user }: user) {
         </div>
       </div>
 
-      <div className="w-full border rounded-md p-3 mt-4">
-        <p className=" font-semibold">Hi {user.firstName},</p>
-
-        <div>
-          <p className="pb-3">Welcome to Udua.</p>
-          <p className="pb-3 w-full flex flex-wrap justify-between">
-            To complete your registration and access all the features we offer,
-            please verify your account.{" "}
-            <Link href={``} className=" hover:underline">
-              verify account
-            </Link>
-          </p>
+      {user.isVerified === false && (
+        <div className="w-full border rounded-md p-3 mt-4">
+          <p className=" font-semibold">Hi {user.firstName},</p>
+          <div>
+            <p className="pb-3">Welcome to Udua.</p>
+            <p className="pb-3 w-full flex flex-wrap justify-between">
+              To complete your registration and access all the features we
+              offer, please verify your account.{" "}
+              <Link href={`/verification`} className=" hover:underline">
+                verify account
+              </Link>
+            </p>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

@@ -31,39 +31,23 @@ export function CheckoutSummary({ userData }: userData) {
     customer: {
       name: userData.firstName + " " + userData.lastName,
       email: userData.email,
-      uniqueRef: "Alfa" + uuidv4(),
+      uniqueRef: "Udua" + uuidv4(),
       phone_number: userData.phoneNumber,
     },
     meta: {
       city: userData.cityOfResidence,
       state: userData.stateOfResidence,
       address: userData.address,
-      itemsInCart: { ...cartItems },
+      itemsInCart: [...cartItems],
       deliveryMethod: deliveryMethod,
       postal_code: userData.postalCode || "",
+      userID: userData._id,
       // secondary_phone_number: formData.secondaryPhoneNumber || '',
     },
   };
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-
-    // if (
-    //   formData.name === "" ||
-    //   formData.email === "" ||
-    //   formData.phone_number === "" ||
-    //   formData.address === "" ||
-    //   formData.city === "" ||
-    //   formData.state === ""
-    // ) {
-    //   toast({
-    //     variant: "destructive",
-    //     title: `ERROR`,
-    //     description: `Provide Your Contact Details`,
-    //   });
-
-    //   return;
-    // }
     setIsLoading(() => true);
 
     try {
@@ -76,7 +60,7 @@ export function CheckoutSummary({ userData }: userData) {
       });
 
       const data = await response.json();
-      console.log(`data`, data);
+      // console.log(`data`, data);
 
       if (response.status === 200) {
         // console.log(data.data.link);

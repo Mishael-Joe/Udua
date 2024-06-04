@@ -15,14 +15,14 @@ export const getUserDataFromToken = (request: NextRequest): string | null => {
   try {
     const encodedToken = request.cookies.get("token")?.value || ``;
 
-    console.log(`encodedToken`, encodedToken);
+    // console.log(`encodedToken`, encodedToken);
 
     const decodedToken = jwt.verify(
       encodedToken,
       process.env.JWT_SECRET_KEY!
     ) as JwtPayload | string;
 
-    console.log(`decodedToken`, decodedToken);
+    // console.log(`decodedToken`, decodedToken);
 
     if (typeof decodedToken === "string") {
       throw new Error("Unexpected string token");

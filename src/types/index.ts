@@ -11,7 +11,7 @@ export type User = {
   cityOfResidence: string;
   stateOfResidence: string;
   postalCode: string;
-  isVarified: boolean;
+  isVerified: boolean;
   isSeller: boolean;
   userProducts: {}[];
   forgotpasswordToken: string;
@@ -33,6 +33,28 @@ export type Product = {
   accountId: string;
   path: string;
   quantity?: number;
+  isVerifiedProduct?: boolean;
+};
+
+export type RequestBodyTypes = {
+  address: string;
+  secondary_phone_number: string;
+  city: string;
+  state: string;
+  postal_code: string;
+  itemsInCart: Product[];
+  deliveryMethod: string;
+  userID: string;
+};
+
+export type ResultDataMetadataItemsInCart = {
+  _id: string;
+  quantity: number;
+  city: string;
+  state: string;
+  postal_code: string;
+  itemsInCart: Product[];
+  deliveryMethod: string;
 };
 
 export type CartItems = Partial<Product>;

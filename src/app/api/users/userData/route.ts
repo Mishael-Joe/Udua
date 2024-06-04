@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     connectToDB();
     const userID = await getUserDataFromToken(request);
     const user = await User.findById(userID).select(
-      "firstName lastName otherNames email phoneNumber address cityOfResidence stateOfResidence postalCode isVarified"
+      "_id firstName lastName otherNames email phoneNumber address cityOfResidence stateOfResidence postalCode isVerified"
     );
 
     return NextResponse.json(
