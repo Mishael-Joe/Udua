@@ -5,22 +5,45 @@ import SkeletonLoader from "@/lib/loaders/skeletonLoader";
 import { Product } from "@/types";
 import { Suspense } from "react";
 
-export default async function Home() {
-  const products: Product[] = await fetchProducts();
-  // console.log(products);
-  const handleCategoryData = (categoryData: string) => {
-    // setData(categoryData);
+type Props = {
+  searchParams: {
+    categories?: string[] | string;
+    page?: number;
+    limit?: number;
+    minPrice?: number;
+    maxPrice?: number;
+    search?: string;
+    sortBy?: string;
+    sortOrder?: "asc" | "desc";
+    inStock?: boolean;
+    minRating?: number;
+    dateFrom?: string | Date;
+    dateTo?: string | Date;
   };
-  return (
-    <main className="min-h-screen px-5 md:px-4 py-4 flex flex-row gap-4 max-w-[75rem] mx-auto">
-      <aside className="w-1/4 max-md:hidden">
-        <LeftSidebar />
-        {/* <DropdownMenu /> */}
-      </aside>
+};
 
-      <Suspense fallback={<SkeletonLoader />}>
-        <ProductGrid products={products} />
-      </Suspense>
+export default async function Home({ searchParams }: Props) {
+  const { categories } = searchParams;
+  // Convert categories string to an array of strings
+  const categoriesArray = categories ? (categories as string).split(" ") : [];
+  // console.log(`categoriesArray`, categoriesArray);
+  // const products: Product[] = await fetchProducts();
+  const products: Product[] = await fetchProducts(categoriesArray);
+  // console.log(products);
+
+  return (
+    <main className="grid min-h-screen mx-auto md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr] ... px-5 md:px-4 fle flex-row gap-4 max-w-[75rem]">
+      <div className="hidden border-r bg-muted/10 md:block">
+        <div className="flex h-full max-h-screen flex-col gap-2">
+          <LeftSidebar />
+        </div>
+      </div>
+
+      <div className="py-4">
+        <Suspense fallback={<SkeletonLoader />}>
+          <ProductGrid products={products} />
+        </Suspense>
+      </div>
     </main>
   );
 }

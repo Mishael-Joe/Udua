@@ -15,7 +15,7 @@ type user = {
 
 function UserProfile({ user }: user) {
   return (
-    <div className="p-4 bg-black border rounded w-full">
+    <div className="p-4 bg-muted/10 border rounded w-full">
       <div className="pb-4 flex flex-row justify-between gap-3">
         <h1>My Profile</h1>
         {user.isVerified !== false && (

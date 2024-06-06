@@ -1,27 +1,40 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "./ui/button";
-
-function LeftSidebar({ onCategoryData }: (categoryData: string) => void) {
-  const router = useRouter();
+// { onCategoryData }: (categoryData: string) => void
+function LeftSidebar() {
+  const searchParams = useSearchParams();
   const pathname = usePathname();
+  const router = useRouter();
+  // const [tab, setTab] = useState<string>(searchParams.get("tab") || "profile");
 
-  const handleCategoryClick = async (category: string, k?: string) => {
-    try {
-      const res = await fetch(`/api/categories/${category}`);
-      const result = await res.json();
-
-      if (result.success) {
-        onCategoryData(result.data);
-      } else {
-        console.error("Failed to fetch category data");
-      }
-    } catch (error) {
-      console.error("Error:", error);
+  const handleChange = (value: string) => {
+    // setTab(value);
+    const params = new URLSearchParams(searchParams);
+    if (value) {
+      params.set("categories", value);
+    } else {
+      params.delete("categories");
     }
+    router.replace(`${pathname}?${params.toString()}`);
   };
+
+  // const handleCategoryClic = async (category: string, k?: string) => {
+  //   try {
+  //     const res = await fetch(`/api/categories/${category}`);
+  //     const result = await res.json();
+
+  //     if (result.success) {
+  //       onCategoryData(result.data);
+  //     } else {
+  //       console.error("Failed to fetch category data");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //   }
+  // };
 
   return (
     <section className="custom-scrollbar leftsidebar">
@@ -29,22 +42,14 @@ function LeftSidebar({ onCategoryData }: (categoryData: string) => void) {
         <h1>Categories</h1>
         <ul className="flex flex-col gap-1">
           <li className="show-dropdown-menu1 cursor-pointer">
-            <a onClick={() => handleCategoryClick("health-beauty")}>
-              Health & Beauty
-            </a>
+            <a onClick={() => handleChange("Perfume")}>Health & Beauty</a>
 
             <div className="dropdown-menu1 bg-black border rounded">
               <ul>
-                <li
-                  onClick={() =>
-                    handleCategoryClick("health-beauty", "skincare")
-                  }
-                >
+                <li onClick={() => handleChange("Perfume skincare")}>
                   <a>Skincare</a>
                 </li>
-                <li
-                  onClick={() => handleCategoryClick("health-beauty", "makeup")}
-                >
+                <li onClick={() => handleChange("Perfume makeup")}>
                   <a>Makeup</a>
                 </li>
               </ul>
@@ -52,23 +57,17 @@ function LeftSidebar({ onCategoryData }: (categoryData: string) => void) {
           </li>
 
           <li
-            onClick={() => handleCategoryClick("home-office")}
+            onClick={() => handleChange("home-office")}
             className="show-dropdown-menu1 cursor-pointer"
           >
             <a>Home & Office</a>
 
             <div className="dropdown-menu1 bg-black border rounded">
               <ul>
-                <li
-                  onClick={() =>
-                    handleCategoryClick("health-beauty", "skincare")
-                  }
-                >
+                <li onClick={() => handleChange("health-beauty skincare")}>
                   <a>pens</a>
                 </li>
-                <li
-                  onClick={() => handleCategoryClick("health-beauty", "makeup")}
-                >
+                <li onClick={() => handleChange("health-beauty makeup")}>
                   <a>books</a>
                 </li>
               </ul>
@@ -76,23 +75,17 @@ function LeftSidebar({ onCategoryData }: (categoryData: string) => void) {
           </li>
 
           <li
-            onClick={() => handleCategoryClick("appliances")}
+            onClick={() => handleChange("appliances")}
             className="show-dropdown-menu1 cursor-pointer"
           >
             <a>Appliances</a>
 
             <div className="dropdown-menu1 bg-black border rounded">
               <ul>
-                <li
-                  onClick={() =>
-                    handleCategoryClick("health-beauty", "skincare")
-                  }
-                >
+                <li onClick={() => handleChange("health-beauty skincare")}>
                   <a>fjgbvm</a>
                 </li>
-                <li
-                  onClick={() => handleCategoryClick("health-beauty", "makeup")}
-                >
+                <li onClick={() => handleChange("health-beauty makeup")}>
                   <a>radio</a>
                 </li>
               </ul>
@@ -100,23 +93,17 @@ function LeftSidebar({ onCategoryData }: (categoryData: string) => void) {
           </li>
 
           <li
-            onClick={() => handleCategoryClick("phones-tablets")}
+            onClick={() => handleChange("phones-tablets")}
             className="show-dropdown-menu1 cursor-pointer"
           >
             <a>Phones & Tablets</a>
 
             <div className="dropdown-menu1 bg-black border rounded">
               <ul>
-                <li
-                  onClick={() =>
-                    handleCategoryClick("health-beauty", "skincare")
-                  }
-                >
+                <li onClick={() => handleChange("health-beauty skincare")}>
                   <a>Phones</a>
                 </li>
-                <li
-                  onClick={() => handleCategoryClick("health-beauty", "makeup")}
-                >
+                <li onClick={() => handleChange("health-beauty makeup")}>
                   <a>Tablets</a>
                 </li>
               </ul>
@@ -124,23 +111,17 @@ function LeftSidebar({ onCategoryData }: (categoryData: string) => void) {
           </li>
 
           <li
-            onClick={() => handleCategoryClick("computing")}
+            onClick={() => handleChange("computing")}
             className="show-dropdown-menu1 cursor-pointer"
           >
             <a>Computing</a>
 
             <div className="dropdown-menu1 bg-black border rounded">
               <ul>
-                <li
-                  onClick={() =>
-                    handleCategoryClick("health-beauty", "skincare")
-                  }
-                >
+                <li onClick={() => handleChange("health-beauty skincare")}>
                   <a>Computers</a>
                 </li>
-                <li
-                  onClick={() => handleCategoryClick("health-beauty", "makeup")}
-                >
+                <li onClick={() => handleChange("health-beauty makeup")}>
                   <a>Ipads</a>
                 </li>
               </ul>
@@ -148,23 +129,17 @@ function LeftSidebar({ onCategoryData }: (categoryData: string) => void) {
           </li>
 
           <li
-            onClick={() => handleCategoryClick("electronics")}
+            onClick={() => handleChange("electronics")}
             className="show-dropdown-menu1 cursor-pointer"
           >
             <a>Electronics</a>
 
             <div className="dropdown-menu1 bg-black border rounded">
               <ul>
-                <li
-                  onClick={() =>
-                    handleCategoryClick("health-beauty", "skincare")
-                  }
-                >
+                <li onClick={() => handleChange("health-beauty skincare")}>
                   <a>pads</a>
                 </li>
-                <li
-                  onClick={() => handleCategoryClick("health-beauty", "makeup")}
-                >
+                <li onClick={() => handleChange("health-beauty makeup")}>
                   <a>box office</a>
                 </li>
               </ul>
@@ -172,23 +147,17 @@ function LeftSidebar({ onCategoryData }: (categoryData: string) => void) {
           </li>
 
           <li
-            onClick={() => handleCategoryClick("fashion")}
+            onClick={() => handleChange("fashion")}
             className="show-dropdown-menu1 cursor-pointer"
           >
             <a>Fashion</a>
 
             <div className="dropdown-menu1 bg-black border rounded">
               <ul>
-                <li
-                  onClick={() =>
-                    handleCategoryClick("health-beauty", "skincare")
-                  }
-                >
+                <li onClick={() => handleChange("health-beauty skincare")}>
                   <a>men's Fashion</a>
                 </li>
-                <li
-                  onClick={() => handleCategoryClick("health-beauty", "makeup")}
-                >
+                <li onClick={() => handleChange("health-beauty makeup")}>
                   <a>children's clothing</a>
                 </li>
               </ul>
@@ -196,23 +165,17 @@ function LeftSidebar({ onCategoryData }: (categoryData: string) => void) {
           </li>
 
           <li
-            onClick={() => handleCategoryClick("gaming")}
+            onClick={() => handleChange("gaming")}
             className="show-dropdown-menu1 cursor-pointer"
           >
             <a>Gaming</a>
 
             <div className="dropdown-menu1 bg-black border rounded">
               <ul>
-                <li
-                  onClick={() =>
-                    handleCategoryClick("health-beauty", "skincare")
-                  }
-                >
+                <li onClick={() => handleChange("health-beauty skincare")}>
                   <a>pads</a>
                 </li>
-                <li
-                  onClick={() => handleCategoryClick("health-beauty", "makeup")}
-                >
+                <li onClick={() => handleChange("health-beauty makeup")}>
                   <a>box office</a>
                 </li>
               </ul>

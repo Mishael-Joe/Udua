@@ -61,11 +61,12 @@ const Profile = () => {
   }
 
   return (
-    <section className="min-h-screen px-5 md:px-4 py-4 flex flex-row gap-4 max-w-[75rem] mx-auto">
-      <aside className="w-1/4 max-md:hidden">
-        <Aside />
-      </aside>
-
+    <section className="grid min-h-screen max-w-6xl mx-auto md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr] ... px-5 md:px-4 gap-4">
+      <div className="hidden bg-muted/10 md:block">
+        <div className="flex h-full max-h-screen flex-col gap-2">
+          <Aside />
+        </div>
+      </div>
       <Suspense fallback={<SkeletonLoader />}>{getTab(data)}</Suspense>
     </section>
   );

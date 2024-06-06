@@ -52,19 +52,95 @@ export async function createProduct({
   }
 }
 
-export async function fetchProducts() {
+export async function fetchProducts(
+  categories?: string[] | string,
+  page: number = 1,
+  limit: number = 30,
+  minPrice?: number,
+  maxPrice?: number,
+  search?: string,
+  sortBy?: string,
+  sortOrder: "asc" | "desc" = "asc",
+  inStock?: boolean,
+  minRating?: number,
+  dateFrom?: Date,
+  dateTo?: Date
+) {
   try {
     await connectToDB();
 
-    const products = await Product.find({}).select(
-      "_id productName productPrice productImage"
-    ); // Fetch all products
+    const query: any = { isVerifiedProduct: false };
+
+    // Add category filter to the query if categories are provided
+    if (categories && categories.length > 0) {
+      query.productCategory = { $in: categories };
+    }
+
+    // Add price range filter
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      query.productPrice = {};
+      if (minPrice !== undefined) query.productPrice.$gte = minPrice;
+      if (maxPrice !== undefined) query.productPrice.$lte = maxPrice;
+    }
+
+    // Add search filter
+    if (search) {
+      query.$or = [
+        { productName: { $regex: search, $options: "i" } },
+        { productDescription: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    // Add stock availability filter
+    if (inStock !== undefined) {
+      query.productQuantity = inStock ? { $gt: 0 } : 0;
+    }
+
+    // Add rating filter
+    if (minRating !== undefined) {
+      query.productRating = { $gte: minRating };
+    }
+
+    // Add date range filter
+    if (dateFrom || dateTo) {
+      query.updatedAt = {};
+      if (dateFrom) query.updatedAt.$gte = dateFrom;
+      if (dateTo) query.updatedAt.$lte = dateTo;
+    }
+
+    // Calculate the number of documents to fetch
+    const totalLimit = page * limit;
+
+    // Determine sorting
+    const sortOptions: any = {};
+    if (sortBy) {
+      sortOptions[sortBy] = sortOrder === "asc" ? 1 : -1;
+    }
+
+    const products = await Product.find(query)
+      .select("_id productName productPrice productImage")
+      .sort(sortOptions)
+      .limit(totalLimit);
 
     return products;
   } catch (error: any) {
     throw new Error(`Failed to fetch products: ${error.message}`);
   }
 }
+
+// export async function fetchProducts() {
+//   try {
+//     await connectToDB();
+
+//     const products = await Product.find({}).select(
+//       "_id productName productPrice productImage"
+//     ); // Fetch all products
+
+//     return products;
+//   } catch (error: any) {
+//     throw new Error(`Failed to fetch products: ${error.message}`);
+//   }
+// }
 
 export async function fetchProductData(id: string) {
   try {
