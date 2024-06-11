@@ -76,6 +76,7 @@ export async function POST(request: Request) {
           const orderProducts = [];
           const notifications = [];
           const insufficientProducts = [];
+          const sellers = [];
 
           for (const { _id, quantity } of cartItems) {
             const product: APIProduct = await Product.findById(_id).session(
@@ -108,6 +109,8 @@ export async function POST(request: Request) {
                 quantity,
               });
             }
+
+            sellers.push(product.accountId);
 
             orderProducts.push({
               product: product._id,
@@ -156,7 +159,8 @@ export async function POST(request: Request) {
             const order = new Order({
               // user: chargeData.customer.id,
               user: userID,
-              seller: orderProducts[0].seller,
+              // seller: orderProducts[0].seller,
+              sellers: sellers,
               products: orderProducts,
               totalAmount: chargeData.amount / 100,
               status: "paid",

@@ -22,6 +22,16 @@ export default function Page() {
   const parsedUserData = JSON.parse(userData || "");
   const userFirstName = parsedUserData.firstName;
 
+  useEffect(() => {
+    const clearStorage = () => {
+      if (startsWithSuccess) {
+        clearItemsInCart();
+      }
+    };
+
+    clearStorage();
+  }, []);
+
   if (status === "cancelled") {
     return (
       <main className="grid min-h-full place-items-center px-6 py-24 sm:py-32 lg:px-8">
@@ -103,16 +113,6 @@ export default function Page() {
 
   //   clearStorage();
   // }
-
-  useEffect(() => {
-    const clearStorage = () => {
-      if (startsWithSuccess) {
-        clearItemsInCart();
-      }
-    };
-
-    clearStorage();
-  }, []);
 
   return (
     <main className="grid min-h-full place-items-center px-6 py-24 sm:py-32 lg:px-8">

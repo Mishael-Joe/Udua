@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import {
@@ -9,7 +11,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-function Aside() {
+function Aside({ slug }: { slug: string }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -102,7 +104,11 @@ function Aside() {
             className={`show-dropdown-menu1 cursor-pointer rounded py-2 px-3`}
           >
             <p>
-              <Link href={`/dash-board`} className="flex items-center gap-2">
+              <Link
+                // href={`/dash-board/${slug}?tab=matrics`}
+                href={`/dash-board`}
+                className="flex items-center gap-2"
+              >
                 <HelpCircleIcon className="" /> seller Profile
               </Link>
             </p>

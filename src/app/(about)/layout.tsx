@@ -7,7 +7,7 @@ import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { SiteFooter } from "@/components/site-footer";
 import { Toaster } from "@/components/ui/toaster";
 import { StateContext } from "@/context/stateContext";
-import { AuthHeader } from "./component/authHeader";
+import { AuthHeader } from "../(auth)/component/authHeader";
 
 export const metadata: Metadata = {
   title: siteConfig.siteName,

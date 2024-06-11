@@ -42,7 +42,7 @@ function AboutSellerAndProduct() {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const result = await axios.get<{ data: User }>(`/api/users/userData`);
+      const result = await axios.post<{ data: User }>(`/api/users/userData`);
       setUserData(result.data.data);
     };
 

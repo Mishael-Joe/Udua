@@ -20,7 +20,9 @@ const Profile = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get<{ data: User }>("/api/users/userData");
+        const response = await axios.post<{ data: User }>(
+          "/api/users/userData"
+        );
         console.log("userdata", response);
         setUserData(response.data.data);
       } catch (error: any) {
@@ -64,7 +66,7 @@ const Profile = () => {
     <section className="grid min-h-screen max-w-6xl mx-auto md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr] ... px-5 md:px-4 gap-4">
       <div className="hidden bg-muted/10 md:block">
         <div className="flex h-full max-h-screen flex-col gap-2">
-          <Aside />
+          <Aside slug={userData._id!} />
         </div>
       </div>
       <Suspense fallback={<SkeletonLoader />}>{getTab(data)}</Suspense>

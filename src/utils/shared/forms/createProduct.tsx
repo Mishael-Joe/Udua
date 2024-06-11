@@ -10,6 +10,7 @@ import axios from "axios";
 import { createProduct } from "@/lib/actions/product.action";
 import { Product } from "@/types";
 import { uploadImagesToCloudinary } from "@/lib/utils";
+import Image from "next/image";
 
 type Products = Omit<Product, "productImage" | "path" | "productPrice"> & {
   productPrice: string;
@@ -298,7 +299,7 @@ function CreateProduct() {
         {imagePreviews && (
           <div className="flex flex-row gap-4 flex-wrap items-center justify-center">
             {imagePreviews.map((src, index) => (
-              <img
+              <Image
                 key={index}
                 src={src}
                 alt={`Selected Preview ${index + 1}`}

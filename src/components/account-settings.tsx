@@ -7,6 +7,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -41,6 +42,7 @@ type user = {
 function AccountSettings({ user }: user) {
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
+  const [delectAccount, setDelectAccount] = React.useState("");
   const [openNewShippingAddress, setOpenNewShippingAddress] =
     React.useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
@@ -57,6 +59,15 @@ function AccountSettings({ user }: user) {
     state: `${user.stateOfResidence}`,
     postal: `${user.postalCode}`,
   });
+
+  const handleAccontDelection = () => {
+    if (delectAccount === "DELECT MY ACCOUNT") {
+      toast({
+        title: `Successful`,
+        description: `Your Account has been delected successfully`,
+      });
+    }
+  };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -251,14 +262,52 @@ function AccountSettings({ user }: user) {
             <h1 className="py-3 flex flex-row justify-between gap-3 text-red-600">
               Delect Account{" "}
               <span>
-                <Button
-                  size="icon"
-                  className="bg-red-600 dark:bg-red-600 hover:bg-red-700"
-                >
-                  <DeleteIcon className="w-5 h-5" />
-                </Button>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button
+                      size="icon"
+                      className="bg-red-600 dark:bg-red-600 hover:bg-red-700"
+                    >
+                      <DeleteIcon className="w-5 h-5" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Delect Account</DialogTitle>
+                      <DialogDescription>
+                        Make changes to your profile here. Click save when
+                        you're done.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      key in{" "}
+                      <span className=" font-bold">DELECT MY ACCOUNT</span> to
+                      delect your account.
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Input
+                          id="delectAccount"
+                          className="col-span-3"
+                          onChange={(e) => setDelectAccount(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button
+                        className=" bg-red-600"
+                        onClick={handleAccontDelection}
+                      >
+                        Delect Account
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </span>
             </h1>
+
+            <p>
+              Once you delete your account, there is no going back. Please be
+              certain.
+            </p>
           </div>
         </div>
 
@@ -500,12 +549,44 @@ function AccountSettings({ user }: user) {
           <h1 className="py-3 flex flex-row justify-between gap-3 text-red-600">
             Delect Account{" "}
             <span>
-              <Button
-                size="icon"
-                className="bg-red-600 dark:bg-red-600 hover:bg-red-700"
-              >
-                <DeleteIcon className="w-5 h-5" />
-              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button
+                    size="icon"
+                    className="bg-red-600 dark:bg-red-600 hover:bg-red-700"
+                  >
+                    <DeleteIcon className="w-5 h-5" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Delect Account</DialogTitle>
+                    <DialogDescription>
+                      Make changes to your profile here. Click save when you're
+                      done.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    key in <span className=" font-bold">DELECT MY ACCOUNT</span>{" "}
+                    to delect your account.
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Input
+                        id="delectAccount"
+                        className="col-span-3"
+                        onChange={(e) => setDelectAccount(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button
+                      className=" bg-red-600"
+                      onClick={handleAccontDelection}
+                    >
+                      Delect Account
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </span>
           </h1>
         </div>
