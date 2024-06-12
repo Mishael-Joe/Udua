@@ -6,8 +6,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { SiteFooter } from "@/components/site-footer";
 import { Toaster } from "@/components/ui/toaster";
-import { SiteHeader } from "@/components/site-header";
 import { StateContext } from "@/context/stateContext";
+import { AuthHeader } from "./component/authHeader";
 
 export const metadata: Metadata = {
   title: siteConfig.siteName,
@@ -28,7 +28,7 @@ export default function RootLayout({
       <body className={`scroll-smooth`}>
         <StateContext>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <SiteHeader />
+            <AuthHeader />
             <SiteBlob />
             <Toaster />
             <div>{children}</div>

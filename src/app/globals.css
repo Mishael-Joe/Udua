@@ -82,8 +82,11 @@
 
 @layer components {
   .leftsidebar {
-    @apply sticky left-0 top-0 z-20 flex h-96 w-full flex-col justify-between border-r border-r-black bg-black pb-5 pt-5 max-md:hidden;
+    @apply sticky left-0 top-0 z-20 flex h-96 w-full flex-col justify-between pb-5 pt-5 max-md:hidden;
   }
+  /* .leftsidebar {
+    @apply sticky left-0 top-0 z-20 flex h-96 w-full flex-col justify-between border-r border-r-black bg-black pb-5 pt-5 max-md:hidden;
+  } */
 }
 
 @layer utilities {

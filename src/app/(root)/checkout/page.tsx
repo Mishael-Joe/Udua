@@ -17,7 +17,7 @@ const LoginForm = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get<user>(`/api/users/userData`);
+        const response = await axios.post<user>(`/api/users/userData`);
         // console.log("userdata", response);
         setUserData(response.data.data);
       } catch (error: any) {

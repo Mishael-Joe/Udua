@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 
 export type User = {
+  _id?: string;
   firstName: string;
   lastName: string;
   otherNames: string;
@@ -55,6 +56,38 @@ export type ResultDataMetadataItemsInCart = {
   postal_code: string;
   itemsInCart: Product[];
   deliveryMethod: string;
+};
+export type IOrderProduct = {
+  product: {
+    _id: string;
+    productName: string;
+  };
+  quantity: number;
+  price: number;
+};
+
+export type IOrder = {
+  _id: string;
+  user: string; // assuming it's a string; replace with the appropriate type if needed
+  seller: string;
+  products: IOrderProduct[];
+  totalAmount: number;
+  status: string;
+};
+
+export type ProductOrder = {
+  product: Product;
+  quantity: number;
+  price: number;
+};
+
+export type Order = {
+  _id: string;
+  user: string;
+  seller: string;
+  products: ProductOrder[];
+  totalAmount: number;
+  status: string;
 };
 
 export type CartItems = Partial<Product>;

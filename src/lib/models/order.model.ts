@@ -8,7 +8,7 @@ interface IOrderProduct {
 
 interface IOrder extends Document {
   user: mongoose.Schema.Types.ObjectId;
-  seller: mongoose.Schema.Types.ObjectId;
+  sellers: mongoose.Schema.Types.ObjectId[];
   products: IOrderProduct[];
   totalAmount: number;
   status: string;
@@ -29,11 +29,13 @@ const OrderProductSchema = new Schema<IOrderProduct>({
 const OrderSchema = new Schema<IOrder>(
   {
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    seller: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
+    sellers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      },
+    ],
     products: [OrderProductSchema],
     totalAmount: { type: Number, required: true },
     status: { type: String, required: true },

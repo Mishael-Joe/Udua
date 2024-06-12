@@ -3,7 +3,7 @@ import User from "@/lib/models/user.model";
 import { connectToDB } from "@/lib/mongoose";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     connectToDB();
     const userID = await getUserDataFromToken(request);
