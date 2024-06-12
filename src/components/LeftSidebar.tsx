@@ -3,12 +3,11 @@
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "./ui/button";
-// { onCategoryData }: (categoryData: string) => void
+
 function LeftSidebar() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
-  // const [tab, setTab] = useState<string>(searchParams.get("tab") || "profile");
 
   const handleChange = (value: string) => {
     // setTab(value);
@@ -21,27 +20,12 @@ function LeftSidebar() {
     router.replace(`${pathname}?${params.toString()}`);
   };
 
-  // const handleCategoryClic = async (category: string, k?: string) => {
-  //   try {
-  //     const res = await fetch(`/api/categories/${category}`);
-  //     const result = await res.json();
-
-  //     if (result.success) {
-  //       onCategoryData(result.data);
-  //     } else {
-  //       console.error("Failed to fetch category data");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error:", error);
-  //   }
-  // };
-
   return (
     <section className="custom-scrollbar leftsidebar">
       <div className="flex w-full flex-1 flex-col gap-3 pl-6 relative">
         <h1>Categories</h1>
         <ul className="flex flex-col gap-1">
-          <li className="show-dropdown-menu1 cursor-pointer">
+          <li className="show-dropdown-menu cursor-pointer">
             <a onClick={() => handleChange("Perfume")}>Health & Beauty</a>
 
             <div className="dropdown-menu1 bg-black border rounded">
@@ -58,7 +42,7 @@ function LeftSidebar() {
 
           <li
             onClick={() => handleChange("home-office")}
-            className="show-dropdown-menu1 cursor-pointer"
+            className="show-dropdown-menu cursor-pointer"
           >
             <a>Home & Office</a>
 
@@ -76,7 +60,7 @@ function LeftSidebar() {
 
           <li
             onClick={() => handleChange("appliances")}
-            className="show-dropdown-menu1 cursor-pointer"
+            className="show-dropdown-menu cursor-pointer"
           >
             <a>Appliances</a>
 
@@ -94,7 +78,7 @@ function LeftSidebar() {
 
           <li
             onClick={() => handleChange("phones-tablets")}
-            className="show-dropdown-menu1 cursor-pointer"
+            className="show-dropdown-menu cursor-pointer"
           >
             <a>Phones & Tablets</a>
 
@@ -112,7 +96,7 @@ function LeftSidebar() {
 
           <li
             onClick={() => handleChange("computing")}
-            className="show-dropdown-menu1 cursor-pointer"
+            className="show-dropdown-menu cursor-pointer"
           >
             <a>Computing</a>
 
@@ -130,7 +114,7 @@ function LeftSidebar() {
 
           <li
             onClick={() => handleChange("electronics")}
-            className="show-dropdown-menu1 cursor-pointer"
+            className="show-dropdown-menu cursor-pointer"
           >
             <a>Electronics</a>
 
@@ -148,7 +132,7 @@ function LeftSidebar() {
 
           <li
             onClick={() => handleChange("fashion")}
-            className="show-dropdown-menu1 cursor-pointer"
+            className="show-dropdown-menu cursor-pointer"
           >
             <a>Fashion</a>
 
@@ -166,7 +150,7 @@ function LeftSidebar() {
 
           <li
             onClick={() => handleChange("gaming")}
-            className="show-dropdown-menu1 cursor-pointer"
+            className="show-dropdown-menu cursor-pointer"
           >
             <a>Gaming</a>
 

@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
+import { Suspense } from "react";
 
 function SearchBar() {
   const pathname = usePathname();
@@ -20,24 +21,26 @@ function SearchBar() {
     // console.log(searchQuery);
   };
   return (
-    <div>
-      {displaySearchInput && (
-        <form
-          onKeyUp={handleSubmit}
-          className="hidden items-center lg:inline-flex"
-        >
-          <Input
-            id="search"
-            name="search"
-            type="search"
-            autoComplete="off"
-            placeholder="Search products..."
-            className="h-9 lg:w-[300px]"
-            defaultValue={defaultSearchQuery}
-          />
-        </form>
-      )}
-    </div>
+    <Suspense fallback={`search`}>
+      <div>
+        {displaySearchInput && (
+          <form
+            onKeyUp={handleSubmit}
+            className="hidden items-center lg:inline-flex"
+          >
+            <Input
+              id="search"
+              name="search"
+              type="search"
+              autoComplete="off"
+              placeholder="Search products..."
+              className="h-9 lg:w-[300px]"
+              defaultValue={defaultSearchQuery}
+            />
+          </form>
+        )}
+      </div>
+    </Suspense>
   );
 }
 

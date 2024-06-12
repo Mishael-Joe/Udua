@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-function Aside({ slug }: { slug: string }) {
+function Aside() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -106,7 +106,7 @@ function Aside({ slug }: { slug: string }) {
             <p>
               <Link
                 // href={`/dash-board/${slug}?tab=matrics`}
-                href={`/dash-board`}
+                href={`/dash-board?tab=matrics`}
                 className="flex items-center gap-2"
               >
                 <HelpCircleIcon className="" /> seller Profile

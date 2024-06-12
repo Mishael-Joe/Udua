@@ -2,7 +2,6 @@
 
 import { ThemeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,9 +15,6 @@ import { Badge } from "@/components/ui/badge";
 import { siteConfig } from "@/config/site";
 
 export function SellerHeader() {
-  const pathname = usePathname();
-  const displaySearchInput = pathname.endsWith("/seller-hub");
-
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between space-x-4 px-6 sm:space-x-0">
@@ -35,13 +31,10 @@ export function SellerHeader() {
           </SheetTrigger>
           <SheetContent side="left" className="flex flex-col">
             <nav className="grid gap-2 text-lg font-medium">
-              <Link
-                href="#"
-                className="flex items-center gap-2 text-lg font-semibold"
-              >
+              <p className="flex items-center gap-2 text-lg font-semibold">
                 <Package2Icon className="h-6 w-6" />
                 <span className="sr-only">Acme Inc</span>
-              </Link>
+              </p>
               <Link
                 href="#"
                 className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
@@ -86,8 +79,8 @@ export function SellerHeader() {
           </SheetContent>
         </Sheet>
         <div className="flex gap-6 md:gap-10">
-          <span className="sm:inline-block hidden sm:text-xl font-bold">
-            {siteConfig.name}
+          <span className="sm:inline-block hidden sm:text-xl font-bold cursor-pointer">
+            <Link href={`/`}>{siteConfig.name}</Link>
           </span>
         </div>
         <div className="flex gap-x-4">

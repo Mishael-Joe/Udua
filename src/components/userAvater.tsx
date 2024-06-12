@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { signOut } from "@/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { User2Icon } from "lucide-react";
@@ -14,22 +14,39 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import { Button } from "./ui/button";
+import { getCookie } from "cookies-next";
 
-function UserAvater() {
-  if (typeof Storage !== "undefined") {
-    // Code for localStorage/sessionStorage.
-    const userData = localStorage.getItem("userData");
-    const parsedUserData = JSON.parse(userData || "{}");
-    console.log(parsedUserData);
+interface UserAvatarProps {
+  name?: string;
+}
 
-    if (parsedUserData !== "") {
-      const userFirstName = parsedUserData.firstName;
+function UserAvatar({ name }: UserAvatarProps) {
+  const [userName, setUserName] = useState<string | undefined>(name);
 
-      return (
-        <Suspense fallback={<User2Icon />}>
-          <DropdownMenu>
-            <DropdownMenuTrigger>{userFirstName}</DropdownMenuTrigger>
-            <DropdownMenuContent>
+  useEffect(() => {
+    if (!userName) {
+      const cookieName = getCookie("name")?.toString();
+      setUserName(cookieName || "");
+    }
+  }, [userName]);
+
+  return (
+    <Suspense fallback={<User2Icon />}>
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          {userName ? (
+            userName
+          ) : (
+            <Avatar>
+              <AvatarFallback>
+                <User2Icon />
+              </AvatarFallback>
+            </Avatar>
+          )}
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          {userName ? (
+            <>
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <Link href={`/profile?tab=profile`}>
                 <DropdownMenuItem>Profile</DropdownMenuItem>
@@ -46,33 +63,16 @@ function UserAvater() {
                   Sign out
                 </Button>
               </DropdownMenuLabel>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </Suspense>
-      );
-    }
-
-    if (parsedUserData === "") {
-      return (
-        <Suspense fallback={<User2Icon />}>
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Avatar>
-                <AvatarFallback>
-                  <User2Icon />
-                </AvatarFallback>
-              </Avatar>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem>
-                <Link href={`/sign-in`}>Sign In</Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </Suspense>
-      );
-    }
-  }
+            </>
+          ) : (
+            <DropdownMenuItem>
+              <Link href={`/sign-in`}>Sign In</Link>
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </Suspense>
+  );
 }
 
-export default UserAvater;
+export default UserAvatar;

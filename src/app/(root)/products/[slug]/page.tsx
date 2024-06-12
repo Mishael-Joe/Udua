@@ -11,7 +11,7 @@ interface Props {
 
 export default async function Page({ params }: Props) {
   const product = await fetchProductData(params.slug);
-  console.log("params._id", params.slug);
+  // console.log("params._id", params.slug);
   // console.log("Product", product);
 
   return (

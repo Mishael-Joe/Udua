@@ -21,6 +21,7 @@ import axios from "axios";
 import { useState } from "react";
 import { Loader } from "lucide-react";
 import Image from "next/image";
+import { create } from "@/lib/actions/user.actions";
 
 function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
@@ -47,15 +48,16 @@ function SignIn() {
       const response = await axios.post(`/api/users/signIn`, userInput);
 
       // TODO: add user first name and _id to LocalStorage
-      console.log(`response`, response);
+      // console.log(`response`, response);
 
       if (response.data.success === true || response.status === 200) {
-        const { id, userFirstName } = response.data.tokenData;
-        const userData = {
-          id: id,
-          firstName: userFirstName,
-        };
-        localStorage.setItem("userData", JSON.stringify(userData));
+        // const { id, userFirstName } = response.data.tokenData;
+        // await create(userFirstName);
+        // const userData = {
+        //   id: id,
+        //   firstName: userFirstName,
+        // };
+        // localStorage.setItem("userData", JSON.stringify(userData));
         toast({
           title: `Success`,
           description: `You have Successfully signed In.`,
@@ -84,11 +86,13 @@ function SignIn() {
         <div className="w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800">
           <div className="px-6 py-4">
             <div className="flex justify-center mx-auto">
-              <Image
+              {/* <Image
                 className="w-auto h-7 sm:h-8"
                 src="https://merakiui.com/images/logo.svg"
+                width={`60`}
+                height={`60`}
                 alt=""
-              />
+              /> */}
             </div>
 
             <h3 className="mt-3 text-xl font-medium text-center text-gray-600 dark:text-gray-200">
