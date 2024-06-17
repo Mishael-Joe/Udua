@@ -1,3 +1,7 @@
+import {
+  removeUserIdFromTheCookies,
+  removeUserNameFromTheCookies,
+} from "@/lib/actions/user.actions";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -8,6 +12,9 @@ export async function GET() {
     );
 
     response.cookies.set("token", "", { httpOnly: true, expires: new Date() });
+
+    await removeUserNameFromTheCookies("name"); // for deleting of cookies
+    await removeUserIdFromTheCookies("userID"); // for deleting of cookies
 
     return response;
   } catch (error: any) {

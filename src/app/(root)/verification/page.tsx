@@ -42,10 +42,6 @@ export default function Page() {
     setCounter(60); // 1 minute
   };
 
-  useEffect(() => {
-    requestOTP();
-  }, []);
-
   const handleSubmit = async () => {
     if (value.length !== 6) {
       toast({

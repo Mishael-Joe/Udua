@@ -24,10 +24,7 @@ function SearchBar() {
     <Suspense fallback={`search`}>
       <div>
         {displaySearchInput && (
-          <form
-            onKeyUp={handleSubmit}
-            className="hidden items-center lg:inline-flex"
-          >
+          <form onKeyUp={handleSubmit} className="">
             <Input
               id="search"
               name="search"

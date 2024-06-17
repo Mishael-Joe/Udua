@@ -22,7 +22,7 @@ export function ProductGrid({ products }: ForProductGrid) {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-3 lg:col-span-3 lg:gap-x-8">
+    <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:col-span-3 lg:gap-x-8">
       {products.map((product) => (
         <Link
           key={product._id}

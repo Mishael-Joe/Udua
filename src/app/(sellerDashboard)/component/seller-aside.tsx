@@ -31,7 +31,7 @@ function SellerAside() {
             Dashboard
           </Link>
 
-          <Link
+          {/* <Link
             href="/orders?tab=orders"
             className={
               tab === "orders"
@@ -41,7 +41,7 @@ function SellerAside() {
           >
             <ShoppingCartIcon className="h-4 w-4" />
             Orders
-          </Link>
+          </Link> */}
 
           <Link
             href="/my-products?tab=products"

@@ -29,7 +29,7 @@ import { Label } from "@/components/ui/label";
 import { User } from "@/types";
 import { ArrowUpRightFromSquare, DeleteIcon, Edit } from "lucide-react";
 import Link from "next/link";
-import React, { ChangeEvent } from "react";
+import { ChangeEvent, useState } from "react";
 import { Button } from "./ui/button";
 import axios from "axios";
 import { toast } from "./ui/use-toast";
@@ -41,19 +41,18 @@ type user = {
 
 function AccountSettings({ user }: user) {
   const router = useRouter();
-  const [open, setOpen] = React.useState(false);
-  const [delectAccount, setDelectAccount] = React.useState("");
-  const [openNewShippingAddress, setOpenNewShippingAddress] =
-    React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [delectAccount, setDelectAccount] = useState("");
+  const [openNewShippingAddress, setOpenNewShippingAddress] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
-  const [newUserData, setNewUserData] = React.useState({
+  const [newUserData, setNewUserData] = useState({
     firstName: `${user.firstName}`,
     lastName: `${user.lastName}`,
     otherNames: `${user.otherNames}`,
     phoneNumber: `${user.phoneNumber}`,
     email: `${user.email}`,
   });
-  const [newShippingAddress, setNewShippingAddress] = React.useState({
+  const [newShippingAddress, setNewShippingAddress] = useState({
     address: `${user.address}`,
     city: `${user.cityOfResidence}`,
     state: `${user.stateOfResidence}`,
@@ -173,28 +172,26 @@ function AccountSettings({ user }: user) {
           <div className="p-3 border rounded">
             <h1 className="py-3 flex flex-row justify-between gap-3">
               Account Details{" "}
-              <span>
-                <Dialog open={open} onOpenChange={setOpen}>
-                  <DialogTrigger asChild>
-                    <Button
-                      size="icon"
-                      className="bg-purple-500 hover:bg-purple-600"
-                    >
-                      <Edit className="w-5 h-5" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                      <DialogTitle>Edit Account Details</DialogTitle>
-                      <DialogDescription>
-                        Make changes to your account details here. Click save
-                        when you're done.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <ProfileForm />
-                  </DialogContent>
-                </Dialog>
-              </span>
+              <Dialog open={open} onOpenChange={setOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    size="icon"
+                    className="bg-purple-500 hover:bg-purple-600"
+                  >
+                    <Edit className="w-5 h-5" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Edit Account Details</DialogTitle>
+                    <DialogDescription>
+                      Make changes to your account details here. Click save when
+                      you're done.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <ProfileForm />
+                </DialogContent>
+              </Dialog>
             </h1>
 
             <div>
@@ -316,13 +313,15 @@ function AccountSettings({ user }: user) {
             <p className=" font-semibold">Hi {user.firstName},</p>
             <div>
               <p className="pb-3">Welcome to Udua.</p>
-              <p className="pb-3 w-full flex flex-wrap justify-between">
+              <p className=" max-w-xl">
                 To complete your registration and access all the features we
-                offer, please verify your account.{" "}
-                <Link href={`/verification`} className=" hover:underline">
-                  verify account
-                </Link>
+                offer, please verify your account.
               </p>
+              <div className="flex justify-end pt-3">
+                <Link href={`/verification`} className=" float-end">
+                  <Button className=" hover:underline">verify account</Button>
+                </Link>
+              </div>
             </div>
           </div>
         )}
@@ -597,13 +596,15 @@ function AccountSettings({ user }: user) {
           <p className=" font-semibold">Hi {user.firstName},</p>
           <div>
             <p className="pb-3">Welcome to Udua.</p>
-            <p className="pb-3 w-full flex flex-wrap justify-between">
+            <p className=" max-w-xl">
               To complete your registration and access all the features we
-              offer, please verify your account.{" "}
-              <Link href={`/verification`} className=" hover:underline">
-                verify account
-              </Link>
+              offer, please verify your account.
             </p>
+            <div className="flex justify-end pt-3">
+              <Link href={`/verification`} className=" float-end">
+                <Button className=" hover:underline">verify account</Button>
+              </Link>
+            </div>
           </div>
         </div>
       )}

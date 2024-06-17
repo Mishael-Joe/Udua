@@ -8,8 +8,9 @@ export async function POST(request: NextRequest) {
     connectToDB();
     const userID = await getUserDataFromToken(request);
     const user = await User.findById(userID).select(
-      "_id firstName lastName otherNames email phoneNumber address cityOfResidence stateOfResidence postalCode isVerified"
+      "_id firstName lastName otherNames email phoneNumber address cityOfResidence stateOfResidence postalCode isVerified isSeller"
     );
+    // console.log(user);
 
     return NextResponse.json(
       { message: `user found`, data: user },

@@ -1,4 +1,5 @@
-import LeftSidebar from "@/components/LeftSidebar";
+import HeroBanners from "@/components/banners";
+import LeftSidebar from "@/components/left-sidebar";
 import { ProductGrid } from "@/components/product-grid";
 import { fetchProducts } from "@/lib/actions/product.action";
 import SkeletonLoader from "@/lib/loaders/skeletonLoader";
@@ -40,7 +41,7 @@ export default async function Home({ searchParams }: Props) {
   // Convert categories string to an array of strings
   const categoriesArray = categories ? (categories as string).split(" ") : [];
   // console.log(`categoriesArray`, categoriesArray);
-  // const products: Product[] = await fetchProducts();
+
   const products: Product[] = await fetchProducts(
     categoriesArray,
     page,
@@ -55,10 +56,9 @@ export default async function Home({ searchParams }: Props) {
     // dateFrom,
     // dateTo
   );
-  console.log(`search`, search);
 
   return (
-    <main className="grid min-h-screen mx-auto md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr] ... px-5 md:px-4 fle flex-row gap-4 max-w-[75rem]">
+    <main className="grid min-h-screen mx-auto md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr] px-5 md:px-4 gap-4 max-w-7xl">
       <div className="hidden border-r bg-muted/10 md:block">
         <div className="flex h-full max-h-screen flex-col gap-2">
           <LeftSidebar />
@@ -67,6 +67,7 @@ export default async function Home({ searchParams }: Props) {
 
       <div className="py-4">
         <Suspense fallback={<SkeletonLoader />}>
+          <HeroBanners />
           <ProductGrid products={products} />
         </Suspense>
       </div>
