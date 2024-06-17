@@ -7,11 +7,17 @@ import {
   HelpCircleIcon,
   SettingsIcon,
   ShoppingCart,
+  TrendingUp,
   UserCheck2Icon,
 } from "lucide-react";
 import Link from "next/link";
+import { User } from "@/types";
 
-function Aside() {
+type user = {
+  user: User;
+};
+
+function Aside({ user }: user) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -39,7 +45,7 @@ function Aside() {
             className={`show-dropdown-menu1 cursor-pointer ${
               tab === "profile"
                 ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
-                : "text-black/70 dark:text-slate-200/70 hover:text-black/95"
+                : "text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white"
             } rounded py-2 px-3 mt-5`}
             onClick={() => handleChange("profile")}
           >
@@ -53,7 +59,7 @@ function Aside() {
             className={`show-dropdown-menu1 cursor-pointer ${
               tab === "wishlist"
                 ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
-                : "text-black/70 dark:text-slate-200/70 hover:text-black/95"
+                : "text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white"
             } rounded py-2 px-3`}
           >
             <p className="flex items-center gap-2">
@@ -66,7 +72,7 @@ function Aside() {
             className={`show-dropdown-menu1 cursor-pointer ${
               tab === "order-history"
                 ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
-                : "text-black/70 dark:text-slate-200/70 hover:text-black/95"
+                : "text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white"
             } rounded py-2 px-3`}
           >
             <p className="flex items-center gap-2">
@@ -79,7 +85,7 @@ function Aside() {
             className={`show-dropdown-menu1 cursor-pointer ${
               tab === "account-settings"
                 ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
-                : "text-black/70 dark:text-slate-200/70 hover:text-black/95"
+                : "text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white"
             } rounded py-2 px-3`}
           >
             <p className="flex items-center gap-2">
@@ -87,7 +93,7 @@ function Aside() {
             </p>
           </li>
 
-          <li
+          {/* <li
             onClick={() => handleChange("supports")}
             className={`show-dropdown-menu1 cursor-pointer ${
               tab === "supports"
@@ -98,21 +104,24 @@ function Aside() {
             <p className="flex items-center gap-2">
               <HelpCircleIcon className="" /> Support and Help
             </p>
-          </li>
+          </li> */}
 
-          <li
-            className={`show-dropdown-menu1 cursor-pointer rounded py-2 px-3`}
-          >
-            <p>
-              <Link
-                // href={`/dash-board/${slug}?tab=matrics`}
-                href={`/dash-board?tab=matrics`}
-                className="flex items-center gap-2"
-              >
-                <HelpCircleIcon className="" /> seller Profile
-              </Link>
-            </p>
-          </li>
+          {user.isSeller === true && (
+            <li
+              className={`show-dropdown-menu1 cursor-pointer rounded py-2 px-3`}
+            >
+              <p>
+                <Link
+                  // href={`/dash-board/${slug}?tab=matrics`}
+                  href={`/dash-board?tab=matrics`}
+                  className="flex items-center gap-2 hover:underline"
+                >
+                  <TrendingUp />
+                  seller Profile
+                </Link>
+              </p>
+            </li>
+          )}
         </ul>
       </div>
     </section>

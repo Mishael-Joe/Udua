@@ -9,8 +9,11 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
+import { cookies } from "next/headers";
 
 async function UploadProduct() {
+  const cookieStore = cookies();
+  const userID: string | undefined = cookieStore.get("userID")?.value;
   return (
     <div className="grid min-h-screen max-w-6xl mx-auto md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
       <div className="hidden border-r bg-muted/10 md:block">
@@ -38,7 +41,7 @@ async function UploadProduct() {
           </div>
 
           <div className="grid gap-4 md:gap-8 lg:grid-cols-1 xl:grid-cols-1">
-            <CreateProduct />
+            <CreateProduct id={userID} />
           </div>
         </main>
       </div>

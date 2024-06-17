@@ -21,7 +21,6 @@ import axios from "axios";
 import { useState } from "react";
 import { Loader } from "lucide-react";
 import Image from "next/image";
-import { create } from "@/lib/actions/user.actions";
 
 function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
@@ -117,7 +116,7 @@ function SignIn() {
                       <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input
-                          className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+                          className="block w-full px-4 py-2 mt-2 text-black dark:text-slate-200 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400"
                           type="email"
                           placeholder="Email Address"
                           aria-label="Email Address"
@@ -138,7 +137,7 @@ function SignIn() {
                       <FormLabel>Password</FormLabel>
                       <FormControl>
                         <Input
-                          className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+                          className="block w-full px-4 py-2 mt-2 dark:text-slate-200 text-black placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400"
                           type="password"
                           placeholder="Enter your password"
                           aria-label="password"
@@ -159,7 +158,7 @@ function SignIn() {
                   </Link>
 
                   <Button
-                    className="px-6 py-2 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50"
+                    className="px-6 py-2 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400"
                     disabled={isLoading}
                   >
                     {isLoading ? (

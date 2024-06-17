@@ -15,8 +15,8 @@ export async function middleware(request: NextRequest) {
     "/shipping-return-policy",
     "/terms-conditions",
     "/cart",
-    /^\/products\/.*/, // Regular expression for matching products path
-    "/verification",
+    "/seller-hub",
+    // /^\/products\/.*/, // Regular expression for matching products path
   ]; // Array of public paths
 
   const token = request.cookies.get("token")?.value || "";
@@ -24,9 +24,9 @@ export async function middleware(request: NextRequest) {
   // Helper function to check if path matches any public path
   const isPublicPath = (path: string) => {
     return publicPaths.some((publicPath) => {
-      if (publicPath instanceof RegExp) {
-        return publicPath.test(path);
-      }
+      // if (publicPath instanceof RegExp) {
+      //   return publicPath.test(path);
+      // }
       return publicPath === path;
     });
   };
@@ -56,7 +56,7 @@ export const config = {
     "/shipping-return-policy",
     "/terms-conditions",
     "/cart",
-    "/products/(.*)",
+    // /^\/products\/.*/,
     "/verification",
     "/checkout",
     "/profile",

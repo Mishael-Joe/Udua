@@ -25,8 +25,17 @@ export async function POST(request: NextRequest) {
     const userAlreadyExists = await User.findOne({ email });
     if (userAlreadyExists) {
       return NextResponse.json(
-        { error: "user already exist" },
-        { status: 500 }
+        { error: "Email already exist" },
+        { status: 401 }
+      );
+    }
+
+    // Check if the user already exist
+    const phoneNumberAlreadyExists = await User.findOne({ phoneNumber });
+    if (phoneNumberAlreadyExists) {
+      return NextResponse.json(
+        { error: "Phone Number already exist" },
+        { status: 401 }
       );
     }
 
@@ -55,6 +64,6 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 401 });
   }
 }

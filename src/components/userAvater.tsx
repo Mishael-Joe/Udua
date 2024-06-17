@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useState, useEffect } from "react";
-import { signOut } from "@/utils";
+import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { User2Icon } from "lucide-react";
 import {
@@ -15,13 +15,29 @@ import {
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { getCookie } from "cookies-next";
+import axios from "axios";
 
 interface UserAvatarProps {
   name?: string;
 }
 
 function UserAvatar({ name }: UserAvatarProps) {
+  const router = useRouter();
   const [userName, setUserName] = useState<string | undefined>(name);
+
+  const signOut = async () => {
+    try {
+      const response = await axios.get("/api/users/signOut");
+      if (response.status === 200) {
+        router.refresh();
+      }
+      // console.log(`response`, response);
+
+      // return response;
+    } catch (error) {
+      return error;
+    }
+  };
 
   useEffect(() => {
     if (!userName) {
@@ -65,9 +81,9 @@ function UserAvatar({ name }: UserAvatarProps) {
               </DropdownMenuLabel>
             </>
           ) : (
-            <DropdownMenuItem>
-              <Link href={`/sign-in`}>Sign In</Link>
-            </DropdownMenuItem>
+            <Link href={`/sign-in`}>
+              <DropdownMenuItem>Sign In</DropdownMenuItem>
+            </Link>
           )}
         </DropdownMenuContent>
       </DropdownMenu>

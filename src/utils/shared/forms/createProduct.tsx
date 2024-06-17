@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { ChangeEvent, useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
-import axios from "axios";
+import { getCookie } from "cookies-next";
 import { createProduct } from "@/lib/actions/product.action";
 import { Product } from "@/types";
 import { uploadImagesToCloudinary } from "@/lib/utils";
@@ -16,15 +16,26 @@ type Products = Omit<Product, "productImage" | "path" | "productPrice"> & {
   productPrice: string;
   productImage: File[];
   path?: string;
+  // userID: string | undefined;
 };
 
-function CreateProduct() {
+type userID = {
+  id?: string;
+};
+
+function CreateProduct({ id }: userID) {
   const router = useRouter();
   const pathname = usePathname();
-  const userData = localStorage.getItem("userData");
-  const parsedUserData = JSON.parse(userData || "");
+  const [userID, setUserID] = useState<string | undefined>(id);
 
-  const userId = parsedUserData.id;
+  // console.log(`userID`, userID);
+
+  useEffect(() => {
+    if (!userID) {
+      const cookieName = getCookie("name")?.toString();
+      setUserID(cookieName || "");
+    }
+  }, [userID]);
 
   const [product, setProduct] = useState<Products>({
     productName: "",
@@ -35,7 +46,7 @@ function CreateProduct() {
     productDescription: "",
     productSpecification: "",
     productCategory: "",
-    accountId: userId,
+    accountId: userID === undefined ? "" : userID,
   });
 
   const possibleSizes = [

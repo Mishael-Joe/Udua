@@ -80,11 +80,17 @@ function SignUp() {
           description: `There was an error signing you up. Please try again`,
         });
       }
-    } catch (error) {
+    } catch (error: any) {
+      // toast({
+      //   title: "Error",
+      //   description: `There was an error signing you up. Please try again`,
+      // });
       toast({
         title: "Error",
-        description: `There was an error signing you up. Please try again`,
+        variant: "destructive",
+        description: `${error.response.data.error}`,
       });
+      // console.log(error);
     }
   };
 
@@ -125,7 +131,7 @@ function SignUp() {
                       <FormLabel>First Name</FormLabel>
                       <FormControl>
                         <Input
-                          className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black"
                           type="text"
                           placeholder="Your First Name"
                           aria-label="name"
@@ -146,7 +152,7 @@ function SignUp() {
                       <FormLabel>Last Name</FormLabel>
                       <FormControl>
                         <Input
-                          className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black"
                           type="text"
                           placeholder="Your Last Name"
                           aria-label="name"
@@ -167,7 +173,7 @@ function SignUp() {
                       <FormLabel>Other Names</FormLabel>
                       <FormControl>
                         <Input
-                          className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black"
                           type="text"
                           placeholder="Other Names"
                           aria-label="name"
@@ -188,7 +194,7 @@ function SignUp() {
                       <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input
-                          className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black"
                           type="email"
                           placeholder="Your Email"
                           aria-label="Your Email"
@@ -209,7 +215,7 @@ function SignUp() {
                       <FormLabel>Password</FormLabel>
                       <FormControl>
                         <Input
-                          className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black"
                           type="password"
                           placeholder="Enter your password"
                           aria-label="password"
@@ -230,7 +236,7 @@ function SignUp() {
                       <FormLabel>Confirm Password</FormLabel>
                       <FormControl>
                         <Input
-                          className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black"
                           type="password"
                           placeholder="confirm your password"
                           aria-label="confirm your password"
@@ -251,7 +257,7 @@ function SignUp() {
                       <FormLabel>Your Address</FormLabel>
                       <FormControl>
                         <Input
-                          className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black"
                           type="text"
                           placeholder="Enter your Address"
                           aria-label="Enter your Address"
@@ -272,7 +278,7 @@ function SignUp() {
                       <FormLabel>Phone Number</FormLabel>
                       <FormControl>
                         <Input
-                          className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black"
                           type="text"
                           placeholder="090******35"
                           aria-label="Enter your phone number"
@@ -293,7 +299,7 @@ function SignUp() {
                       <FormLabel>City Of Residence</FormLabel>
                       <FormControl>
                         <Input
-                          className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black"
                           type="text"
                           placeholder="Enter your city of Residence"
                           aria-label="Enter your city of Residence"
@@ -314,7 +320,7 @@ function SignUp() {
                       <FormLabel>State of Residence</FormLabel>
                       <FormControl>
                         <Input
-                          className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black"
                           type="text"
                           placeholder="Enter your state of Residence"
                           aria-label="Enter your state of Residence"
@@ -335,7 +341,7 @@ function SignUp() {
                       <FormLabel>postalCode</FormLabel>
                       <FormControl>
                         <Input
-                          className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black"
                           type="text"
                           placeholder="Enter your postal Code"
                           aria-label="Enter your postal Code"

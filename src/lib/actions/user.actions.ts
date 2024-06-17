@@ -20,12 +20,30 @@ export const fetchOrders = async (sellerID: string) => {
   }
 };
 
-export async function create(name: string) {
+export async function storeUserNameInTheCookies(name: string) {
   cookies().set({
-    name: "name",
+    name: "userName",
     value: name,
     httpOnly: true,
     path: "/",
     maxAge: 7 * 24 * 60 * 60,
   });
+}
+
+export async function storeUserIdInTheCookies(userID: string) {
+  cookies().set({
+    name: "userID",
+    value: userID,
+    httpOnly: true,
+    path: "/",
+    maxAge: 7 * 24 * 60 * 60,
+  });
+}
+
+export async function removeUserNameFromTheCookies(data: string) {
+  cookies().delete(data);
+}
+
+export async function removeUserIdFromTheCookies(data: string) {
+  cookies().delete(data);
 }

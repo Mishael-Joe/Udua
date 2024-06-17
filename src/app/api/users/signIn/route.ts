@@ -3,7 +3,8 @@ import User from "@/lib/models/user.model";
 import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { create } from "@/lib/actions/user.actions";
+import { storeUserNameInTheCookies } from "@/lib/actions/user.actions";
+import { storeUserIdInTheCookies } from "@/lib/actions/user.actions";
 
 interface userData {
   id: string;
@@ -57,7 +58,8 @@ export async function POST(request: NextRequest) {
       maxAge: oneWeekInSeconds,
     });
 
-    await create(user.firstName);
+    await storeUserNameInTheCookies(user.firstName); // for creating of cookies
+    await storeUserIdInTheCookies(user._id); // for creating of cookies
 
     return response;
   } catch (error: any) {

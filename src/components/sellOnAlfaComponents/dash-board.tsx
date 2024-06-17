@@ -27,8 +27,8 @@ export default function SellerDashboard() {
         const response = await axios.post<{ orders: Order[] }>(
           "/api/seller/orders"
         );
-        console.log("sellerdata", response);
-        console.log("sellerdata.data", response.data);
+        // console.log("sellerdata", response);
+        // console.log("sellerdata.data", response.data);
         setOrders(response.data.orders);
       } catch (error: any) {
         console.error("Failed to fetch user data", error.message);
@@ -76,7 +76,7 @@ export default function SellerDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    ${totalRevenue.toFixed(2)}
+                    &#8358;{totalRevenue.toFixed(2)}
                   </div>
                   {/* <p className="text-xs text-muted-foreground">
                           +20.1% from last month

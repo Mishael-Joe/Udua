@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { siteConfig } from "@/config/site";
+import { Icons } from "@/components/icons";
 
 export function SellerHeader() {
   return (
@@ -30,11 +31,15 @@ export function SellerHeader() {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="flex flex-col">
+            <Link href="/" className="flex items-center space-x-2">
+              <Icons.logo className="h-7 w-7" />
+              <span className=" sm:text-xl font-bold">{siteConfig.name}</span>
+            </Link>
             <nav className="grid gap-2 text-lg font-medium">
-              <p className="flex items-center gap-2 text-lg font-semibold">
+              {/* <p className="flex items-center gap-2 text-lg font-semibold">
                 <Package2Icon className="h-6 w-6" />
                 <span className="sr-only">Acme Inc</span>
-              </p>
+              </p> */}
               <Link
                 href="#"
                 className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
@@ -42,16 +47,14 @@ export function SellerHeader() {
                 <HomeIcon className="h-5 w-5" />
                 Dashboard
               </Link>
-              <Link
+              {/* <Link
                 href="#"
                 className="mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-foreground hover:text-foreground"
               >
                 <ShoppingCartIcon className="h-5 w-5" />
                 Orders
-                <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
-                  6
-                </Badge>
-              </Link>
+                
+              </Link> */}
               <Link
                 href="#"
                 className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
@@ -79,9 +82,10 @@ export function SellerHeader() {
           </SheetContent>
         </Sheet>
         <div className="flex gap-6 md:gap-10">
-          <span className="sm:inline-block hidden sm:text-xl font-bold cursor-pointer">
-            <Link href={`/`}>{siteConfig.name}</Link>
-          </span>
+          <Link href="/" className="flex items-center space-x-2">
+            <Icons.logo className="h-7 w-7 sm:inline-block hidden" />
+            <span className=" sm:text-xl font-bold">{siteConfig.name}</span>
+          </Link>
         </div>
         <div className="flex gap-x-4">
           <ThemeToggle />
