@@ -2,7 +2,6 @@ import Link from "next/link";
 
 import { siteConfig } from "@/config/site";
 import { Icons } from "@/components/icons";
-// import Sheets from "./sheet";
 
 export function MainNav() {
   return (

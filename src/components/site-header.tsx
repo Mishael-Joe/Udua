@@ -4,7 +4,7 @@ import SearchBar from "./search-bar";
 import CartCount from "./cart-count";
 import { Suspense } from "react";
 import { cookies } from "next/headers";
-import UserAvatar from "./userAvater";
+import UserAvatar from "../app/(user)/components/userAvater";
 import Sheets from "./sheet";
 
 export function SiteHeader() {

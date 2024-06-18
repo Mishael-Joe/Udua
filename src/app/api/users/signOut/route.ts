@@ -13,7 +13,7 @@ export async function GET() {
 
     response.cookies.set("token", "", { httpOnly: true, expires: new Date() });
 
-    await removeUserNameFromTheCookies("name"); // for deleting of cookies
+    await removeUserNameFromTheCookies("userName"); // for deleting of cookies
     await removeUserIdFromTheCookies("userID"); // for deleting of cookies
 
     return response;
