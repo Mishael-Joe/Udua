@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
-import { Button } from "./ui/button";
+import { Button } from "../../../components/ui/button";
 import { getCookie } from "cookies-next";
 import axios from "axios";
 

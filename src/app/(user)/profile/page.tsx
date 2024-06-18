@@ -1,4 +1,4 @@
-import Profile from "@/components/user-profile";
+import Profile from "@/app/(user)/components/user-profile";
 import { Suspense } from "react";
 
 function Page() {
