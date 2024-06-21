@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "./ui/button";
 import { MainNav } from "./main-nav";
+import { siteConfig } from "@/config/site"
 
 function ResponsiveLeftSidebar() {
   const searchParams = useSearchParams();
@@ -172,7 +173,7 @@ function ResponsiveLeftSidebar() {
 
       <Link href={"/seller-hub"} className="px-0">
         <Button className="mt-8 w-full bg-violet-600 py-5 text-base font-medium text-white hover:bg-violet-700">
-          Sell on Alfa
+          Sell on {siteConfig.name}
         </Button>
       </Link>
     </section>
