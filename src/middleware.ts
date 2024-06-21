@@ -31,9 +31,12 @@ export async function middleware(request: NextRequest) {
     });
   };
 
-  // If the pathname is public and user has the token then you cannot visit the sign-in & sign-up page
-  if (isPublicPath(pathName) && token && pathName !== "/") {
-    return NextResponse.redirect(new URL("/", request.url));
+  // If the pathname is public and user has the token, prevent access to sign-in & sign-up pages
+  if (isPublicPath(pathName) && token) {
+    if (pathName === "/sign-in" || pathName === "/sign-up") {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+    return NextResponse.next();
   }
 
   // If the pathname is not public and user does not have the token then you cannot visit the protected pages
