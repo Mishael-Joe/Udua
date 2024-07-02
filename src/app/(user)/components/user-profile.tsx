@@ -8,8 +8,8 @@ import axios from "axios";
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Loader } from "lucide-react";
-import { WishlistEmpty } from "@/app/(user)/components/wishlist";
-import { OrderHistory } from "@/components/order-history";
+import { Wishlist } from "@/app/(user)/components/wishlist";
+import { OrderHistory } from "./order-history";
 import AccountSettings from "@/components/account-settings";
 import CartCount from "../../../components/cart-count";
 import { ThemeToggle } from "../../../components/theme-toggle";
@@ -60,7 +60,7 @@ const Profile = () => {
       case "order-history":
         return <OrderHistory />;
       case "wishlist":
-        return <WishlistEmpty />;
+        return <Wishlist />;
       case "supports":
         return "Support and Help Component";
       default:
@@ -99,7 +99,7 @@ const Profile = () => {
         </div>
       </header>
 
-      <div className="grid min-h-screen max-w-6xl mx-auto md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr] ... px-5 md:px-4 gap-4">
+      <div className="grid min-h-screen max-w-6xl mx-auto md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr] ... md:px-4 gap-4">
         <div className="hidden bg-muted/10 md:block">
           <div className="flex h-full max-h-screen flex-col gap-2">
             <Aside user={userData!} />

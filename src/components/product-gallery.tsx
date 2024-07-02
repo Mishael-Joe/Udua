@@ -4,9 +4,82 @@ import { useState } from "react";
 import Image from "next/image";
 import { shimmer, toBase64 } from "@/lib/image";
 import { ForProductGallery } from "@/types";
+import { Heart, Loader } from "lucide-react";
+import {
+  addToWishlist,
+  removeFromWishlist,
+} from "@/lib/actions/product.action";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
 
-export function ProductGallery({ product }: ForProductGallery) {
+type Response = {
+  status: number;
+  message: any;
+}
+
+export function ProductGallery({ product, isLikedProduct }: ForProductGallery) {
+  const { toast } = useToast();
+  const router = useRouter();
   const [selectedImage, setSelectedImage] = useState(0);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const handleWishlist = async (val: string) => {
+    try {
+      if (val === "addToWishlist") {
+        setIsLoading(true);
+        const response: Response = await addToWishlist(product._id!);
+        // console.log('res', response)
+
+        if (response.message === 'User not authenticated') {
+          router.push('/sign-in')
+        }
+        
+        if (response.status === 200) {
+          toast({
+            variant: "default",
+            title: `Succesful`,
+            description: `Product added to your Wishlist`,
+          });
+        }
+        
+        if (response.status === 401) {
+          toast({
+            variant: "destructive",
+            title: `Error`,
+            description: `An Error occurred while adding this product to your Wishlist`,
+          });
+        }
+      }
+
+      if (val === "removeFromWishlist") {
+        setIsLoading(true);
+        const response: Response = await removeFromWishlist(product._id!);
+        // console.log('res', response)
+
+        if (response.status === 200) {
+          toast({
+            variant: "default",
+            title: `Succesful`,
+            description: `Product removed from your Wishlist`,
+          });
+        }
+
+        if (response.status === 401) {
+          toast({
+            variant: "destructive",
+            title: `Error`,
+            description: `An Error occurred while removing this product from your Wishlist`,
+          });
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+      router.refresh();
+    }
+  };
+
   return (
     <div className="flex flex-col-reverse">
       {/* Image Grid */}
@@ -43,10 +116,24 @@ export function ProductGallery({ product }: ForProductGallery) {
       </div>
 
       {/* Main Image */}
-      <div className="aspect-h-1 aspect-w-1 w-full p-3.5 sm:p-0">
+      <div className="aspect-h-1 aspect-w-1 w-full p-3.5 sm:p-0 relative">
+        {isLoading && (
+          <button>
+            <Loader className="w-10 h-10 z-10 p-1 top-12 left-6 md:top-10 md:left-3 absolute animate-spin" />
+          </button>
+        )}
+        {isLikedProduct && !isLoading && (
+          <button onClick={() => handleWishlist("removeFromWishlist")}>
+            <Heart className=" text-white rounded p-1 top-12 left-6 md:top-10 md:left-3 bg-red-500 w-10 h-10 z-10 absolute" />
+          </button>
+        )}
+        {!isLikedProduct && !isLoading && (
+          <button onClick={() => handleWishlist("addToWishlist")}>
+            <Heart className=" rounded p-1 top-12 left-6 md:top-10 md:left-3 text-black bg-slate-100 w-10 h-10 z-10 absolute" />
+          </button>
+        )}
         <Image
           priority
-          // src={urlForImage(product.images[selectedImage]).url()}
           src={product.productImage[selectedImage]}
           alt={`Main ${product.productName} image`}
           width={600}

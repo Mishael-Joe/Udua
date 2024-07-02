@@ -70,7 +70,7 @@ export default function SellerProducts() {
   const endIndex = Math.min(startIndex + pageSize, totalProducts);
 
   return (
-    <div className="grid min-h-screen max-w-6xl mx-auto md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+    <div className="grid min-h-screen max-w-7xl mx-auto md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
       <div className="hidden border-r bg-muted/10 md:block">
         <div className="flex h-full max-h-screen flex-col gap-2">
           <SellerAside />
@@ -91,6 +91,7 @@ export default function SellerProducts() {
               </Link>
             </div>
           </div>
+          <div className="grid gap-4 md:gap-8 lg:grid-cols-1 xl:grid-cols-1">
           <Card>
             <CardHeader>
               <CardTitle>Products</CardTitle>
@@ -98,7 +99,7 @@ export default function SellerProducts() {
                 Manage your products and view their sales performance.
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="grid gap-8">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -197,165 +198,9 @@ export default function SellerProducts() {
               </div>
             </CardFooter>
           </Card>
+          </div>
         </main>
       </div>
     </div>
   );
 }
-
-// export default function Page() {
-//   const [sellerProducts, setSellerProducts] = useState<Product[] | null>(null);
-
-//   useEffect(() => {
-//     const fetchUserData = async () => {
-//       try {
-//         const response = await axios.post<{ products: Product[] }>(
-//           "/api/seller/products"
-//         );
-//         console.log("sellerdata", response);
-//         console.log("sellerdata.data", response.data);
-//         setSellerProducts(response.data.products);
-//       } catch (error: any) {
-//         console.error("Failed to fetch seller Products", error.message);
-//       }
-//     };
-
-//     fetchUserData();
-//   }, []);
-
-//   if (sellerProducts !== null) {
-//     return (
-//       <div className="grid min-h-screen max-w-6xl mx-auto md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-//         <div className="hidden border-r bg-muted/10 md:block">
-//           <div className="flex h-full max-h-screen flex-col gap-2">
-//             <SellerAside />
-//           </div>
-//         </div>
-//         <div className="flex flex-col">
-//           <main className="grid items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-//             <div className="flex items-center py-6">
-//               <h1 className="text-lg font-semibold md:text-2xl">Inventory</h1>
-//               <div className="ml-auto flex items-center gap-2">
-//                 <Button size="sm" className="h-8 gap-1">
-//                   <PlusCircle className="h-3.5 w-3.5" />
-//                   <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-//                     Add Product
-//                   </span>
-//                 </Button>
-//               </div>
-//             </div>
-//             <Card>
-//               <CardHeader>
-//                 <CardTitle>Products</CardTitle>
-//                 <CardDescription>
-//                   Manage your products and view their sales performance.
-//                 </CardDescription>
-//               </CardHeader>
-//               <CardContent>
-//                 <Table>
-//                   <TableHeader>
-//                     <TableRow>
-//                       <TableHead className="hidden w-[100px] sm:table-cell">
-//                         <span className="sr-only">Image</span>
-//                       </TableHead>
-//                       <TableHead>Name</TableHead>
-//                       {/* <TableHead>Status</TableHead> */}
-//                       <TableHead className="hidden lg:table-cell">
-//                         Price
-//                       </TableHead>
-//                       <TableHead className="hidden lg:table-cell">
-//                         Total Sales
-//                       </TableHead>
-//                       <TableHead className="hidden lg:table-cell">
-//                         Created at
-//                       </TableHead>
-//                       <TableHead>
-//                         <span className="sr-only">Actions</span>
-//                       </TableHead>
-//                     </TableRow>
-//                   </TableHeader>
-//                   <TableBody>
-//                     {sellerProducts?.map((product) => (
-//                       <TableRow>
-//                         <TableCell className="hidden sm:table-cell">
-//                           <Image
-//                             alt="Product image"
-//                             className="aspect-square rounded-md object-cover"
-//                             height="64"
-//                             src={product.productImage[0]}
-//                             loading="lazy"
-//                             width="64"
-//                           />
-//                         </TableCell>
-//                         <TableCell className="font-medium">
-//                           {product.productName}
-//                         </TableCell>
-//                         {/* <TableCell>
-//                         <Badge variant="outline">Draft</Badge>
-//                       </TableCell> */}
-//                         <TableCell className="hidden lg:table-cell">
-//                           {product.productPrice}
-//                         </TableCell>
-//                         <TableCell className="hidden lg:table-cell">
-//                           {product.productQuantity}
-//                         </TableCell>
-//                         <TableCell className="hidden lg:table-cell">
-//                           2023-07-12 10:42 AM
-//                         </TableCell>
-//                         <TableCell>
-//                           <DropdownMenu>
-//                             <DropdownMenuTrigger asChild>
-//                               <Button
-//                                 aria-haspopup="true"
-//                                 size="icon"
-//                                 variant="ghost"
-//                               >
-//                                 <MoreHorizontal className="h-4 w-4" />
-//                                 <span className="sr-only">Toggle menu</span>
-//                               </Button>
-//                             </DropdownMenuTrigger>
-//                             <DropdownMenuContent align="end">
-//                               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-//                               <DropdownMenuItem>Edit</DropdownMenuItem>
-//                               <DropdownMenuItem>Delete</DropdownMenuItem>
-//                             </DropdownMenuContent>
-//                           </DropdownMenu>
-//                         </TableCell>
-//                       </TableRow>
-//                     ))}
-//                   </TableBody>
-//                 </Table>
-//               </CardContent>
-//               <CardFooter>
-//                 <div className="text-xs text-muted-foreground">
-//                   Showing <strong>1-10</strong> of <strong>32</strong> products
-//                 </div>
-//               </CardFooter>
-//             </Card>
-//           </main>
-//           {/* <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-//             <div className="flex items-center">
-//               <h1 className="text-lg font-semibold md:text-2xl">Inventory</h1>
-//             </div>
-//             <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm">
-//               <div className="flex flex-col items-center gap-1 text-center">
-//                 <h3 className="text-2xl font-bold tracking-tight">
-//                   You have no products
-//                 </h3>
-//                 <p className="text-sm text-muted-foreground">
-//                   You can start selling as soon as you add a product.
-//                 </p>
-//                 <Button size="sm" className="h-8 gap-1 mt-4">
-//                     <PlusCircle className="h-3.5 w-3.5" />
-//                     <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-//                       Add Product
-//                     </span>
-//                   </Button>
-//               </div>
-//             </div>
-//           </main> */}
-//         </div>
-//       </div>
-//     );
-//   }
-// }

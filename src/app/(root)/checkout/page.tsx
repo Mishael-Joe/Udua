@@ -55,8 +55,9 @@ const LoginForm = () => {
         <p className="mt-4">
           To ensure a smooth and timely delivery, please make sure your contact
           information is up to date. If any details have changed, kindly update
-          them before proceeding with your payment. You can do so under the
-          account settings in your profile page.
+          them before proceeding with your payment. You need to verify your
+          account before making any purchase. You can do so under the account
+          settings in your profile page.
         </p>
 
         <form className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">

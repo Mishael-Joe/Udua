@@ -18,9 +18,6 @@ export default function PaymentSuccess() {
   // console.log(`status`, status);
   // console.log(`transaction_reference`, transaction_reference);
   // console.log(`pathname`, pathname);
-  const userData = localStorage.getItem("userData");
-  const parsedUserData = JSON.parse(userData || "");
-  const userFirstName = parsedUserData.firstName;
 
   useEffect(() => {
     const clearStorage = () => {
@@ -42,8 +39,8 @@ export default function PaymentSuccess() {
               Payment cancelled!!
             </h1>
             <h3 className="mt-8 text-2xl leading-7">
-              Sorry <span className="font-extrabold">{userFirstName}</span>,
-              Payment was not successfull!
+              Sorry <span className="font-extrabold"></span>, Payment was not
+              successfull!
             </h3>
             <p className="mt-8">
               Your transaction reference{" "}
@@ -78,8 +75,8 @@ export default function PaymentSuccess() {
               Opps, Something went wrong!!!
             </h1>
             <h3 className="mt-8 text-2xl leading-7">
-              Sorry <span className="font-extrabold">{userFirstName}</span>,
-              Payment was not successfull!
+              Sorry <span className="font-extrabold"></span>, Payment was not
+              successfull!
             </h3>
             <p className="mt-8">
               Your transaction reference{" "}
@@ -123,15 +120,10 @@ export default function PaymentSuccess() {
           <h1 className="mt-4 text-3xl font-bold tracking-tight text-lime-500 dark:text-lime-400 sm:text-5xl">
             Order Successful!
           </h1>
-          <h3 className="mt-8 text-2xl leading-7">
-            Thank you,{" "}
-            <span className="font-extrabold">
-              {userFirstName ? `${userFirstName}!` : ``}
-            </span>
-          </h3>
+          <h3 className="mt-8 text-2xl leading-7">Thank you</h3>
           <p className="mt-8">
-            Check your purchase email{" "}
-            <span className="mx-1 font-extrabold text-indigo-500"></span> for
+            Check your purchase email
+            <span className="mx-1 font-extrabold text-indigo-500"></span>for
             your invoice.
           </p>
           <p className="mt-8">

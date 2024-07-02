@@ -7,14 +7,14 @@ import { HomeIcon, Package, Package2, ShoppingCartIcon } from "lucide-react";
 
 function SellerAside() {
   const searchParams = useSearchParams();
-  const [tab, setTab] = useState<string>(searchParams.get("tab") || "profile");
+  const [tab, setTab] = useState<string>(searchParams.get("tab") || "matrics");
 
   return (
     <Suspense fallback={`loading`}>
       <div className="flex h-16 items-center border-b px-4 lg:h-[60px] lg:px-6">
         <Link href="/" className="flex items-center gap-2 font-semibold">
           <Package2 className="h-6 w-6" />
-          <span className="">Acme Inc</span>
+          <span className="">My Dashboard</span>
         </Link>
       </div>
       <div className="flex-1">
@@ -28,7 +28,7 @@ function SellerAside() {
             }
           >
             <HomeIcon className="h-4 w-4" />
-            Dashboard
+            {/* Dashboard */} Orders
           </Link>
 
           {/* <Link

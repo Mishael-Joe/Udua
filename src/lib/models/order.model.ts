@@ -14,6 +14,15 @@ interface IOrder extends Document {
   status: string;
   createdAt: Date;
   updatedAt: Date;
+  shippingAddress?: string;
+  shippingMethod?: string;
+  trackingNumber?: string;
+  deliveryDate?: Date;
+  paymentMethod?: string;
+  paymentStatus?: string;
+  notes?: string;
+  discount?: number;
+  taxAmount?: number;
 }
 
 const OrderProductSchema = new Schema<IOrderProduct>({
@@ -39,6 +48,15 @@ const OrderSchema = new Schema<IOrder>(
     products: [OrderProductSchema],
     totalAmount: { type: Number, required: true },
     status: { type: String, required: true },
+    shippingAddress: { type: String },
+    shippingMethod: { type: String },
+    trackingNumber: { type: String },
+    deliveryDate: { type: Date },
+    paymentMethod: { type: String },
+    paymentStatus: { type: String },
+    // notes: { type: String },
+    // discount: { type: Number },
+    // taxAmount: { type: Number },
   },
   { timestamps: true }
 );
@@ -47,6 +65,57 @@ const Order =
   mongoose.models.Order || mongoose.model<IOrder>("Order", OrderSchema);
 
 export default Order;
+
+
+// import mongoose, { Schema, Document } from "mongoose";
+
+// interface IOrderProduct {
+//   product: mongoose.Schema.Types.ObjectId;
+//   quantity: number;
+//   price: number;
+// }
+
+// interface IOrder extends Document {
+//   user: mongoose.Schema.Types.ObjectId;
+//   sellers: mongoose.Schema.Types.ObjectId[];
+//   products: IOrderProduct[];
+//   totalAmount: number;
+//   status: string;
+//   createdAt: Date;
+//   updatedAt: Date;
+// }
+
+// const OrderProductSchema = new Schema<IOrderProduct>({
+//   product: {
+//     type: mongoose.Schema.Types.ObjectId,
+//     ref: "Product",
+//     required: true,
+//   },
+//   quantity: { type: Number, required: true },
+//   price: { type: Number, required: true },
+// });
+
+// const OrderSchema = new Schema<IOrder>(
+//   {
+//     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+//     sellers: [
+//       {
+//         type: mongoose.Schema.Types.ObjectId,
+//         ref: "User",
+//         required: true,
+//       },
+//     ],
+//     products: [OrderProductSchema],
+//     totalAmount: { type: Number, required: true },
+//     status: { type: String, required: true },
+//   },
+//   { timestamps: true }
+// );
+
+// const Order =
+//   mongoose.models.Order || mongoose.model<IOrder>("Order", OrderSchema);
+
+// export default Order;
 
 // Differences between OrderProductSchema and OrderSchema
 // Purpose:

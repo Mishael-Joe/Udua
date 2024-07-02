@@ -22,9 +22,12 @@ export const userSignUpInfoValidation = z.object({
   email: z.string({
     required_error: "Required",
   }),
-  password: z.string({
-    required_error: "Required",
-  }),
+  password: z
+    .string({
+      required_error: "Required",
+    })
+    .min(3, { message: "Minimum 7 Characters" })
+    .max(15),
   confirmPassword: z.string({
     required_error: "Required",
   }),

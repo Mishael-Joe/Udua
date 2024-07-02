@@ -10,6 +10,7 @@ interface IProduct extends Document {
   productDescription: string;
   productSpecification: string;
   productCategory: string[];
+  productSubCategory: string[],
   isVerifiedProduct: boolean;
 } // NOTE: accountId serves as the owner of the product i.e ownerID
 
@@ -23,6 +24,7 @@ const productSchema = new Schema<IProduct>({
   productDescription: { type: String, required: true },
   productSpecification: { type: String, required: true },
   productCategory: { type: [String], required: true },
+  productSubCategory: { type: [String], required: true },
   isVerifiedProduct: { type: Boolean, default: false },
 });
 

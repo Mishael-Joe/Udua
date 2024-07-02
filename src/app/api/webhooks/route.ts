@@ -6,8 +6,8 @@ import mongoose from "mongoose";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
 
-import User from "@/lib/models/user.model"; // Import User model
-import Order from "@/lib/models/order.model"; // Import Order model
+import User from "@/lib/models/user.model";
+import Order from "@/lib/models/order.model";
 import {
   Product as Products,
   ResultDataMetadataItemsInCart,
@@ -64,9 +64,12 @@ export async function POST(request: Request) {
       // console.log("cartItems", cartItems);
 
       const userID = result.data.metadata.userID;
+      const shippingAddress = `${result.data.metadata.state}, ${result.data.metadata.city}, ${result.data.metadata.address}`;
+      const shippingMethod = result.data.metadata.deliveryMethod;
       const eventStatus = result.status;
       const chargeData = result.data;
       const status = chargeData.status;
+      const paymentType = chargeData.channel;
 
       if (eventStatus === true && status === "success") {
         const session = await mongoose.startSession();
@@ -157,13 +160,15 @@ export async function POST(request: Request) {
             //   orderProducts[0].seller
             // );
             const order = new Order({
-              // user: chargeData.customer.id,
               user: userID,
-              // seller: orderProducts[0].seller,
               sellers: sellers,
               products: orderProducts,
               totalAmount: chargeData.amount / 100,
-              status: "paid",
+              status: status,
+              shippingAddress: shippingAddress,
+              shippingMethod: shippingMethod,
+              paymentMethod: paymentType,
+              paymentStatus: status === "success" ? "paid" : "Decline",
             });
 
             await order.save({ session });

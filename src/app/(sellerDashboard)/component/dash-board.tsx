@@ -17,6 +17,7 @@ import {
 import { Order } from "@/types";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { addCommasToNumber } from "@/lib/utils";
 
 export default function SellerDashboard() {
   const [orders, setOrders] = useState<Order[] | null>(null);
@@ -57,14 +58,13 @@ export default function SellerDashboard() {
     );
 
     return (
-      <div className="grid min-h-screen max-w-6xl mx-auto md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+      <div className="grid min-h-screen max-w-7xl mx-auto md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
         <div className="hidden border-r bg-muted/10 md:block">
           <div className="flex h-full max-h-screen flex-col gap-2">
             <SellerAside />
           </div>
         </div>
-        <div className="flex flex-col">
-          <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
+        <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
             <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-2">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -76,7 +76,7 @@ export default function SellerDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    &#8358;{totalRevenue.toFixed(2)}
+                    &#8358;{addCommasToNumber(totalRevenue)}
                   </div>
                   {/* <p className="text-xs text-muted-foreground">
                           +20.1% from last month
@@ -141,12 +141,12 @@ export default function SellerDashboard() {
                           <TableCell>
                             {order.products.map((productOrder) => (
                               <div key={productOrder.product._id}>
-                                ${productOrder.price}
+                                &#8358;{addCommasToNumber(productOrder.price)}
                               </div>
                             ))}
                           </TableCell>
                           <TableCell className="text-right">
-                            ${order.totalAmount}
+                            &#8358;{addCommasToNumber(order.totalAmount)}
                           </TableCell>
                           <TableCell>{order.status}</TableCell>
                         </TableRow>
@@ -156,7 +156,7 @@ export default function SellerDashboard() {
                       <TableRow>
                         <TableCell colSpan={4}>Total</TableCell>
                         <TableCell className="text-right">
-                          ${totalRevenue.toFixed(2)}
+                          &#8358;{addCommasToNumber(totalRevenue)}
                         </TableCell>
                       </TableRow>
                     </TableFooter>
@@ -165,7 +165,6 @@ export default function SellerDashboard() {
               </Card>
             </div>
           </main>
-        </div>
       </div>
     );
   } else {

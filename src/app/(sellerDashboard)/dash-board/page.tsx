@@ -1,4 +1,4 @@
-import SellerDashboard from "@/components/sellOnAlfaComponents/dash-board";
+import SellerDashboard from "@/app/(sellerDashboard)/component/dash-board";
 import { Suspense } from "react";
 
 function Page() {

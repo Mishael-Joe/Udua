@@ -195,12 +195,21 @@ function AccountSettings({ user }: user) {
             </h1>
 
             <div>
-              <p>
-                Name {`${user.firstName} ${user.otherNames} ${user.lastName}`}
-              </p>
-              <p>Phone: {user.phoneNumber}</p>
-              <p>Email {user.email}</p>
-            </div>
+            <p>
+              <span className=" text-base font-semibold">Name:</span>{" "}
+              <span>{`${user.firstName} ${user.otherNames} ${user.lastName}`}</span>
+            </p>
+
+            <p>
+              <span className=" text-base font-semibold">Phone:</span>{" "}
+              <span>{user.phoneNumber}</span>
+            </p>
+
+            <p>
+              <span className=" text-base font-semibold">Email:</span>{" "}
+              <span>{user.email}</span>
+            </p>
+          </div>
           </div>
 
           <div className="p-3 border rounded">
@@ -234,11 +243,30 @@ function AccountSettings({ user }: user) {
             </h1>
 
             <div>
-              <p>Address: {user.address}</p>
-              <p>City Of Residence: {user.cityOfResidence}</p>
-              <p>State Of Residence: {user.stateOfResidence}</p>
-              <p>Postal Code: {user.postalCode}</p>
-            </div>
+            <p>
+              <span className=" text-base font-semibold">Address:</span>{" "}
+              <span>{user.address}</span>
+            </p>
+
+            <p>
+              <span className=" text-base font-semibold">
+                City Of Residence:{" "}
+              </span>{" "}
+              <span>{user.cityOfResidence}</span>
+            </p>
+
+            <p>
+              <span className=" text-base font-semibold">
+                State Of Residence:{" "}
+              </span>{" "}
+              <span>{user.stateOfResidence}</span>
+            </p>
+
+            <p>
+              <span className=" text-base font-semibold">Postal Code:</span>{" "}
+              <span>{user.postalCode}</span>
+            </p>
+          </div>
           </div>
 
           <div className="p-3 border rounded">
@@ -483,10 +511,19 @@ function AccountSettings({ user }: user) {
 
           <div>
             <p>
-              Name {`${user.firstName} ${user.otherNames} ${user.lastName}`}
+              <span className=" text-base font-semibold">Name:</span>{" "}
+              <span>{`${user.firstName} ${user.otherNames} ${user.lastName}`}</span>
             </p>
-            <p>Phone: {user.phoneNumber}</p>
-            <p>Email {user.email}</p>
+
+            <p>
+              <span className=" text-base font-semibold">Phone:</span>{" "}
+              <span>{user.phoneNumber}</span>
+            </p>
+
+            <p>
+              <span className=" text-base font-semibold">Email:</span>{" "}
+              <span>{user.email}</span>
+            </p>
           </div>
         </div>
 
@@ -526,10 +563,29 @@ function AccountSettings({ user }: user) {
           </h1>
 
           <div>
-            <p>Address: {user.address}</p>
-            <p>City Of Residence: {user.cityOfResidence}</p>
-            <p>State Of Residence: {user.stateOfResidence}</p>
-            <p>Postal Code: {user.postalCode}</p>
+            <p>
+              <span className=" text-base font-semibold">Address:</span>{" "}
+              <span>{user.address}</span>
+            </p>
+
+            <p>
+              <span className=" text-base font-semibold">
+                City Of Residence:{" "}
+              </span>{" "}
+              <span>{user.cityOfResidence}</span>
+            </p>
+
+            <p>
+              <span className=" text-base font-semibold">
+                State Of Residence:{" "}
+              </span>{" "}
+              <span>{user.stateOfResidence}</span>
+            </p>
+
+            <p>
+              <span className=" text-base font-semibold">Postal Code:</span>{" "}
+              <span>{user.postalCode}</span>
+            </p>
           </div>
         </div>
 

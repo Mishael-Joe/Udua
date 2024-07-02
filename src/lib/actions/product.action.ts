@@ -1,13 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-
+import { cookies } from "next/headers";
 import { connectToDB } from "../mongoose";
 
 import User from "../models/user.model";
 import Product from "../models/product.model";
 
 import { Product as Products } from "@/types";
+import Wishlist from "../models/wishlist.model";
 
 type Product = Omit<Products, "productPrice"> & {
   productPrice: string;
@@ -22,6 +23,7 @@ export async function createProduct({
   productDescription,
   productSpecification,
   productCategory,
+  productSubCategory,
   accountId,
   path,
 }: Product) {
@@ -38,6 +40,7 @@ export async function createProduct({
       productDescription,
       productSpecification,
       productCategory,
+      productSubCategory,
       path,
     });
 
@@ -143,6 +146,9 @@ export async function fetchProducts(
 // }
 
 export async function fetchProductData(id: string) {
+  const cookieStore = cookies();
+  const userID = cookieStore.get("userID")?.value;
+
   try {
     await connectToDB();
 
@@ -150,8 +156,107 @@ export async function fetchProductData(id: string) {
       "_id productName productPrice productImage productSizes productQuantity productDescription productSpecification"
     );
 
-    return productData;
+    if (!productData) {
+      throw new Error("Product not found");
+    }
+
+    if (userID) {
+      const wishlist = await Wishlist.findOne({ user: userID });
+
+      if (wishlist) {
+        const isLikedProduct = wishlist.products.includes(id);
+        return {
+          productData,
+          isLikedProduct,
+        };
+      }
+    }
+
+    return { productData, isLikedProduct: false };
   } catch (error: any) {
-    throw new Error(`Failed to fetch productData: ${error.message}`);
+    throw new Error(`Failed to fetch product data: ${error.message}`);
   }
 }
+
+export const addToWishlist = async (productId: string) => {
+  const cookieStore = cookies();
+  const userID = cookieStore.get("userID")?.value;
+
+  if (!userID) {
+    const response = {
+      status: 401,
+      message: "User not authenticated",
+    };
+    return response;
+  }
+
+  try {
+    let wishlist = await Wishlist.findOne({ user: userID });
+
+    if (!wishlist) {
+      wishlist = new Wishlist({ user: userID, products: [] });
+    }
+
+    if (!wishlist.products.includes(productId)) {
+      wishlist.products.push(productId);
+      await wishlist.save();
+    }
+
+    const response = {
+      status: 200,
+      message: "Succesful",
+      wishlist,
+    };
+
+    return response;
+  } catch (error: any) {
+    const response = {
+      status: 401,
+      message: error.message,
+    };
+    return response;
+    // throw new Error(`Failed to add to wishlist: ${error.message}`);
+  }
+};
+
+export const removeFromWishlist = async (productId: string) => {
+  const cookieStore = cookies();
+  const userID = cookieStore.get("userID")?.value;
+
+  if (!userID) {
+    const response = {
+      status: 401,
+      message: "User not authenticated",
+    };
+    return response;
+  }
+
+  try {
+    const wishlist = await Wishlist.findOne({ user: userID });
+
+    if (!wishlist) {
+      return wishlist;
+    }
+
+    wishlist.products = wishlist.products.filter(
+      (id: string) => id.toString() !== productId
+    );
+
+    await wishlist.save();
+
+    const response = {
+      status: 200,
+      message: "Succesful",
+      wishlist,
+    };
+
+    return response;
+  } catch (error: any) {
+    const response = {
+      status: 401,
+      message: error.message,
+    };
+
+    return response;
+  }
+};

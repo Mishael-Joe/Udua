@@ -31,6 +31,7 @@ export type Product = {
   productDescription: string;
   productSpecification: string;
   productCategory: string;
+  productSubCategory: string,
   accountId: string;
   path: string;
   quantity?: number;
@@ -129,6 +130,7 @@ export type ForProductInfo = {
 
 export type ForProductGallery = {
   product: Product;
+  isLikedProduct: boolean
 };
 
 // type ProductPrice = Exclude<Product, null>["productPrice"];
