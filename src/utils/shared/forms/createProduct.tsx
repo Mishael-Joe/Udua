@@ -243,7 +243,7 @@ function CreateProduct({ id }: userID) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    console.log(product);
+    // console.log(product);
 
     // Allowed file types
     const allowedFileTypes = [
@@ -388,10 +388,10 @@ function CreateProduct({ id }: userID) {
       setImageUrls(urls);
 
       // Add logic to handle form submission, e.g., send product data along with URLs to the server
-      console.log("Product submitted with URLs:", {
-        ...product,
-        productImage: urls,
-      });
+      // console.log("Product submitted with URLs:", {
+      //   ...product,
+      //   productImage: urls,
+      // });
 
       await createProduct({
         productName: product.productName,

@@ -78,7 +78,7 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
     setGrandTotalPriceFromStorage(0);
   };
 
-  const addToCart = (product: ProductFromLocalStorage, quantity: number) => {
+  const addToCart = (product: ProductFromLocalStorage, quantity: number, selectedSize: string | null, selectedColor: string | null) => {
     const existingProductIndex = cartItems.findIndex(
       (item) => item._id!.toString() === product._id!.toString()
     );
@@ -93,6 +93,12 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
     if (existingProductIndex !== -1) {
       const updatedCartItems = [...cartItems];
       updatedCartItems[existingProductIndex].quantity! += quantity;
+      if (selectedSize) {
+        updatedCartItems[existingProductIndex].size! = selectedSize;
+      }
+      if (selectedColor) {
+        updatedCartItems[existingProductIndex].colors! = [selectedColor];
+      }
       setCartItems(updatedCartItems);
       setCartItemsFromStorage(updatedCartItems);
     } else {

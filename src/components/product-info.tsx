@@ -6,7 +6,6 @@ import { ArrowRight, Plus, Minus } from "lucide-react";
 
 import { addCommasToNumber } from "@/lib/utils";
 import { useStateContext } from "@/context/stateContext";
-import { getSizeName } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -26,15 +25,15 @@ export function ProductInfo({ product }: ForProductInfo) {
     if (product.productSizes === undefined || product.productSizes === null) {
       return null;
     }
-    return product.productSizes;
+    return product.productSizes[0];
   });
 
-  // const [selectedColor, setSelectedColor] = useState(() => {
-  //   if (product.colors === undefined || product.colors === null ) {
-  //     return null;
-  //   }
-  //   return product.colors[0];
-  // });
+  const [selectedColor, setSelectedColor] = useState(() => {
+    if (product.colors === undefined || product.colors === null) {
+      return null;
+    }
+    return product.colors[0];
+  });
 
   const { toast } = useToast();
   const { addToCart, quantity, incrementQuantity, decrementQuantity } =
@@ -101,37 +100,43 @@ export function ProductInfo({ product }: ForProductInfo) {
             <ShareButton slug={currentUrl} />
           </div>
         </div>
-        <p>
-          {/* Size: <strong>{selectedSize && getSizeName(selectedSize)}</strong> */}
-          {selectedSize ? `size: ${selectedSize}` : ""}
-        </p>
-        {/* {product.productSizes &&
+        {selectedSize && (
+          <p>
+            Size: <strong>{selectedSize && selectedSize}</strong>
+          </p>
+        )}
+        {product.productSizes &&
           product.productSizes.map((size: any) => (
             <Button
               onClick={() => setSelectedSize(size)}
               key={size}
-              variant={selectedSize ? "default" : `outline`}
-              className="mr-2 mt-4"
+              variant={selectedSize === size ? "default" : `outline`}
+              className={`mr-2 mt-4 ${
+                selectedSize === size ? " bg-purple-700" : ``
+              }`}
             >
-              {size && getSizeName(size)}
+              {size && size}
             </Button>
-          ))} */}
+          ))}
 
-        <p>
-          {/* Size: <strong>{selectedSize && getSizeName(selectedSize)}</strong> */}
-          {/* {selectedColor ? `Color: ${selectedColor}` : ""} */}
-        </p>
-        {/* {product.colors &&
+        {selectedColor && (
+          <p className="pt-2">
+            Color: <strong>{selectedColor && selectedColor}</strong>
+          </p>
+        )}
+        {product.colors &&
           product.colors.map((color: any) => (
             <Button
               onClick={() => setSelectedColor(color)}
               key={color}
-              variant={selectedSize ? `outline` : `default`}
-              className={`mr-2 mt-4`}
+              variant={selectedColor === color ? `outline` : `default`}
+              className={`mr-2 mt-4 ${
+                selectedColor === color ? " bg-purple-700" : ``
+              }`}
             >
               {color && color}
             </Button>
-          ))} */}
+          ))}
       </div>
 
       <form className="mt-6">
@@ -141,7 +146,7 @@ export function ProductInfo({ product }: ForProductInfo) {
             className="w-full bg-violet-600 py-6 text-base font-medium text-white hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-500"
             onClick={() => {
               notify(product);
-              addToCart(product, quantity);
+              addToCart(product, quantity, selectedSize, selectedColor);
             }}
           >
             Add to cart

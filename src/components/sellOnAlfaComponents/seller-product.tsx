@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import SellerAside from "@/app/(sellerDashboard)/component/seller-aside";
-import { MoreHorizontal, PlusCircle } from "lucide-react";
+import { Loader, MoreHorizontal, PlusCircle } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -32,8 +32,11 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Product } from "@/types";
 import Link from "next/link";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function SellerProducts() {
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
   const [sellerProducts, setSellerProducts] = useState<Product[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
@@ -54,13 +57,30 @@ export default function SellerProducts() {
   }, []);
 
   const handleDelete = async (productId: string) => {
+    setIsLoading(true);
     try {
-      await axios.delete("/api/seller/deleteProduct", { data: { productId } });
-      setSellerProducts(
-        sellerProducts.filter((product) => product._id !== productId)
-      );
+      const response = await axios.delete("/api/seller/deleteProduct", {
+        data: { productId },
+      });
+
+      if (response.status === 200) {
+        toast({
+          title: `Success`,
+          description: `You have Successfully deleted this product.`,
+        });
+        setSellerProducts(
+          sellerProducts.filter((product) => product._id !== productId)
+        );
+      }
     } catch (error: any) {
       console.error("Failed to delete product", error.message);
+      toast({
+        title: `Success`,
+        variant: `destructive`,
+        description: `An error occured while deleting this product.`,
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -92,112 +112,130 @@ export default function SellerProducts() {
             </div>
           </div>
           <div className="grid gap-4 md:gap-8 lg:grid-cols-1 xl:grid-cols-1">
-          <Card>
-            <CardHeader>
-              <CardTitle>Products</CardTitle>
-              <CardDescription>
-                Manage your products and view their sales performance.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-8">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="hidden w-[100px] sm:table-cell">
-                      <span className="sr-only">Image</span>
-                    </TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="hidden lg:table-cell">
-                      Price
-                    </TableHead>
-                    <TableHead className="hidden lg:table-cell">
-                      Quantity
-                    </TableHead>
-                    <TableHead className="hidden lg:table-cell">
-                      Created at
-                    </TableHead>
-                    <TableHead>
-                      <span className="sr-only">Actions</span>
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {sellerProducts.slice(startIndex, endIndex).map((product) => (
-                    <TableRow key={product._id}>
-                      <TableCell className="hidden sm:table-cell">
-                        <Image
-                          alt="Product image"
-                          className="aspect-square rounded-md object-cover"
-                          height="64"
-                          src={product.productImage[0]}
-                          loading="lazy"
-                          width="64"
-                        />
-                      </TableCell>
-                      <TableCell className="font-medium">
-                        {product.productName}
-                      </TableCell>
-                      <TableCell>
-                        {product.isVerifiedProduct === true ? (
-                          <Badge variant="outline" className="text-green-500">
-                            Verified
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline" className="text-yellow-500">
-                            unverified
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell className="hidden lg:table-cell">
-                        {product.productPrice}
-                      </TableCell>
-                      <TableCell className="hidden lg:table-cell">
-                        {product.productQuantity}
-                      </TableCell>
-                      {/* <TableCell className="hidden lg:table-cell">
+            <Card>
+              <CardHeader>
+                <CardTitle>Products</CardTitle>
+                <CardDescription>
+                  Manage your products and view their sales performance.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="grid gap-8">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="hidden w-[100px] sm:table-cell">
+                        <span className="sr-only">Image</span>
+                      </TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="hidden lg:table-cell">
+                        Price
+                      </TableHead>
+                      <TableHead className="hidden lg:table-cell">
+                        Quantity
+                      </TableHead>
+                      <TableHead className="hidden lg:table-cell">
+                        Created at
+                      </TableHead>
+                      <TableHead>
+                        <span className="sr-only">Actions</span>
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {sellerProducts
+                      .slice(startIndex, endIndex)
+                      .map((product) => (
+                        <TableRow key={product._id}>
+                          <TableCell className="hidden sm:table-cell">
+                            <Image
+                              alt="Product image"
+                              className="aspect-square rounded-md object-cover"
+                              height="64"
+                              src={product.productImage[0]}
+                              loading="lazy"
+                              width="64"
+                            />
+                          </TableCell>
+                          <TableCell className="font-medium">
+                            {product.productName}
+                          </TableCell>
+                          <TableCell>
+                            {product.isVerifiedProduct === true ? (
+                              <Badge
+                                variant="outline"
+                                className="text-green-500"
+                              >
+                                Verified
+                              </Badge>
+                            ) : (
+                              <Badge
+                                variant="outline"
+                                className="text-yellow-500"
+                              >
+                                unverified
+                              </Badge>
+                            )}
+                          </TableCell>
+                          <TableCell className="hidden lg:table-cell">
+                            {product.productPrice}
+                          </TableCell>
+                          <TableCell className="hidden lg:table-cell">
+                            {product.productQuantity}
+                          </TableCell>
+                          {/* <TableCell className="hidden lg:table-cell">
                         2023-07-12 10:42 AM
                       </TableCell> */}
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              aria-haspopup="true"
-                              size="icon"
-                              variant="ghost"
-                            >
-                              <MoreHorizontal className="h-4 w-4" />
-                              <span className="sr-only">Toggle menu</span>
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <Link href={`/editProduct/${product._id}`}>
-                              <DropdownMenuItem>Edit</DropdownMenuItem>
-                            </Link>
-                            <DropdownMenuItem
-                              onClick={() =>
-                                handleDelete(product._id as string)
-                              }
-                            >
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-            <CardFooter>
-              <div className="text-xs text-muted-foreground">
-                Showing <strong>{startIndex + 1}</strong> to{" "}
-                <strong>{endIndex}</strong> of <strong>{totalProducts}</strong>{" "}
-                products
-              </div>
-            </CardFooter>
-          </Card>
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  aria-haspopup="true"
+                                  size="icon"
+                                  variant="ghost"
+                                >
+                                  <MoreHorizontal className="h-4 w-4" />
+                                  <span className="sr-only">Toggle menu</span>
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                <Link href={`/editProduct/${product._id}`}>
+                                  <DropdownMenuItem>Edit</DropdownMenuItem>
+                                </Link>
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    handleDelete(product._id as string)
+                                  }
+                                >
+                                  {isLoading ? (
+                                    <p className="flex flex-row items-center gap-4">
+                                      <Loader
+                                        className=" animate-spin"
+                                        width={25}
+                                        height={25}
+                                      />{" "}
+                                    </p>
+                                  ) : (
+                                    "Delete"
+                                  )}
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+              <CardFooter>
+                <div className="text-xs text-muted-foreground">
+                  Showing <strong>{startIndex + 1}</strong> to{" "}
+                  <strong>{endIndex}</strong> of{" "}
+                  <strong>{totalProducts}</strong> products
+                </div>
+              </CardFooter>
+            </Card>
           </div>
         </main>
       </div>

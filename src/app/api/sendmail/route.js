@@ -8,7 +8,7 @@ const nodemailer = require("nodemailer");
 export async function POST(request) {
   const requestBody = await request.json();
   const { body }  = requestBody;
-  console.log('Body', body);
+  // console.log('Body', body);
   
   try {
     const transporter = nodemailer.createTransport({

@@ -20,11 +20,11 @@ export async function POST(request: Request) {
   }: RequestBodyTypes = requestBody.meta;
 
   const subamount = Number(amount * 100);
-  console.log("uniqueRef", uniqueRef);
+  // console.log("uniqueRef", uniqueRef);
 
   try {
     // Inventory Check
-    console.log("itemsInCart", itemsInCart);
+    // console.log("itemsInCart", itemsInCart);
     for (const item of itemsInCart) {
       const product = await Product.findById(item._id);
       if (!product) {

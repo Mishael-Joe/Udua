@@ -31,10 +31,12 @@ export type Product = {
   productDescription: string;
   productSpecification: string;
   productCategory: string;
-  productSubCategory: string,
+  productSubCategory: string;
   accountId: string;
   path: string;
   quantity?: number;
+  colors?: string[];
+  size?: string;
   isVerifiedProduct?: boolean;
 };
 
@@ -99,7 +101,12 @@ export type ProductFromLocalStorage = Partial<Product>;
 export type ContextType = {
   onRemove: (product: CartItems) => void;
   quantity: number;
-  addToCart: (product: ProductFromLocalStorage, quantity: number) => void;
+  addToCart: (
+    product: ProductFromLocalStorage,
+    quantity: number,
+    selectedSize: string | null,
+    selectedColor: string | null
+  ) => void;
   cartItems: CartItems[];
   totalPrice: number;
   shippingFee: number;
@@ -130,7 +137,7 @@ export type ForProductInfo = {
 
 export type ForProductGallery = {
   product: Product;
-  isLikedProduct: boolean
+  isLikedProduct: boolean;
 };
 
 // type ProductPrice = Exclude<Product, null>["productPrice"];

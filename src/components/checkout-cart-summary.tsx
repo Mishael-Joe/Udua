@@ -66,7 +66,7 @@ export function CheckoutSummary({ userData }: userData) {
         // console.log(data.data.link);
         window.location.href = data.data.authorization_url; // Redirect to the payment link
       } else {
-        console.log(data.message);
+        // console.log(data.message);
       }
     } catch (error) {
       console.error("Error submitting form:", error);

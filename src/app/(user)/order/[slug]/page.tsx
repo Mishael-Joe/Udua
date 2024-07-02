@@ -30,6 +30,7 @@ import { Icons } from "@/components/icons";
 import { siteConfig } from "@/config/site";
 import { ThemeToggle } from "@/components/theme-toggle";
 import ProfileSheets1 from "../../components/ProfileSheets1";
+import { Loader } from "lucide-react";
 
 export default function Page({ params }: { params: { slug: string } }) {
   const [orderDetails, setOrderDetails] = useState<any>();
@@ -40,7 +41,7 @@ export default function Page({ params }: { params: { slug: string } }) {
           orderID: params.slug,
         });
         setOrderDetails(response.data.orderDetail);
-        console.log(`response.data`, response.data.orderDetail);
+        // console.log(`response.data`, response.data.orderDetail);
       } catch (error: any) {
         console.error("Failed to fetch seller Products", error.message);
       }
@@ -48,6 +49,16 @@ export default function Page({ params }: { params: { slug: string } }) {
 
     fetchOrderData();
   }, []);
+
+  if (orderDetails === null || orderDetails === undefined) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center">
+        <p className="w-full h-full flex items-center justify-center">
+          <Loader className="animate-spin" /> Loading...
+        </p>
+      </div>
+    );
+  }
 
   if (orderDetails !== undefined) {
     return (
@@ -148,29 +159,38 @@ export default function Page({ params }: { params: { slug: string } }) {
               <CardContent>
                 <div className="grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:gap-x-8">
                   {orderDetails.products.map((product: any) => (
-                    <div className="flex flex-col sm:flex-row gap-4 text-sm w-full" key={product.productName}>
+                    <div
+                      className="flex flex-col sm:flex-row gap-4 text-sm w-full"
+                      key={product.productName}
+                    >
                       <div className="aspect-square w-full overflow-hidden rounded-lg border-2 border-gray-200 bg-gray-100 group-hover:opacity-75 dark:border-gray-800">
-                        <Image
-                          src={product.product.productImage[0]}
-                          alt={product.productName}
-                          width={300}
-                          height={150}
-                          className="h-full w-full object-cover object-center"
-                          quality={90}
-                        />
+                        {product.product !== null ||
+                          (product.product !== null && (
+                            <Image
+                              src={product.product.productImage[0]}
+                              alt={product.productName}
+                              width={300}
+                              height={150}
+                              className="h-full w-full object-cover object-center"
+                              quality={90}
+                            />
+                          ))}
                       </div>
 
                       <div>
                         <h3 className="mt-4 font-medium">
                           Product Name:
-                          {product.product.productName}
+                          {product.product &&
+                            product.product.productName}
                         </h3>
                         <p className="mt-2 font-medium">
-                          Quantity: {product.quantity}
+                          Quantity: {product.quantity && product.quantity}
                         </p>
-                        <p className="mt-2 font-medium">
-                          Price: &#8358; {addCommasToNumber(product.price)}{" "}
-                        </p>
+                        {product.price && (
+                          <p className="mt-2 font-medium">
+                            Price: &#8358; {addCommasToNumber(product.price)}{" "}
+                          </p>
+                        )}
                       </div>
                     </div>
                   ))}

@@ -43,7 +43,7 @@ export function OrderHistory() {
     const fetchOrders = async () => {
       try {
         const response = await axios.post("/api/users/orders");
-        setOrders(response.data.orders);
+        // setOrders(response.data.orders);
         console.log("response.data.orders", response.data.orders);
         // console.log(response.data.orders[0].products[0].product.productImage);
       } catch (error: any) {
@@ -79,14 +79,18 @@ export function OrderHistory() {
                 {orders.map((order: any) => (
                   <TableRow key={order._id}>
                     <TableCell className="font-medium">
-                      <Image
-                        alt="Product image"
-                        className="aspect-square rounded-md object-cover"
-                        height="64"
-                        src={order.products[0].product.productImage[0]}
-                        loading="lazy"
-                        width="64"
-                      />
+                      {order.products !== null ||
+                        (order.products[0].product.productImage[0] !==
+                          undefined && (
+                          <Image
+                            alt="Product image"
+                            className="aspect-square rounded-md object-cover"
+                            height="64"
+                            src={order.products[0].product.productImage[0]}
+                            loading="lazy"
+                            width="64"
+                          />
+                        ))}
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">{order.status}</Badge>

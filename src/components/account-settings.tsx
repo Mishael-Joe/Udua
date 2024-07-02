@@ -109,7 +109,7 @@ function AccountSettings({ user }: user) {
           email: newUserData.email,
         };
         const response = await axios.post(`/api/users/updateUserData`, body);
-        console.log(`response`, response);
+        // console.log(`response`, response);
 
         if (response.status === 200) {
           toast({
@@ -119,7 +119,7 @@ function AccountSettings({ user }: user) {
           router.refresh();
         }
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         toast({
           variant: "destructive",
           title: `Error `,
@@ -148,7 +148,7 @@ function AccountSettings({ user }: user) {
           router.refresh();
         }
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         toast({
           variant: "destructive",
           title: `Error `,

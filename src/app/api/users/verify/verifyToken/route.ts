@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
   try {
     connectToDB();
     const userID = await getUserDataFromToken(request);
-    console.log(`userID`, userID);
+    // console.log(`userID`, userID);
 
     if (userID !== null) {
       const user = await User.findById(userID);
@@ -19,10 +19,10 @@ export async function POST(request: NextRequest) {
       const tokenExpiry = new Date(user.verifyTokenExpiry).getTime();
       const date = Date.now();
 
-      console.log(`savedToken`, savedToken);
-      console.log(`token`, token);
-      console.log(`date`, date);
-      console.log(`tokenExpiry`, tokenExpiry);
+      // console.log(`savedToken`, savedToken);
+      // console.log(`token`, token);
+      // console.log(`date`, date);
+      // console.log(`tokenExpiry`, tokenExpiry);
 
       if (
         savedToken.toString() === token.toString() &&

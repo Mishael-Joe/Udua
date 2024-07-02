@@ -29,7 +29,7 @@ const Profile = () => {
         const response = await axios.post<{ data: User }>(
           "/api/users/userData"
         );
-        console.log("userdata", response);
+        // console.log("userdata", response);
         setUserData(response.data.data);
       } catch (error: any) {
         console.error("Failed to fetch user data", error.message);

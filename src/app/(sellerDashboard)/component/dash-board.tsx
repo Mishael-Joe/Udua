@@ -1,6 +1,6 @@
 "use client";
 
-import { CreditCard } from "lucide-react";
+import { CreditCard, Loader } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import SellerAside from "@/app/(sellerDashboard)/component/seller-aside";
 
@@ -39,6 +39,16 @@ export default function SellerDashboard() {
     fetchUserData();
   }, []);
   // const orders: Order[] = await fetchOrders(params.slug);
+
+  if (orders === null) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center">
+        <p className="w-full h-full flex items-center justify-center">
+          <Loader className="animate-spin" /> Loading...
+        </p>
+      </div>
+    );
+  }
 
   // Calculate total revenue and total sales
   if (orders !== null) {
