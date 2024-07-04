@@ -27,7 +27,7 @@ const Profile = () => {
     const fetchUserData = async () => {
       try {
         const response = await axios.post<{ data: User }>(
-          "/api/users/userData"
+          "/api/user/userData"
         );
         // console.log("userdata", response);
         setUserData(response.data.data);

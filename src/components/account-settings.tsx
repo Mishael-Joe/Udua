@@ -108,7 +108,7 @@ function AccountSettings({ user }: user) {
           phoneNumber: newUserData.phoneNumber,
           email: newUserData.email,
         };
-        const response = await axios.post(`/api/users/updateUserData`, body);
+        const response = await axios.post(`/api/user/updateUserData`, body);
         // console.log(`response`, response);
 
         if (response.status === 200) {
@@ -135,7 +135,7 @@ function AccountSettings({ user }: user) {
           postalCode: newShippingAddress.postal,
         };
         const response = await axios.post(
-          `/api/users/updateUserShippingData`,
+          `/api/user/updateUserShippingData`,
           body
         );
         // console.log(`response`, response);

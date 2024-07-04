@@ -21,7 +21,7 @@ export function Wishlist() {
   useEffect(() => {
     const fetchWishlist = async () => {
       try {
-        const response = await axios.post("/api/users/wishlist");
+        const response = await axios.post("/api/user/wishlist");
         setWishlist(response.data.wishlist.products);
         // console.log("response.data.wishlist", response.data.wishlist);
       } catch (error: any) {

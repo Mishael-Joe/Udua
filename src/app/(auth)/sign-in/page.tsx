@@ -44,7 +44,7 @@ function SignIn() {
     };
 
     try {
-      const response = await axios.post(`/api/users/signIn`, userInput);
+      const response = await axios.post(`/api/auth/signIn`, userInput);
       // console.log(`response`, response);
 
       if (response.data.success === true || response.status === 200) {
@@ -142,10 +142,10 @@ function SignIn() {
 
                 <div className="flex items-center justify-between mt-4">
                   <Link
-                    href="#"
+                    href="/forgot-password"
                     className="text-sm text-gray-600 dark:text-gray-200 hover:text-gray-500"
                   >
-                    Forget Password?
+                    Forgot Password?
                   </Link>
 
                   <Button

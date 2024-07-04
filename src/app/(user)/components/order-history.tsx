@@ -42,7 +42,7 @@ export function OrderHistory() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.post("/api/users/orders");
+        const response = await axios.post("/api/user/orders");
         // setOrders(response.data.orders);
         console.log("response.data.orders", response.data.orders);
         // console.log(response.data.orders[0].products[0].product.productImage);
@@ -54,7 +54,7 @@ export function OrderHistory() {
     fetchOrders();
   }, []);
 
-  if (orders !== undefined && orders.length > 0) {
+  if (orders.length > 0) {
     return (
       <div className="grid gap-4 w-full md:gap-8 py-4 md:py-0">
         <Card className="w-full md:border-0">

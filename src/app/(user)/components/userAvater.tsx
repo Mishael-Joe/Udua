@@ -27,7 +27,7 @@ function UserAvatar({ name }: UserAvatarProps) {
 
   const signOut = async () => {
     try {
-      const response = await axios.get("/api/users/signOut");
+      const response = await axios.get("/api/auth/signOut");
       if (response.status === 200) {
         router.refresh();
       }

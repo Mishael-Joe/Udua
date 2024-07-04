@@ -29,7 +29,7 @@ export default function SellerDashboard() {
           "/api/seller/orders"
         );
         // console.log("sellerdata", response);
-        // console.log("sellerdata.data", response.data);
+        // console.log("sellerdata.data.orders", response.data.orders);
         setOrders(response.data.orders);
       } catch (error: any) {
         console.error("Failed to fetch user data", error.message);
@@ -135,22 +135,22 @@ export default function SellerDashboard() {
                             {order._id}
                           </TableCell>
                           <TableCell>
-                            {order.products.map((productOrder) => (
-                              <div key={productOrder.product._id}>
-                                {productOrder.product.productName}
+                            {order.products !== null && order.products.map((productOrder) => (
+                              <div key={productOrder.product !== null ? productOrder.product._id : 1}>
+                                {productOrder.product !== null ? productOrder.product.productName : "You've deleted this product."}
                               </div>
                             ))}
                           </TableCell>
                           <TableCell>
-                            {order.products.map((productOrder) => (
-                              <div key={productOrder.product._id}>
+                            {order.products !== null && order.products.map((productOrder) => (
+                              <div key={productOrder.product !== null ? productOrder.product._id : 1}>
                                 {productOrder.quantity}
                               </div>
                             ))}
                           </TableCell>
                           <TableCell>
-                            {order.products.map((productOrder) => (
-                              <div key={productOrder.product._id}>
+                            {order.products !== null && order.products.map((productOrder) => (
+                              <div key={productOrder.product !== null ? productOrder.product._id : 1}>
                                 &#8358;{addCommasToNumber(productOrder.price)}
                               </div>
                             ))}

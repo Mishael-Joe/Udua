@@ -42,7 +42,7 @@ function AboutSellerAndProduct() {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const result = await axios.post<{ data: User }>(`/api/users/userData`);
+      const result = await axios.post<{ data: User }>(`/api/user/userData`);
       setUserData(result.data.data);
     };
 
@@ -107,7 +107,7 @@ function AboutSellerAndProduct() {
   }
 
   return (
-    <section className="max-w-3xl mx-auto my-5 px-6 h-full">
+    <section className="max-w-3xl mx-auto my-5 px-6 min-h-screen">
       {!showInfo ? (
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 ">

@@ -66,7 +66,7 @@ function SignUp() {
     };
 
     try {
-      const response = await axios.post(`/api/users/signUp`, user);
+      const response = await axios.post(`/api/auth/signUp`, user);
 
       if (response.status === 200 || response.data.success === true) {
         toast({
