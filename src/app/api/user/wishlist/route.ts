@@ -16,9 +16,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const wishlist = await Wishlist.findOne({ user: userId }).populate(
-      "products"
-    ).exec();
+    const wishlist = await Wishlist.findOne({ user: userId })
+    .populate({
+      path: "products",
+    })
+    .exec(); //.populate(
+    //   "products"
+    // ).exec();
+
+    // console.log(wishlist)
 
     if (!wishlist) {
       return NextResponse.json(
@@ -33,7 +39,7 @@ export async function POST(request: NextRequest) {
     );
   } catch (error: any) {
     return NextResponse.json(
-      { error: `Error fetching wishlist: ${error.message}` },
+      { error: `Error fetching wishlist: ${error}` },
       { status: 500 }
     );
   }

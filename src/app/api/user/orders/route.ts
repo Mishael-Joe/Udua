@@ -17,9 +17,12 @@ export async function POST(request: NextRequest) {
     }
 
     const userOrders = await Order.find({ user: userId.toString() })
-      .populate('products.product')
-    //   .populate('sellers', 'name') // Adjust field to be populated if necessary
+      .populate({
+        path: "products.product",
+      })
       .exec();
+
+      // console.log('userOrders', userOrders)
 
     return NextResponse.json(
       { message: "Orders found", orders: userOrders },
@@ -27,7 +30,7 @@ export async function POST(request: NextRequest) {
     );
   } catch (error: any) {
     return NextResponse.json(
-      { error: `Error fetching orders: ${error.message}` },
+      { error: `Error fetching orders: ${error}` },
       { status: 500 }
     );
   }
