@@ -37,7 +37,7 @@ export default function Page({ params }: { params: { slug: string } }) {
   useEffect(() => {
     const fetchOrderData = async () => {
       try {
-        const response = await axios.post("/api/users/orderDetails", {
+        const response = await axios.post("/api/user/orderDetails", {
           orderID: params.slug,
         });
         setOrderDetails(response.data.orderDetail);

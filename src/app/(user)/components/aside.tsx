@@ -117,11 +117,26 @@ function Aside({ user }: user) {
                   className="flex items-center gap-2 hover:underline"
                 >
                   <TrendingUp />
-                  seller Profile
+                  Seller Profile
                 </Link>
               </p>
             </li>
           )}
+
+          <li
+            className={`show-dropdown-menu1 cursor-pointer rounded py-2 px-3`}
+          >
+            <p>
+              <Link
+                // href={`/dash-board/${slug}?tab=matrics`}
+                href={`/admin/verify-products`}
+                className="flex items-center gap-2 hover:underline"
+              >
+                <TrendingUp />
+                Admins
+              </Link>
+            </p>
+          </li>
         </ul>
       </div>
     </section>

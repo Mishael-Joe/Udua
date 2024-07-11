@@ -10,7 +10,7 @@ const generateResetToken = () => {
 export async function POST(request: NextRequest) {
   const requestBody = await request.json();
   const { email } = requestBody;
-  console.log("email", email);
+  // console.log("email", email);
 
   try {
     await connectToDB();

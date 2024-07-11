@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectToDB } from "@/lib/mongoose";
 import { getUserDataFromToken } from "@/lib/helpers/getUserDataFromToken";
 import Wishlist from "@/lib/models/wishlist.model";
+import Product from "@/lib/models/product.model";
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,7 +18,7 @@ export async function POST(request: NextRequest) {
 
     const wishlist = await Wishlist.findOne({ user: userId }).populate(
       "products"
-    );
+    ).exec();
 
     if (!wishlist) {
       return NextResponse.json(
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { message: "Wishlist not found", wishlist: wishlist },
+      { message: "Wishlist found", wishlist: wishlist },
       { status: 200 }
     );
   } catch (error: any) {

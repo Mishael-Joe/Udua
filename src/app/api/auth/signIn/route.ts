@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: "Make sure you provide the write Email" },
-        { status: 500 }
+        { status: 401 }
       );
     }
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectToDB } from "@/lib/mongoose";
 import Order from "@/lib/models/order.model";
 import { getUserDataFromToken } from "@/lib/helpers/getUserDataFromToken";
+import Product from "@/lib/models/product.model";
 
 export async function POST(request: NextRequest) {
   try {

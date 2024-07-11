@@ -43,7 +43,7 @@ export function OrderHistory() {
     const fetchOrders = async () => {
       try {
         const response = await axios.post("/api/user/orders");
-        // setOrders(response.data.orders);
+        setOrders(response.data.orders);
         console.log("response.data.orders", response.data.orders);
         // console.log(response.data.orders[0].products[0].product.productImage);
       } catch (error: any) {
