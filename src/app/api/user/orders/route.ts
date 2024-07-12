@@ -16,16 +16,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const userOrders = await Order.find({ user: userId.toString() })
-      .populate({
-        path: "products.product",
-      })
-      .exec();
+    // const userOrders = await Order.find({ user: userId.toString() })
+    //   .populate({
+    //     path: "products.product",
+    //   })
+    //   .exec();
 
       // console.log('userOrders', userOrders)
 
+      // Find the orders without populating the products
+    const orders = await Order.find({ user: userId.toString() }).exec();
+
+    // Populate products for each order
+    const populatedOrders = await Promise.all(
+      orders.map(async (order) => {
+        await order.populate({
+          path: "products.product",
+        })
+        return order;
+      })
+    );
+
+    // console.log('populatedOrders', populatedOrders)
+
     return NextResponse.json(
-      { message: "Orders found", orders: userOrders },
+      { message: "Orders found", orders: populatedOrders },
       { status: 200 }
     );
   } catch (error: any) {
