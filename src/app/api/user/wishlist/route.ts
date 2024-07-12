@@ -16,13 +16,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const product = await Product.findOne({}).select("_id productName").exec();
+
     const wishlist = await Wishlist.findOne({ user: userId })
-    .populate({
-      path: "products",
-    })
-    .exec(); //.populate(
-    //   "products"
-    // ).exec();
+      .populate("products")
+      .exec();
 
     // console.log(wishlist)
 

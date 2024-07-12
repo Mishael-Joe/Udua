@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-// import Product from "@/lib/models/product.model";
+import Product from "@/lib/models/product.model";
 
 import Order from "@/lib/models/order.model";
 import { connectToDB } from "@/lib/mongoose";
@@ -16,6 +16,8 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    const product = await Product.findOne({}).select("_id productName").exec();
 
     const orders = await Order.find({ sellers: { $in: [sellerId.toString()] } })
       .populate({
