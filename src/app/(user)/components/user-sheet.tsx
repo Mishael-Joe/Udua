@@ -2,9 +2,9 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Fragment } from "react";
 import { Button } from "@/components/ui/button";
 import { MenuIcon } from "lucide-react";
-import AdminAside from "./admin-aside";
+import Aside1 from "./aside-1";
 
-function AdminSheets() {
+function UserSheets() {
   return (
     <Fragment>
       <Sheet>
@@ -16,7 +16,7 @@ function AdminSheets() {
         </SheetTrigger>
         <SheetContent side="right" className="flex flex-col">
           <nav className="grid gap-2 text-lg font-medium">
-            <AdminAside />
+            <Aside1 />
           </nav>
         </SheetContent>
       </Sheet>
@@ -24,4 +24,4 @@ function AdminSheets() {
   );
 }
 
-export default AdminSheets;
+export default UserSheets;

@@ -1,13 +1,12 @@
 "use client";
 
 import axios from "axios";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { addCommasToNumber } from "@/lib/utils";
 
-import { Badge } from "@/components/ui/badge";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -20,16 +19,11 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 
 import Aside1 from "@/app/(user)/components/aside-1";
-import { Icons } from "@/components/icons";
-import { siteConfig } from "@/config/site";
-import { ThemeToggle } from "@/components/theme-toggle";
-import ProfileSheets1 from "../../components/ProfileSheets1";
 import { Loader } from "lucide-react";
 
 export default function Page({ params }: { params: { slug: string } }) {
@@ -63,32 +57,6 @@ export default function Page({ params }: { params: { slug: string } }) {
   if (orderDetails !== undefined) {
     return (
       <section>
-        <header className="sticky top-0 z-40 w-full border-b bg-background">
-          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between space-x-4 px-6 sm:space-x-0">
-            <Suspense fallback={`search bar`}>
-              <div className="flex items-center justify-center gap-3">
-                <div className="hidde items-center md:inline-flex">
-                  <div className="flex gap-3 md:gap-10">
-                    <Link href="/" className="flex items-center space-x-2">
-                      <Icons.logo className="h-7 w-7" />
-                      <span className="sm:inline-block hidde sm:text-xl font-bold">
-                        {siteConfig.name}
-                      </span>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </Suspense>
-
-            <div className="flex items-center space-x-1">
-              <ThemeToggle />
-
-              <div className="md:hidden">
-                <ProfileSheets1 />
-              </div>
-            </div>
-          </div>
-        </header>
         <div className="grid min-h-screen max-w-7xl mx-auto md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
           <div className="hidden border-r bg-muted/10 md:block">
             <div className="flex h-full max-h-screen flex-col gap-2">

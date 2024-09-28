@@ -10,6 +10,7 @@ import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { ThemeProvider } from "@/components/theme-provider";
 
 import { StateContext } from "@/context/stateContext";
+import { UserHeader } from "./components/user-header";
 
 export const metadata: Metadata = {
   title: siteConfig.siteName,
@@ -30,6 +31,7 @@ export default function RootLayout({
       <body className={`scroll-smooth`}>
         <StateContext>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <UserHeader />
             <SiteBlob />
             <Toaster />
             <div>{children}</div>

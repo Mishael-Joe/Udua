@@ -7,7 +7,7 @@ import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { SiteFooter } from "@/components/site-footer";
 import { Toaster } from "@/components/ui/toaster";
 import { StateContext } from "@/context/stateContext";
-import { AuthHeader } from "../(auth)/component/authHeader";
+import { AdminHeader } from "./components/admin-header";
 
 export const metadata: Metadata = {
   title: siteConfig.siteName,
@@ -28,7 +28,7 @@ export default function RootLayout({
       <body className={`scroll-smooth`}>
         <StateContext>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <AuthHeader />
+            <AdminHeader />
             <SiteBlob />
             <Toaster />
             <div>{children}</div>

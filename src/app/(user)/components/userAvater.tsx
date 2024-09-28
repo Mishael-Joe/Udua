@@ -64,13 +64,13 @@ function UserAvatar({ name }: UserAvatarProps) {
           {userName ? (
             <>
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <Link href={`/profile?tab=profile`}>
+              <Link href={`/profile`}>
                 <DropdownMenuItem>Profile</DropdownMenuItem>
               </Link>
-              <Link href={`/profile?tab=wishlist`}>
+              <Link href={`/wishlist`}>
                 <DropdownMenuItem>Wishlist</DropdownMenuItem>
               </Link>
-              <Link href={`/profile?tab=order-history`}>
+              <Link href={`/order-history`}>
                 <DropdownMenuItem>Orders</DropdownMenuItem>
               </Link>
               <DropdownMenuSeparator />

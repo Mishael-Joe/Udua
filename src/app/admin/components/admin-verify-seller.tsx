@@ -5,7 +5,6 @@ import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { useState } from "react";
 import { Loader } from "lucide-react";
-import Link from "next/link";
 import { User } from "@/types";
 
 function AdminVerifySeller() {
@@ -63,16 +62,52 @@ function AdminVerifySeller() {
         setIsLoading(false);
       }
     }
-    
+
     if (val === "verifyUser") {
       try {
         setIsLoading(true);
 
         const response = await axios.post("/api/admin/verify-seller", {
           sellerID,
+          type: "verifyUser",
         });
         // console.log(`response`, response);
-        
+
+        if (response.data.success === true || response.status === 200) {
+          toast({
+            title: `Success`,
+            description: `This user is now a verified seller.`,
+          });
+          setUser(response.data.data);
+          setIsLoading(false);
+        } else {
+          toast({
+            variant: `destructive`,
+            title: `Error`,
+            description: `There was an error fetching user data. Please try again.`,
+          });
+          setIsLoading(false);
+        }
+      } catch (error) {
+        toast({
+          variant: `destructive`,
+          title: "Error",
+          description: `There was an error fetching user data. Please try again.`,
+        });
+        setIsLoading(false);
+      }
+    }
+
+    if (val === "UnVerifyUser") {
+      try {
+        setIsLoading(true);
+
+        const response = await axios.post("/api/admin/verify-seller", {
+          sellerID,
+          type: "UnVerifyUser",
+        });
+        // console.log(`response`, response);
+
         if (response.data.success === true || response.status === 200) {
           toast({
             title: `Success`,
@@ -105,7 +140,7 @@ function AdminVerifySeller() {
         Verify Seller
       </h3>
 
-      <div className="w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800">
+      <div className="w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800 mb-6">
         <div className="px-6 py-4">
           <p className="mt-3 text-center text-gray-500 dark:text-gray-400">
             Provide the User or Seller Id.
@@ -139,7 +174,7 @@ function AdminVerifySeller() {
       </div>
 
       <div>
-        <div className="pb-4 mt-3 flex flex-row justify-between gap-3">
+        <div className="py-6 border-t-2 flex flex-row justify-between gap-3">
           <h1 className="text-xl font-semibold">Seller Details</h1>
           {user.isVerified !== false && (
             <span className="text-sm text-green-600">verified</span>
@@ -216,8 +251,8 @@ function AdminVerifySeller() {
           <div className="w-full border rounded-md p-3 mt-4">
             <div>
               <p className=" max-w-xl">
-                Ensure this user meets the criteria before verifying the user as
-                a seller.
+                Verify that this user meets the criteria before approving them
+                as a seller.
               </p>
               <form
                 onSubmit={(e) => handleSubmit("verifyUser", e)}
@@ -230,8 +265,28 @@ function AdminVerifySeller() {
                   )}{" "}
                   {isLoading && "Please wait..."}
                 </Button>
-                {/* <Link href={`/verification`} className=" float-end">
-                </Link> */}
+              </form>
+            </div>
+          </div>
+        )}
+
+        {user.isSeller && (
+          <div className="w-full border rounded-md p-3 mt-4">
+            <div>
+              <p className=" max-w-xl">
+                You can unverify this seller if necessary.
+              </p>
+              <form
+                onSubmit={(e) => handleSubmit("UnVerifyUser", e)}
+                className="flex justify-end pt-3"
+              >
+                <Button type="submit" className="hover:text-purple-600">
+                  {!isLoading && "Unverify Seller"}
+                  {isLoading && (
+                    <Loader className=" animate-spin w-5 h-5 mr-4" />
+                  )}{" "}
+                  {isLoading && "Please wait..."}
+                </Button>
               </form>
             </div>
           </div>
