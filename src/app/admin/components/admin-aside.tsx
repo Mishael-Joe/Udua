@@ -2,10 +2,12 @@
 
 import { usePathname } from "next/navigation";
 import {
+  CheckCheckIcon,
   FileEdit,
-  SettingsIcon,
+  Settings2Icon,
   ShoppingCart,
-  UserCheck2Icon,
+  StoreIcon,
+  Users,
 } from "lucide-react";
 import Link from "next/link";
 import { useMediaQuery } from "@react-hook/media-query";
@@ -23,19 +25,32 @@ function AdminAside() {
         <div className="flex w-full flex-1 flex-col gap-3 px-3 relative text-black dark:text-white">
           <ul className="flex flex-col gap-1 text-black dark:text-white">
             <Link
-              href={"/admin/verify-products"}
+              href={"/admin/create-store"}
               className={`show-dropdown-menu1 cursor-pointer ${
-                pathname.includes("product")
+                pathname.includes("store")
                   ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
                   : "text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white"
               } rounded py-2 px-3 mt-5`}
             >
               <p className="flex items-center gap-2">
-                <UserCheck2Icon className="" /> Verify Product
+                <StoreIcon className="" /> Create Store
+              </p>
+            </Link>
+            
+            <Link
+              href={"/admin/verify-products"}
+              className={`show-dropdown-menu1 cursor-pointer ${
+                pathname.includes("product")
+                  ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
+                  : "text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white"
+              } rounded py-2 px-3`}
+            >
+              <p className="flex items-center gap-2">
+                <CheckCheckIcon className="" /> Verify Product
               </p>
             </Link>
   
-            <Link
+            {/* <Link
               href={`/admin/verify-seller`}
               className={`show-dropdown-menu1 cursor-pointer ${
                 pathname.includes("seller")
@@ -46,7 +61,7 @@ function AdminAside() {
               <p className="flex items-center gap-2">
                 <FileEdit className="" /> Verify Seller
               </p>
-            </Link>
+            </Link> */}
   
             <Link
               href={`/admin/order-details`}
@@ -70,7 +85,7 @@ function AdminAside() {
               } rounded py-2 px-3`}
             >
               <p className="flex items-center gap-2">
-                <ShoppingCart className="" /> Dispute & Resolution
+                <FileEdit className="" /> Dispute & Resolution
               </p>
             </Link>
   
@@ -83,7 +98,20 @@ function AdminAside() {
               } rounded py-2 px-3`}
             >
               <p className="flex items-center gap-2">
-                <SettingsIcon className="" /> Finance and Settlement
+                <Settings2Icon className="" /> Finance and Settlement
+              </p>
+            </Link>
+  
+            <Link
+              href={`/admin/manage-admins`}
+              className={`show-dropdown-menu1 cursor-pointer ${
+                pathname.includes("manage")
+                  ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
+                  : "text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white"
+              } rounded py-2 px-3`}
+            >
+              <p className="flex items-center gap-2">
+                <Users className="" /> Manage Admins
               </p>
             </Link>
           </ul>
@@ -100,19 +128,32 @@ function AdminAside() {
       <div className="flex w-full flex-1 flex-col gap-3 px-3 relative text-black dark:text-white">
         <ul className="flex flex-col gap-1 text-black dark:text-white">
           <Link
-            href={"/admin/verify-products"}
+            href={"/admin/create-store"}
             className={`show-dropdown-menu1 cursor-pointer ${
-              pathname.includes("product")
+              pathname.includes("Store")
                 ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
                 : "text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white"
             } rounded py-2 px-3 mt-5`}
           >
             <p className="flex items-center gap-2">
-              <UserCheck2Icon className="" /> Verify Product
+              <StoreIcon className="" /> Create Store
+            </p>
+          </Link>
+          
+          <Link
+            href={"/admin/verify-products"}
+            className={`show-dropdown-menu1 cursor-pointer ${
+              pathname.includes("product")
+                ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
+                : "text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white"
+            } rounded py-2 px-3`}
+          >
+            <p className="flex items-center gap-2">
+              <CheckCheckIcon className="" /> Verify Product
             </p>
           </Link>
 
-          <Link
+          {/* <Link
             href={`/admin/verify-seller`}
             className={`show-dropdown-menu1 cursor-pointer ${
               pathname.includes("seller")
@@ -123,7 +164,7 @@ function AdminAside() {
             <p className="flex items-center gap-2">
               <FileEdit className="" /> Verify Seller
             </p>
-          </Link>
+          </Link> */}
 
           <Link
             href={`/admin/order-details`}
@@ -147,7 +188,7 @@ function AdminAside() {
             } rounded py-2 px-3`}
           >
             <p className="flex items-center gap-2">
-              <ShoppingCart className="" /> Dispute & Resolution
+              <FileEdit className="" /> Dispute & Resolution
             </p>
           </Link>
 
@@ -160,7 +201,20 @@ function AdminAside() {
             } rounded py-2 px-3`}
           >
             <p className="flex items-center gap-2">
-              <SettingsIcon className="" /> Finance and Settlement
+              <Settings2Icon className="" /> Finance and Settlement
+            </p>
+          </Link>
+          
+          <Link
+            href={`/admin/manage-admins`}
+            className={`show-dropdown-menu1 cursor-pointer ${
+              pathname.includes("manage")
+                ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
+                : "text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white"
+            } rounded py-2 px-3`}
+          >
+            <p className="flex items-center gap-2">
+              <Users className="" /> Manage Admins
             </p>
           </Link>
         </ul>

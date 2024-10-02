@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 interface IProduct extends Document {
-  accountId: string;
+  storeID: string;
   productName: string;
   productPrice: number;
   productSizes: string[];
@@ -12,10 +12,10 @@ interface IProduct extends Document {
   productCategory: string[];
   productSubCategory: string[],
   isVerifiedProduct: boolean;
-} // NOTE: accountId serves as the owner of the product i.e ownerID
+} // NOTE: storeID serves as the store the product belongs to.
 
 const productSchema = new Schema<IProduct>({
-  accountId: { type: String, required: true },
+  storeID: { type: String, required: true }, // The store a product belongs to
   productName: { type: String, required: true },
   productPrice: { type: Number, required: true },
   productSizes: { type: [String], required: true },

@@ -9,9 +9,12 @@ import Product from "../models/product.model";
 
 import { Product as Products } from "@/types";
 import Wishlist from "../models/wishlist.model";
+import Store from "../models/store.model";
+import bcryptjs from "bcryptjs";
 
 type Product = Omit<Products, "productPrice"> & {
   productPrice: string;
+  storePassword: string
 };
 
 export async function createProduct({
@@ -24,14 +27,31 @@ export async function createProduct({
   productSpecification,
   productCategory,
   productSubCategory,
-  accountId,
+  storeID,
   path,
+  storePassword
 }: Product) {
   try {
-    connectToDB();
+    // Await the connection if connectToDB is asynchronous
+    await connectToDB();
 
+    // Find the store by ID
+    const store = await Store.findById(storeID);
+
+    if (!store) {
+      throw new Error(`Store not found: Invalid store ID (create product)`);
+    }
+
+    // Check if the password is correct
+    const validatePassword = await bcryptjs.compare(storePassword, store.password);
+
+    if (!validatePassword) {
+      throw new Error(`Invalid store password (create product)`);
+    }
+
+    // Create the product
     const createdProduct = await Product.create({
-      accountId,
+      storeID,
       productName,
       productPrice,
       productSizes,
@@ -44,12 +64,14 @@ export async function createProduct({
       path,
     });
 
-    // Update User model
-    await User.findByIdAndUpdate(accountId, {
-      $push: { userProducts: createdProduct._id },
+    // Update the store by pushing the new product to the products array
+    await Store.findByIdAndUpdate(storeID, {
+      $push: { products: createdProduct._id },
     });
 
+    // Revalidate the path for any cache or static paths
     revalidatePath(path);
+    
   } catch (error: any) {
     throw new Error(`Failed to create product: ${error.message}`);
   }

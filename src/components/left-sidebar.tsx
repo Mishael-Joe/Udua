@@ -1,9 +1,6 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Button } from "./ui/button";
-import { siteConfig } from "@/config/site"
 
 function LeftSidebar() {
   const searchParams = useSearchParams();
@@ -168,12 +165,6 @@ function LeftSidebar() {
           </li>
         </ul>
       </div>
-
-      <Link href={"/seller-hub"} className="px-4">
-        <Button className="mt-8 w-full bg-violet-600 py-5 text-base font-medium text-white hover:bg-violet-700">
-          Sell on {siteConfig.name}
-        </Button>
-      </Link>
     </section>
   );
 }

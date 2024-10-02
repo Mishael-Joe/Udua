@@ -13,6 +13,10 @@ export const siteConfig = {
     { name: "Terms & Conditions", href: "/terms-conditions" },
     { name: "Shipping & Return Policy", href: "/shipping-return-policy" },
     { name: "Privacy Policy", href: "/privacy-policy" },
-    { name: "FAQ", href: "#" },
+    { name: "Pricing", href: "/pricing" },
   ],
+};
+
+export const admins = {
+  ID: [ '664c45ec0095f5f097c9ed09', '666c43c9f164cbfa9a80178e' ],
 };

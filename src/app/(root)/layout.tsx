@@ -12,6 +12,13 @@ import { ThemeProvider } from "@/components/theme-provider";
 
 import { StateContext } from "@/context/stateContext";
 
+import { Rubik } from 'next/font/google'
+ 
+const rubik = Rubik({
+  weight: ['400', '600', '700'],
+  subsets: ['latin'],
+})
+
 export const metadata: Metadata = {
   title: siteConfig.siteName,
   description: siteConfig.description,
@@ -28,7 +35,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`scroll-smooth`}>
+      <body className={`${rubik.className} scroll-smooth`}>
         <StateContext>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <SiteHeader />

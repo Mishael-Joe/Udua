@@ -83,8 +83,8 @@ export function ProductGallery({ product, isLikedProduct }: ForProductGallery) {
   return (
     <div className="flex flex-col-reverse">
       {/* Image Grid */}
-      <div className="mx-auto mt-6 hidden w-full max-w-2xl sm:block lg:max-w-none">
-        <ul className="grid grid-cols-4 gap-6">
+      <div className="mx-auto mt-6 w-full max-w-2xl px-3.5 lg:max-w-none">
+        <ul className="grid grid-cols-3 gap-2 sm:gap-6">
           {product.productImage.map((image, imageIndex) => (
             <div
               key={imageIndex}

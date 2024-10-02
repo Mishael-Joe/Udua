@@ -1,20 +1,25 @@
 "use client";
 
-import { User } from "@/types";
+import { User as USER} from "@/types";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Loader } from "lucide-react";
 import Link from "next/link";
 import Aside1 from "./aside-1";
 import { Button } from "@/components/ui/button";
+import { admins } from "@/config/site";
+
+type user = USER & {
+  store: string
+}
 
 const Profile = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<user | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.post<{ data: User }>("/api/user/userData");
+        const response = await axios.post<{ data: user }>("/api/user/userData");
         // console.log("userdata", response);
         setUser(response.data.data);
       } catch (error: any) {
@@ -115,21 +120,23 @@ const Profile = () => {
             </div>
           </div>
 
-          {user.isSeller === true && (
+          {user.store && user.store !== "" && (
             <div className="w-full border rounded-md p-3 mt-4">
               <p className=" font-semibold">Hi {user.firstName},</p>
               <div>
-                <p className="pb-3">Welcome to Udua.</p>
+                <p className="pb-3">My store.</p>
                 <p className=" max-w-xl">
-                  To complete your registration and access all the features we
-                  offer, please verify your account.
+                  Store owners can create and manage their own store, including
+                  customizing the store layout, adding product categories, and
+                  managing product listings (titles, descriptions, pricing,
+                  stock levels, and images).
                 </p>
                 <div className="flex justify-end pt-3">
                   <Link
-                    href={`/dash-board`}
+                    href={`/store/${user.store}/my-store`}
                     className="flex items-center gap-2 hover:underline"
                   >
-                    seller Profile
+                    My Store
                   </Link>
                 </div>
               </div>
@@ -148,6 +155,22 @@ const Profile = () => {
                 <div className="flex justify-end pt-3">
                   <Link href={`/verification`} className=" float-end">
                     <Button className=" hover:underline">verify account</Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {admins.ID.includes(user._id as string) && (
+            <div className="w-full border rounded-md p-3 mt-4">
+              <div>
+                <p className="pb-3">For Admins.</p>
+                <p className=" max-w-xl">
+                  LOGIN to the admin dashboard (only admins can see this).
+                </p>
+                <div className="flex justify-end pt-3">
+                  <Link href={`/admin/create-store`} className=" float-end">
+                    <Button className=" hover:underline">Admins</Button>
                   </Link>
                 </div>
               </div>

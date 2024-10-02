@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     const user = await User.findOne({ email });
     if (!user) {
       return NextResponse.json(
-        { error: "Make sure you provide the write Email" },
+        { error: "Make sure you provide the right Email" },
         { status: 401 }
       );
     }

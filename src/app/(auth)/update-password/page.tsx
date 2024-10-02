@@ -7,7 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
 
-export const Page = () => {
+const UpdatePassword = () => {
   const router = useRouter();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -132,4 +132,4 @@ export const Page = () => {
   );
 };
 
-export default Page;
+export default UpdatePassword;

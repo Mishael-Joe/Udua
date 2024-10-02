@@ -8,7 +8,7 @@ interface IOrderProduct {
 
 interface IOrder extends Document {
   user: mongoose.Schema.Types.ObjectId;
-  sellers: mongoose.Schema.Types.ObjectId[];
+  stores: mongoose.Schema.Types.ObjectId[];
   products: IOrderProduct[];
   totalAmount: number;
   status: string;
@@ -20,10 +20,13 @@ interface IOrder extends Document {
   deliveryDate?: Date;
   paymentMethod?: string;
   paymentStatus?: string;
+  deliveryStatus?: string;
   notes?: string;
   discount?: number;
   taxAmount?: number;
 }
+
+// TODO: Add delivery status
 
 const OrderProductSchema = new Schema<IOrderProduct>({
   product: {
@@ -38,10 +41,10 @@ const OrderProductSchema = new Schema<IOrderProduct>({
 const OrderSchema = new Schema<IOrder>(
   {
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    sellers: [
+    stores: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: "Store",
         required: true,
       },
     ],
@@ -54,6 +57,21 @@ const OrderSchema = new Schema<IOrder>(
     deliveryDate: { type: Date },
     paymentMethod: { type: String },
     paymentStatus: { type: String },
+    deliveryStatus: {
+      type: String,
+      enum: [
+        "Order Placed",
+        "Processing",
+        "Shipped",
+        "Out for Delivery",
+        "Delivered",
+        "Canceled",
+        "Returned",
+        "Failed Delivery",
+        "Refunded",
+      ],
+      default: "Order Placed",
+    },
     // notes: { type: String },
     // discount: { type: Number },
     // taxAmount: { type: Number },
@@ -66,57 +84,6 @@ const Order =
 
 export default Order;
 
-
-// import mongoose, { Schema, Document } from "mongoose";
-
-// interface IOrderProduct {
-//   product: mongoose.Schema.Types.ObjectId;
-//   quantity: number;
-//   price: number;
-// }
-
-// interface IOrder extends Document {
-//   user: mongoose.Schema.Types.ObjectId;
-//   sellers: mongoose.Schema.Types.ObjectId[];
-//   products: IOrderProduct[];
-//   totalAmount: number;
-//   status: string;
-//   createdAt: Date;
-//   updatedAt: Date;
-// }
-
-// const OrderProductSchema = new Schema<IOrderProduct>({
-//   product: {
-//     type: mongoose.Schema.Types.ObjectId,
-//     ref: "Product",
-//     required: true,
-//   },
-//   quantity: { type: Number, required: true },
-//   price: { type: Number, required: true },
-// });
-
-// const OrderSchema = new Schema<IOrder>(
-//   {
-//     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-//     sellers: [
-//       {
-//         type: mongoose.Schema.Types.ObjectId,
-//         ref: "User",
-//         required: true,
-//       },
-//     ],
-//     products: [OrderProductSchema],
-//     totalAmount: { type: Number, required: true },
-//     status: { type: String, required: true },
-//   },
-//   { timestamps: true }
-// );
-
-// const Order =
-//   mongoose.models.Order || mongoose.model<IOrder>("Order", OrderSchema);
-
-// export default Order;
-
 // Differences between OrderProductSchema and OrderSchema
 // Purpose:
 
@@ -126,7 +93,7 @@ export default Order;
 // Components:
 
 // OrderProductSchema: Contains fields specific to an individual product (product ID, quantity, price).
-// OrderSchema: Contains fields specific to an order (user ID, seller ID, total amount, status) and an array of products that follows OrderProductSchema.
+// OrderSchema: Contains fields specific to an order (user ID, store ID, total amount, status) and an array of products that follows OrderProductSchema.
 
 // Usage:
 

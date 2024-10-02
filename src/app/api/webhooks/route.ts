@@ -7,11 +7,12 @@ import nodemailer from "nodemailer";
 import crypto from "crypto";
 
 import User from "@/lib/models/user.model";
+import Store from "@/lib/models/store.model";
 import Order from "@/lib/models/order.model";
 import {
   Product as Products,
   ResultDataMetadataItemsInCart,
-  User as APIUser,
+  Store as APIStore,
 } from "@/types";
 
 type APIProduct = Omit<Products, "productQuantity"> & {
@@ -77,63 +78,71 @@ export async function POST(request: Request) {
 
         try {
           const orderProducts = [];
-          const notifications = [];
+          const notifications = []; // to inform the store that one of its products has been sold
           const insufficientProducts = [];
-          const sellers = [];
+          const stores = [];
 
+          // product operation begins
           for (const { _id, quantity } of cartItems) {
             const product: APIProduct = await Product.findById(_id).session(
               session
             );
             // console.log(`product`, product);
-            // NOTE: accountId serves as the owner of the product i.e ownerID
+            // NOTE: StoreID serves as the store this product belongs to
 
+            // Product not found
             if (!product) {
               throw new Error(`Product not found: ${_id}`);
             }
 
+            // Insufficient Products
             if (product.productQuantity < quantity) {
               insufficientProducts.push({ product, quantity });
               continue; // Skip to the next product
             }
 
+            // Reduce the product Quantity by the Quantity purchased the save it within a session
             product.productQuantity -= quantity;
             await product.save({ session });
 
-            const seller: APIUser = await User.findById(
-              product.accountId
+            // store operation begins
+            const store: APIStore = await Store.findById(
+              product.storeID
             ).session(session);
-            // NOTE: accountId serves as the owner of the product i.e ownerID
-            // console.log(`seller`, seller);
-            if (seller) {
+            // NOTE: storeID serves as the store the product belongs to.
+            // console.log(`store`, store);
+
+            if (store) {
               notifications.push({
-                sellerEmail: seller.email,
+                storeEmail: store.storeEmail,
                 productName: product.productName,
                 quantity,
               });
             }
 
-            sellers.push(product.accountId);
+            stores.push(product.storeID);
 
             orderProducts.push({
               product: product._id,
-              seller: product.accountId,
+              store: product.storeID,
               quantity,
               price: product.productPrice * quantity,
             });
           }
+          // product operation ends
 
           if (insufficientProducts.length > 0) {
             // Handle insufficient products: notify the seller and potentially refund
             // NOTE: accountId serves as the owner of the product i.e ownerID
             for (const { product, quantity } of insufficientProducts) {
-              const seller: APIUser = await User.findById(
-                product.accountId
+              const store: APIStore = await Store.findById(
+                product.storeID
               ).session(session);
-              if (seller) {
+
+              if (store) {
                 const mailOptions = {
                   from: '"Your E-commerce Site" <mishaeljoe55@zohomail.com>',
-                  to: seller.email,
+                  to: store.storeEmail,
                   subject: "Stock Alert Notification",
                   text: `Your product ${product.productName} is low on stock. Ordered quantity: ${quantity}, Available quantity: ${product.productQuantity}. Please restock.`,
                 };
@@ -161,14 +170,14 @@ export async function POST(request: Request) {
             // );
             const order = new Order({
               user: userID,
-              sellers: sellers,
+              stores: stores,
               products: orderProducts,
               totalAmount: chargeData.amount / 100,
               status: status,
               shippingAddress: shippingAddress,
               shippingMethod: shippingMethod,
               paymentMethod: paymentType,
-              paymentStatus: status === "success" ? "paid" : "Decline",
+              paymentStatus: status === "success" ? "paid" : "Decline", // TODO: Add delivery status
             });
 
             await order.save({ session });
@@ -180,7 +189,7 @@ export async function POST(request: Request) {
           for (const notification of notifications) {
             const mailOptions = {
               from: '"Your E-commerce Site" <mishaeljoe55@zohomail.com>',
-              to: notification.sellerEmail,
+              to: notification.storeEmail,
               subject: "Product Sold Notification",
               text: `Your product ${notification.productName} has been sold. Quantity: ${notification.quantity}`,
             };

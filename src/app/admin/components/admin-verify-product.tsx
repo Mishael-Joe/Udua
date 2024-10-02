@@ -23,7 +23,7 @@ function AdminVerifyProduct() {
     productDescription: "",
     productSpecification: "",
     productSubCategory: "",
-    accountId: "",
+    storeID: "",
     isVerifiedProduct: false,
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -287,7 +287,7 @@ function AdminVerifyProduct() {
                     </span>{" "}
                     {product.productSizes !== undefined &&
                       product.productSizes.map((size, i: number) => (
-                        <Button disabled>{size}</Button>
+                        <Button disabled key={i}>{size}</Button>
                       ))}
                   </p>
                 </div>
@@ -301,7 +301,7 @@ function AdminVerifyProduct() {
               <CardContent>
                 <p>
                   <span className=" text-base font-semibold">Owner Id:</span>{" "}
-                  <span>{product.accountId}</span>
+                  <span>{product.storeID}</span>
                 </p>
 
                 <p>

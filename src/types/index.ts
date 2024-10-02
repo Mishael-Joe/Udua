@@ -32,13 +32,23 @@ export type Product = {
   productSpecification: string;
   productCategory: string;
   productSubCategory: string;
-  accountId: string;
+  storeID: string;
   path: string;
   quantity?: number;
   colors?: string[];
   size?: string;
   isVerifiedProduct?: boolean;
 };
+
+export type Store = {
+  name: string;
+  password: string;
+  storeOwner: string;
+  storeEmail: string;
+  uniqueId: string;
+  description: string;
+  products: string[];
+}
 
 export type RequestBodyTypes = {
   address: string;

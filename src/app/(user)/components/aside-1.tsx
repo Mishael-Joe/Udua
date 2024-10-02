@@ -2,6 +2,7 @@
 
 import {
   FileEdit,
+  HelpCircleIcon,
   LogOut,
   SettingsIcon,
   ShoppingCart,
@@ -23,7 +24,7 @@ import { Button } from "@/components/ui/button";
 function Aside1() {
   const router = useRouter();
   const pathname = usePathname();
-  console.log("pathname", pathname);
+  // console.log("pathname", pathname);
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
   const signOut = async () => {
@@ -98,30 +99,17 @@ function Aside1() {
             </Link>
 
             <Link
-              href={`/admin/verify-products`}
+              href={`/support`}
               className={`show-dropdown-menu1 cursor-pointer ${
-                pathname.includes("account-settings")
+                pathname.includes("support")
                   ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
                   : "text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white"
               } rounded py-2 px-3`}
             >
               <p className="flex items-center gap-2">
-                <SettingsIcon className="" /> Admins
+                <HelpCircleIcon className="" /> Support and Help
               </p>
             </Link>
-
-            {/* <li
-            onClick={() => handleChange("supports")}
-            className={`show-dropdown-menu1 cursor-pointer ${
-              tab === "supports"
-                ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
-                : "text-black/70 dark:text-slate-200/70 hover:text-black/95"
-            } rounded py-2 px-3`}
-          >
-            <p className="flex items-center gap-2">
-              <HelpCircleIcon className="" /> Support and Help
-            </p>
-          </li> */}
           </ul>
 
           <div className="flex flex-col gap-4 justify-between items-center">
@@ -136,9 +124,11 @@ function Aside1() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button size="sm" className="w-full">
-                    Create Store
-                  </Button>
+                  <Link href={"/seller-hub"}>
+                    <Button size="sm" className="w-full">
+                      Create Store
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
             </div>
@@ -215,26 +205,17 @@ function Aside1() {
           </Link>
 
           <Link
-            href={`/admin/verify-products`}
-            className={`show-dropdown-menu1 cursor-pointer text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white rounded py-2 px-3`}
-          >
-            <p className="flex items-center gap-2">
-              <SettingsIcon className="" /> Admins
-            </p>
-          </Link>
-
-          {/* <li
-            onClick={() => handleChange("supports")}
+            href={`/support`}
             className={`show-dropdown-menu1 cursor-pointer ${
-              tab === "supports"
+              pathname.includes("support")
                 ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
-                : "text-black/70 dark:text-slate-200/70 hover:text-black/95"
+                : "text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white"
             } rounded py-2 px-3`}
           >
             <p className="flex items-center gap-2">
               <HelpCircleIcon className="" /> Support and Help
             </p>
-          </li> */}
+          </Link>
         </ul>
 
         <div className="flex flex-col gap-4 justify-between items-center">
@@ -249,9 +230,11 @@ function Aside1() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button size="sm" className="w-full">
-                  Create Store
-                </Button>
+                <Link href={"/seller-hub"}>
+                  <Button size="sm" className="w-full">
+                    Create Store
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           </div>

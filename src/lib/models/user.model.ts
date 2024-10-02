@@ -6,14 +6,15 @@ interface IUser extends Document {
   otherNames: string;
   email: string;
   password: string;
+  adminPassword: string;
   phoneNumber: string;
   address: string;
   cityOfResidence: string;
   stateOfResidence: string;
   postalCode: string;
   isVerified: boolean;
-  isSeller: boolean;
-  userProducts: mongoose.Schema.Types.ObjectId[];
+  isAdmin: boolean;
+  store: mongoose.Schema.Types.ObjectId;
   forgotpasswordToken?: string;
   forgotpasswordTokenExpiry?: Date;
   verifyToken?: string;
@@ -26,14 +27,15 @@ const userSchema = new Schema<IUser>({
   otherNames: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  adminPassword: { type: String },
   phoneNumber: { type: String, required: true, unique: true },
   address: { type: String, required: true },
   cityOfResidence: { type: String, required: true },
   stateOfResidence: { type: String, required: true },
   postalCode: { type: String, required: true },
   isVerified: { type: Boolean, default: false },
-  isSeller: { type: Boolean, default: false },
-  userProducts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
+  isAdmin: { type: Boolean, default: false },
+  store: { type: mongoose.Schema.Types.ObjectId, ref: "Store" },
   forgotpasswordToken: String,
   forgotpasswordTokenExpiry: Date,
   verifyToken: String,
