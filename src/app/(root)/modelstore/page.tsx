@@ -15,36 +15,39 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Loader, Star } from "lucide-react";
+import { Star, StoreIcon } from "lucide-react";
 import Image from "next/image";
 
 export default function Page() {
   return (
     <section className=" max-w-7xl mx-auto my-3 px-6 xl:px-0">
       <div className="p-4 border border-gray-700 h-72 w-full rounded-md bg-muted/50">
-        <div className="flex h-2/3">
-          <div className="bg-lime-60 basis-1/5 w-3/12 flex flex-col justify-center">
-            <Image
-              className="h-36 w-36 mx-auto rounded-full object-fill border"
-              src={"/unsplash.jpg"}
-              height={150}
-              width={150}
-              alt=""
-            />
-          </div>
+      <div className="flex h-2/3 w-[100%] items-center">
+            <div className="bg-lime-60 basis-2/5 sm:basis-1/5 w-3/12 sm:flex flex-col justify-center  hidden">
+              <StoreIcon
+                className="h-16 w-16 sm:h-[100px] sm:w-[100px] mx-auto"
+                height={50}
+                width={50}
+              />
+            </div>
 
-          <div className="bg-red-60 basis-4/5 w-full flex flex-col justify-center">
-            <div className="flex flex-col gap-4 justify-center">
-              <p className=" text-2xl font-semibold">MISH STORE</p>
-              <p className="text-ellipsis truncate max-w-screen-sm">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Temporibus adipisci eum aspernatur dolorem nemo fugiat natus
-                vero voluptates, sequi beatae hic perferendis harum repudiandae,
-                exercitationem inventore itaque accusamus eligendi blanditiis.
+            <div className="flex flex-col gap-4 w-full sm:pl-5 lg:pl-0">
+              {/* <p className=" text-2xl font-semibold">{store?.name}</p> */}
+              <p
+                style={{
+                  display: "-webkit-box",
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  WebkitLineClamp: 3, // Limits the text to 3 lines
+                  maxHeight: "4.5em", // Adjust this based on the number of lines and line height
+                  lineHeight: "1.5em", // Adjust based on font size for accurate height control
+                }}
+              >
+                {/* {store?.description} */}
               </p>
             </div>
           </div>
-        </div>
         <div className="flex items-center justify-center gap-2 h-1/3 w-full">
           <Star />
           <Star />
@@ -55,7 +58,7 @@ export default function Page() {
       </div>
 
       <div className="pt-4 w-full h-fit">
-        <Tabs defaultValue="account" className="max-w-6xl mx-auto">
+        <Tabs defaultValue="products" className="max-w-6xl mx-auto">
           <TabsList className="grid w-full grid-cols-3 text-xl font-bold">
             <TabsTrigger value="products">Products</TabsTrigger>
             <TabsTrigger value="description">Description</TabsTrigger>

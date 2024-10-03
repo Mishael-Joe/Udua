@@ -7,7 +7,7 @@ const UduaPricing = () => {
   const [amount, setAmount] = useState(2000);
   const feePercentage = 8.25 / 100;
   const flatFee = 200;
-  const feeCap = 2000;
+  const feeCap = 3000;
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(event.target.value);
@@ -38,7 +38,7 @@ const UduaPricing = () => {
             <p>8.25% + NGN 200</p>
             <ul>
               <li>₦200 fee waived for transactions under ₦2500</li>
-              <li>Transactions fees are capped at ₦2000</li>
+              <li>Transactions fees are capped at ₦3000</li>
             </ul>
           </div>
         </div>
@@ -58,13 +58,13 @@ const UduaPricing = () => {
             Enter amount:
           </label>
           <div className="relative sm:w-1/2">
-            <p className=" absolute top-2.5 left-2 text-xl mt-2 sm:mt-0">NGN</p>
+            <p className=" absolute top-2.5 left-2 text-xl mt-2 sm:mt-0 dark:text-slate-800">NGN</p>
             <input
               id="amountInput"
               type="text"
               value={amount}
               onChange={handleAmountChange}
-              className="p-2.5 rounded-lg focus:outline-blue-400 mt-2 pl-14 text-xl sm:mt-0 w-full absolut"
+              className="p-2.5 rounded-lg focus:outline-blue-400 mt-2 pl-14 text-xl sm:mt-0 w-full dark:bg-slate-200 dark:text-slate-800 dark:focus:outline-blue-400 focus:outline outline-2"
             />
           </div>
         </div>

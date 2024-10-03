@@ -7,7 +7,9 @@ import Link from "next/link";
 import {
   FileBoxIcon,
   HomeIcon,
-  Package
+  Package,
+  ShieldAlertIcon,
+  WalletIcon
 } from "lucide-react";
 
 function StoreAside({ params }: { params: { slug: string } }) {
@@ -78,7 +80,7 @@ function StoreAside({ params }: { params: { slug: string } }) {
             } rounded py-2 px-3`}
           >
             <p className="flex gap-3 items-center font-semibold">
-              <Package className="h-5 w-5" />
+              <WalletIcon className="h-5 w-5" />
               Payout{" "}
             </p>
           </Link>
@@ -92,7 +94,7 @@ function StoreAside({ params }: { params: { slug: string } }) {
             } rounded py-2 px-3`}
           >
             <p className="flex gap-3 items-center font-semibold">
-              <Package className="h-5 w-5" />
+              <ShieldAlertIcon className="h-5 w-5" />
               Security{" "}
             </p>
           </Link>
@@ -163,7 +165,7 @@ function StoreAside({ params }: { params: { slug: string } }) {
             } rounded py-2 px-3`}
           >
             <p className="flex gap-3 items-center font-semibold">
-              <Package className="h-5 w-5" />
+              <WalletIcon className="h-5 w-5" />
               Payout{" "}
             </p>
           </Link>
@@ -177,7 +179,7 @@ function StoreAside({ params }: { params: { slug: string } }) {
             } rounded py-2 px-3`}
           >
             <p className="flex gap-3 items-center font-semibold">
-              <Package className="h-5 w-5" />
+              <ShieldAlertIcon className="h-5 w-5" />
               Security{" "}
             </p>
           </Link>

@@ -47,6 +47,7 @@ export type Store = {
   storeEmail: string;
   uniqueId: string;
   description: string;
+  createdAt: Date;
   products: string[];
 }
 

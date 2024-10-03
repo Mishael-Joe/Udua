@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
 
     if (!storeID) {
       return NextResponse.json(
-        { error: "Seller ID is required" },
+        { error: "Store ID is required" },
         { status: 400 }
       );
     }
