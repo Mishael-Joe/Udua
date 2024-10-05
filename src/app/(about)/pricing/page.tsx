@@ -1,6 +1,7 @@
 "use client";
 
 import { siteConfig } from "@/config/site";
+import { calculateCommission } from "@/constant/constant";
 import React, { FormEvent, useState } from "react";
 
 const UduaPricing = () => {
@@ -16,15 +17,7 @@ const UduaPricing = () => {
     }
   };
 
-  const calculateFees = () => {
-    // If the amount is less than 2500, NGN 100 flat fee is waived
-    const transactionFee =
-      amount >= 2500 ? amount * feePercentage + flatFee : amount * feePercentage;
-    // The maximum transaction fee is capped at NGN 2000
-    return Math.min(transactionFee, feeCap);
-  };
-
-  const settleAmount = amount - calculateFees();
+  const settleAmount = calculateCommission(amount).settleAmount;
 
   return (
     <div className=" max-w-5xl p-5 mx-auto">
@@ -85,7 +78,7 @@ const UduaPricing = () => {
                 ? `${(feePercentage * 100).toFixed(1)}%`
                 : `${(feePercentage * 100).toFixed(1)}% + 200`}
             </p>
-            <h3>NGN {calculateFees().toFixed(2)}</h3>
+            <h3>NGN {calculateCommission(amount).commission.toFixed(2)}</h3>
           </div>
         </div>
       </section>

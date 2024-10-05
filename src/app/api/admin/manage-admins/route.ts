@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     await connectToDB();
 
     const user = await User.findById(adminID).select(
-      "_id firstName lastName otherNames email phoneNumber address cityOfResidence stateOfResidence postalCode isVerified isSeller"
+      "_id firstName lastName otherNames email phoneNumber address cityOfResidence stateOfResidence postalCode isVerified"
     );
 
     if (!user) {

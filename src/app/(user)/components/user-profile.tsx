@@ -161,7 +161,7 @@ const Profile = () => {
             </div>
           )}
 
-          {admins.ID.includes(user._id as string) && (
+          {user.isAdmin && (
             <div className="w-full border rounded-md p-3 mt-4">
               <div>
                 <p className="pb-3">For Admins.</p>

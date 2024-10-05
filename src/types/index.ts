@@ -13,7 +13,7 @@ export type User = {
   stateOfResidence: string;
   postalCode: string;
   isVerified: boolean;
-  isSeller: boolean;
+  isAdmin: boolean;
   userProducts: {}[];
   forgotpasswordToken: string;
   forgotpasswordTokenExpiry: Date;
@@ -25,7 +25,7 @@ export type Product = {
   _id?: string;
   productName: string;
   productPrice: number;
-  productSizes: string[];
+  productSizes?: string[];
   productQuantity: string;
   productImage: string[];
   productDescription: string;
@@ -49,7 +49,44 @@ export type Store = {
   description: string;
   createdAt: Date;
   products: string[];
-}
+  availableBalance: number;
+  pendingBalance: number;
+  platformFee: number;
+  transactionFees: number;
+  payoutAccounts: PayoutAccounts[];
+  payoutHistory: PayoutHistory[];
+};
+
+export type PayoutAccounts = {
+  payoutMethod: string[];
+  bankDetails: {
+    bankName: string;
+    accountNumber: string;
+    accountHolderName: string;
+  };
+  totalEarnings: string;
+  lastPayoutDate: Date;
+};
+
+export type PayoutHistory = {
+  payoutAccount: string;
+  amount: number;
+  payoutDate: Date;
+  payoutMethodDetails: {
+    bankDetails: {
+      bankName: string;
+      accountNumber: string;
+    };
+    mobileWallet: {
+      walletProvider: String;
+      walletId: String;
+    };
+  };
+  status: "pending" | "completed" | "failed";
+  platformFee: number;
+  transactionFees: number;
+  taxes: number;
+};
 
 export type RequestBodyTypes = {
   address: string;

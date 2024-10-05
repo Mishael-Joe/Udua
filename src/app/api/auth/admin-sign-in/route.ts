@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
         { status: 200 }
       );
 
-      response.cookies.set("adminTokenData", token, {
+      response.cookies.set("adminToken", token, {
         httpOnly: true,
         maxAge: threeDaysInSeconds,
       });

@@ -93,13 +93,13 @@ export async function middleware(request: NextRequest) {
   }
 
   // If the pathname is admin and user does not have the token then you cannot visit the protected pages
-  // if (isAdminPath(pathName) && !adminToken) {
-  //   // return NextResponse.redirect(new URL("/sign-in", request.url));
-  //   const signInUrl = new URL("/admin-sign-in", request.url);
-  //   // Append the current page (callback URL) to the query parameters
-  //   signInUrl.searchParams.set("callbackUrl", request.nextUrl.pathname);
-  //   return NextResponse.redirect(signInUrl);
-  // }
+  if (isAdminPath(pathName) && !adminToken) {
+    // return NextResponse.redirect(new URL("/sign-in", request.url));
+    const signInUrl = new URL("/admin-sign-in", request.url);
+    // Append the current page (callback URL) to the query parameters
+    signInUrl.searchParams.set("callbackUrl", request.nextUrl.pathname);
+    return NextResponse.redirect(signInUrl);
+  }
 
   // If the pathname is store and user does not have the store token then you cannot visit the protected pages
   if (isStorePath(pathName) && !storeToken) {

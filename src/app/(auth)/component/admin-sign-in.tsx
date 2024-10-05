@@ -27,7 +27,7 @@ function AdminSignIn() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/"; // Default to '/'
   const { toast } = useToast();
-
+  console.log('callbackUrl', callbackUrl)
   const form = useForm<z.infer<typeof adminSignInInfoValidation>>({
     resolver: zodResolver(adminSignInInfoValidation),
     defaultValues: {
@@ -54,6 +54,7 @@ function AdminSignIn() {
           description: `You have Successfully signed In.`,
         });
         setIsLoading(false);
+        console.log('callbackUrl', callbackUrl)
         router.push(callbackUrl);
       } else {
         toast({
@@ -105,7 +106,7 @@ function AdminSignIn() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Store ID</FormLabel>
+                      <FormLabel>Your Email</FormLabel>
                       <FormControl>
                         <Input
                           className="block w-full px-4 py-2 mt-2 text-black dark:text-slate-200 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400"

@@ -1,12 +1,11 @@
 "use strict";
 
+import nodemailer from "nodemailer";
 import { NextResponse } from "next/server";
-const nodemailer = require("nodemailer");
 
 export async function POST(request: Request) {
   const requestBody = await request.json();
   const { seller, email, businessName, userID } = requestBody;
-
   const transporter = nodemailer.createTransport({
     host: "smtp.zoho.com",
     port: 465,

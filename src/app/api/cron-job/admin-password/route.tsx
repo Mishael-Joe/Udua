@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
       pass: process.env.NEXT_SECRET_APP_SPECIFIED_KEY,
     },
   });
-
+  
   try {
     await connectToDB();
 

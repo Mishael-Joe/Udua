@@ -4,13 +4,14 @@ import { useState } from "react";
 import Image from "next/image";
 import { shimmer, toBase64 } from "@/lib/image";
 import { ForProductGallery } from "@/types";
-import { Heart, Loader } from "lucide-react";
+import { Heart, Loader, Store } from "lucide-react";
 import {
   addToWishlist,
   removeFromWishlist,
 } from "@/lib/actions/product.action";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
+import Link from "next/link";
 
 type Response = {
   status: number;
@@ -132,6 +133,11 @@ export function ProductGallery({ product, isLikedProduct }: ForProductGallery) {
             <Heart className=" rounded p-1 top-12 left-6 md:top-10 md:left-3 text-black bg-slate-100 w-10 h-10 z-10 absolute" />
           </button>
         )}
+        <Link href={`/brand/${product.storeID}`}>
+        <button>
+            <Store className=" rounded p-1 top-12 right-6 md:top-10 md:right-3 text-black bg-slate-100 w-10 h-10 z-10 absolute" />
+          </button>
+        </Link>
         <Image
           priority
           src={product.productImage[selectedImage]}

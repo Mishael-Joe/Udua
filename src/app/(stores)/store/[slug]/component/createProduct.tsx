@@ -21,14 +21,18 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ChevronRight, Loader2, Upload } from "lucide-react";
-import { possibleSizes, productCategories, subCategories } from "@/constant/constant";
+import {
+  possibleSizes,
+  productCategories,
+  subCategories,
+} from "@/constant/constant";
 
 type Products = Omit<Product, "productImage" | "path" | "productPrice"> & {
   productPrice: string;
   productImage: File[];
   path?: string;
   productSubCategory: string;
-  storePassword: string
+  storePassword: string;
   // userID: string | undefined;
 };
 
@@ -64,7 +68,7 @@ function CreateProduct({ id }: storeID) {
     productCategory: "",
     productSubCategory: "",
     storeID: id,
-    storePassword: ""
+    storePassword: "",
   });
 
   const [imagePreviews, setImagePreviews] = useState<string[]>([]); // This will store the image URLs
@@ -113,16 +117,33 @@ function CreateProduct({ id }: storeID) {
     // console.log(product);
   };
 
+  // use this code if product sizes is not optional
+  // const handleSizeChange = (e: ChangeEvent<HTMLInputElement>) => {
+  //   const { value, checked } = e.target;
+  //   setProduct((prev) => {
+  //     const sizes = checked
+  //       ? [...prev.productSizes, value] // Add size if checked
+  //       : prev.productSizes.filter((size) => size !== value); // Remove size if unchecked
+
+  //     return {
+  //       ...prev,
+  //       productSizes: sizes,
+  //     };
+  //   });
+  // };
+
+  // use this code if product sizes is optional
   const handleSizeChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = e.target;
     setProduct((prev) => {
-      const sizes = checked
-        ? [...prev.productSizes, value] // Add size if checked
-        : prev.productSizes.filter((size) => size !== value); // Remove size if unchecked
+      const sizes = prev.productSizes ?? []; // Default to an empty array if undefined
+      const updatedSizes = checked
+        ? [...sizes, value] // Add size if checked
+        : sizes.filter((size) => size !== value); // Remove size if unchecked
 
       return {
         ...prev,
-        productSizes: sizes,
+        productSizes: updatedSizes,
       };
     });
   };
@@ -267,7 +288,7 @@ function CreateProduct({ id }: storeID) {
       setIsLoading(false);
       return;
     }
-    
+
     // Validate store password
     if (product.storePassword === "") {
       toast({
@@ -303,10 +324,10 @@ function CreateProduct({ id }: storeID) {
         productSubCategory: product.productSubCategory,
         path: pathname,
         storeID: product.storeID,
-        storePassword: product.storePassword
+        storePassword: product.storePassword,
       });
 
-      router.push("/");
+      router.back();
     } catch (error) {
       console.error("Error submitting product:", error);
       toast({
@@ -517,12 +538,28 @@ function CreateProduct({ id }: storeID) {
                     Product Sizes
                   </Label> */}
                   <div className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100">
-                    {possibleSizes.map((size) => (
+                    {/* use this code if product sizes is not optional */}
+                    {/* {possibleSizes.map((size) => (
                       <label key={size} className="block">
                         <input
                           type="checkbox"
                           value={size}
                           checked={product.productSizes.includes(size)}
+                          onChange={handleSizeChange}
+                          className="mr-2 text-slate-100"
+                        />
+                        {size}
+                      </label>
+                    ))} */}
+                    {/* use this code if product sizes is optional */}
+                    {possibleSizes.map((size) => (
+                      <label key={size} className="block">
+                        <input
+                          type="checkbox"
+                          value={size}
+                          checked={
+                            product.productSizes?.includes(size) || false
+                          } // Handle undefined productSizes
                           onChange={handleSizeChange}
                           className="mr-2 text-slate-100"
                         />
@@ -584,20 +621,20 @@ function CreateProduct({ id }: storeID) {
                   </div>
 
                   <div className="grid gap-3 border-t-2 pt-3">
-                      <Label className="text-base-semibold text-light-2">
-                        Store Password
-                      </Label>
+                    <Label className="text-base-semibold text-light-2">
+                      Store Password
+                    </Label>
 
-                      <Input
-                        name="storePassword"
-                        value={product.storePassword}
-                        onChange={(e) => handleChange(e)}
-                        className="block w-full px-4 py-2 mt-2 text-gray-700 dark:text-white placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
-                        type="text"
-                        placeholder="Your Store Password"
-                        aria-label="Your Store Password"
-                      />
-                    </div>
+                    <Input
+                      name="storePassword"
+                      value={product.storePassword}
+                      onChange={(e) => handleChange(e)}
+                      className="block w-full px-4 py-2 mt-2 text-gray-700 dark:text-white placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+                      type="password"
+                      placeholder="Your Store Password"
+                      aria-label="Your Store Password"
+                    />
+                  </div>
                 </CardContent>
               </Card>
               <div className="flex items-center justify-center gap-2 md:hidden w-full">

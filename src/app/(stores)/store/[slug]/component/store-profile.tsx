@@ -27,7 +27,7 @@ export default function StoreProfile({ params }: { params: { slug: string } }) {
         const response = await axios.post<{ store: Store }>(
           "/api/store/fetch-store-data"
         );
-        console.log("storedata", response.data);
+        // console.log("storedata", response.data);
         setStore(response.data.store);
       } catch (error: any) {
         console.error("Failed to fetch store data", error.message);

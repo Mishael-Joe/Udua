@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
     connectToDB();
     const userID = await getUserDataFromToken(request);
     const user = await User.findById(userID).select(
-      "_id firstName lastName otherNames email phoneNumber address cityOfResidence stateOfResidence postalCode isVerified isSeller store isAdmin"
+      "_id firstName lastName otherNames email phoneNumber address cityOfResidence stateOfResidence postalCode isVerified store isAdmin"
     );
     // console.log(user);
 

@@ -19,7 +19,7 @@ function AdminVerifySeller() {
     isVerified: false,
     cityOfResidence: "",
     stateOfResidence: "",
-    isSeller: false,
+    isAdmin: false,
   });
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -175,7 +175,7 @@ function AdminVerifySeller() {
 
       <div>
         <div className="py-6 border-t-2 flex flex-row justify-between gap-3">
-          <h1 className="text-xl font-semibold">Seller Details</h1>
+          <h1 className="text-xl font-semibold">User Details</h1>
           {user.isVerified !== false && (
             <span className="text-sm text-green-600">verified</span>
           )}
@@ -247,12 +247,12 @@ function AdminVerifySeller() {
           </div>
         </div>
 
-        {user.isSeller === false && (
+        {/* {user.isAdmin === false && (
           <div className="w-full border rounded-md p-3 mt-4">
             <div>
               <p className=" max-w-xl">
                 Verify that this user meets the criteria before approving them
-                as a seller.
+                as an Admin.
               </p>
               <form
                 onSubmit={(e) => handleSubmit("verifyUser", e)}
@@ -270,11 +270,11 @@ function AdminVerifySeller() {
           </div>
         )}
 
-        {user.isSeller && (
+        {user.isAdmin && (
           <div className="w-full border rounded-md p-3 mt-4">
             <div>
               <p className=" max-w-xl">
-                You can unverify this seller if necessary.
+                You can unverify this Admin if necessary.
               </p>
               <form
                 onSubmit={(e) => handleSubmit("UnVerifyUser", e)}
@@ -290,7 +290,7 @@ function AdminVerifySeller() {
               </form>
             </div>
           </div>
-        )}
+        )} */}
       </div>
     </section>
   );

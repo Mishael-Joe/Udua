@@ -3,22 +3,35 @@
 import Product from "@/lib/models/product.model";
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
-import nodemailer from "nodemailer";
 import crypto from "crypto";
-
-import User from "@/lib/models/user.model";
 import Store from "@/lib/models/store.model";
 import Order from "@/lib/models/order.model";
 import {
   Product as Products,
   ResultDataMetadataItemsInCart,
-  Store as APIStore,
+  Store as Stores,
 } from "@/types";
+import { calculateCommission } from "@/constant/constant";
+import nodemailer from "nodemailer";
 
 type APIProduct = Omit<Products, "productQuantity"> & {
   productQuantity: number;
   save: any;
 };
+
+type APIStore = Stores & {
+  save: any;
+};
+
+const transporter = nodemailer.createTransport({
+  host: "smtp.zoho.com",
+  port: 465,
+  secure: true,
+  auth: {
+    user: "mishaeljoe55@zohomail.com",
+    pass: process.env.NEXT_SECRET_APP_SPECIFIED_KEY,
+  },
+});
 
 export async function POST(request: Request) {
   const requestBody = await request.json();
@@ -32,16 +45,6 @@ export async function POST(request: Request) {
     .update(JSON.stringify(requestBody))
     .digest("hex");
   const signature = headers.get("x-paystack-signature");
-
-  const transporter = nodemailer.createTransport({
-    host: "smtp.zoho.com",
-    port: 465,
-    secure: true,
-    auth: {
-      user: "mishaeljoe55@zohomail.com",
-      pass: process.env.NEXT_SECRET_APP_SPECIFIED_KEY,
-    },
-  });
 
   if (hash === signature) {
     // Verify the transaction
@@ -106,6 +109,12 @@ export async function POST(request: Request) {
             await product.save({ session });
 
             // store operation begins
+            // calculate pending balance of the store. This is done by multiplying the 
+            // product price and the bought qty then taking away our commission or charges
+            const totalProductPurchasedAmount = product.productPrice * quantity;
+            const pendingBalance = calculateCommission(totalProductPurchasedAmount).settleAmount
+
+            // console.log('pendingBalance', pendingBalance)
             const store: APIStore = await Store.findById(
               product.storeID
             ).session(session);
@@ -118,6 +127,9 @@ export async function POST(request: Request) {
                 productName: product.productName,
                 quantity,
               });
+
+              store.pendingBalance += pendingBalance;
+              await store.save({ session });
             }
 
             stores.push(product.storeID);
@@ -164,10 +176,7 @@ export async function POST(request: Request) {
           if (orderProducts.length > 0) {
             // console.log(`orderProducts[0]`, orderProducts[0]);
             // console.log(`orderProducts[0].product,`, orderProducts[0].product);
-            // console.log(
-            //   `orderProducts[0].product!.accountId,`,
-            //   orderProducts[0].seller
-            // );
+
             const order = new Order({
               user: userID,
               stores: stores,
@@ -177,7 +186,8 @@ export async function POST(request: Request) {
               shippingAddress: shippingAddress,
               shippingMethod: shippingMethod,
               paymentMethod: paymentType,
-              paymentStatus: status === "success" ? "paid" : "Decline", // TODO: Add delivery status
+              paymentStatus: status === "success" ? "paid" : "Decline",
+              deliveryStatus: "Order Placed",
             });
 
             await order.save({ session });

@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 interface IOrderProduct {
   product: mongoose.Schema.Types.ObjectId;
+  store: mongoose.Schema.Types.ObjectId;
   quantity: number;
   price: number;
 }
@@ -33,6 +34,10 @@ const OrderProductSchema = new Schema<IOrderProduct>({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Product",
     required: true,
+  },
+  store: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Store",
   },
   quantity: { type: Number, required: true },
   price: { type: Number, required: true },

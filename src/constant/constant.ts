@@ -105,7 +105,6 @@ export const subCategories: { [key: string]: string[] } = {
   ],
 };
 
-
 export const possibleSizes = [
   "X-Small",
   "Small",
@@ -114,3 +113,22 @@ export const possibleSizes = [
   "X-Large",
   "One Size",
 ];
+
+export const calculateCommission = (amount: number) => {
+  const feePercentage = 8.25 / 100;
+  const flatFee = 200;
+  const feeCap = 3000;
+
+  // If the amount is less than 2500, NGN 200 flat fee is waived
+  const transactionFee =
+  amount >= 2500 ? amount * feePercentage + flatFee : amount * feePercentage;
+  // The maximum transaction fee is capped at NGN 3000
+
+  const commission = Math.min(transactionFee, feeCap);
+  const settleAmount = amount - commission;
+
+  return {
+    commission,
+    settleAmount
+  }
+}
