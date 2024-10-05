@@ -1,371 +1,175 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
-import axios from "axios";
-import { useState } from "react";
-import { Loader } from "lucide-react";
-import { Product } from "@/types";
-import Image from "next/image";
-import { shimmer, toBase64 } from "@/lib/image";
+import { CreditCard, Loader, MoreHorizontalIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { addCommasToNumber } from "@/lib/utils";
 
-function AdminVerifyProduct() {
-  const [productID, setProductID] = useState("");
-  const [product, setProduct] = useState<Partial<Product>>({
-    _id: "",
-    productName: "",
-    productPrice: 0,
-    productSizes: [],
-    productQuantity: "",
-    productImage: [],
-    productDescription: "",
-    productSpecification: "",
-    productSubCategory: "",
-    storeID: "",
-    isVerifiedProduct: false,
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Product as  Products } from "@/types";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import Image from "next/image";
 
-  const handleSubmit = async (val: string, e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (val === "requestProductData") {
-      try {
-        setIsLoading(true);
-
-        const response = await axios.get("/api/admin/verify-product", {
-          params: {
-            productID,
-          },
-        });
-        // console.log(`response`, response);
-
-        if (response.data.success === true || response.status === 200) {
-          toast({
-            title: `Success`,
-            description: `Here is the seller details.`,
-          });
-          setProduct(response.data.data);
-          setIsLoading(false);
-        } else {
-          toast({
-            variant: `destructive`,
-            title: `Error`,
-            description: `There was an error fetching user data. Please try again.`,
-          });
-          setIsLoading(false);
-        }
-      } catch (error) {
-        toast({
-          variant: `destructive`,
-          title: "Error",
-          description: `There was an error fetching user data. Please try again.`,
-        });
-        setIsLoading(false);
-      }
-    }
-
-    if (val === "verifyProduct") {
-      try {
-        setIsLoading(true);
-
-        const response = await axios.post("/api/admin/verify-product", {
-          productID,
-          type: "VerifyProduct",
-        });
-        // console.log(`response`, response);
-
-        if (response.data.success === true || response.status === 200) {
-          toast({
-            title: `Success`,
-            description: `This user is now a verified seller.`,
-          });
-          setProduct(response.data.data);
-          setIsLoading(false);
-        } else {
-          toast({
-            variant: `destructive`,
-            title: `Error`,
-            description: `There was an error fetching user data. Please try again.`,
-          });
-          setIsLoading(false);
-        }
-      } catch (error) {
-        toast({
-          variant: `destructive`,
-          title: "Error",
-          description: `There was an error fetching user data. Please try again.`,
-        });
-        setIsLoading(false);
-      }
-    }
-
-    if (val === "UnVerifyProduct") {
-      try {
-        setIsLoading(true);
-
-        const response = await axios.post("/api/admin/verify-product", {
-          productID,
-          type: "UnVerifyProduct",
-        });
-        // console.log(`response`, response);
-
-        if (response.data.success === true || response.status === 200) {
-          toast({
-            title: `Success`,
-            description: `This user is now a verified seller.`,
-          });
-          setProduct(response.data.data);
-          setIsLoading(false);
-        } else {
-          toast({
-            variant: `destructive`,
-            title: `Error`,
-            description: `There was an error fetching user data. Please try again.`,
-          });
-          setIsLoading(false);
-        }
-      } catch (error) {
-        toast({
-          variant: `destructive`,
-          title: "Error",
-          description: `There was an error fetching user data. Please try again.`,
-        });
-        setIsLoading(false);
-      }
-    }
-  };
-
-  return (
-    <section>
-      <h3 className="my-3 text-xl font-medium text-center text-gray-600 dark:text-gray-200">
-        Verify Product
-      </h3>
-
-      <div className="w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800 mb-6">
-        <div className="px-6 py-4">
-          <p className="mt-3 text-center text-gray-500 dark:text-gray-400">
-            Provide the Product Id.
-          </p>
-
-          <form
-            onSubmit={(e) => handleSubmit("requestProductData", e)}
-            className="space-y-8 "
-          >
-            <input
-              className="block w-full px-4 py-2 mt-2 dark:text-slate-200 text-black placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400"
-              aria-label="ID"
-              type="text"
-              value={productID}
-              onChange={(e) => setProductID(e.target.value)}
-              placeholder="Product ID"
-              required
-            />
-            <Button
-              type="submit"
-              className="items-end w-full bg-purple-500 hover:bg-purple-600"
-            >
-              {!isLoading && "Submit"}
-              {isLoading && (
-                <Loader className=" animate-spin w-5 h-5 mr-4" />
-              )}{" "}
-              {isLoading && "Please wait..."}
-            </Button>
-          </form>
-        </div>
-      </div>
-
-      <div>
-        <div className="py-6 border-t-2 flex flex-row justify-between gap-3">
-          <CardTitle>Product Images</CardTitle>
-          {product.isVerifiedProduct !== false && (
-            <span className="text-lg text-green-600">verified</span>
-          )}
-          {product.isVerifiedProduct === false && (
-            <span className="text-lg text-red-600">Unverified</span>
-          )}
-        </div>
-
-        <div className="grid grid-cols-1 flex-row gap-6 flex-wrap lg:justify-between">
-          <div className="mx-auto w-full max-w-5xl sm:block lg:max-w-none">
-            <ul className="grid sm:grid-cols-3 gap-6">
-              {product.productImage !== undefined &&
-                product.productImage.map((image, imageIndex: number) => (
-                  <div
-                    key={imageIndex}
-                    className="relative flex h-52 cursor-pointer items-center justify-center rounded-md bg-white text-sm font-medium uppercase hover:bg-gray-50"
-                  >
-                    <span className="absolute inset-0 overflow-hidden rounded-md">
-                      <Image
-                        placeholder="blur"
-                        blurDataURL={`data:image/svg+xml;base64,${toBase64(
-                          shimmer(200, 200)
-                        )}`}
-                        src={image}
-                        width={200}
-                        height={200}
-                        alt=""
-                        className="h-full w-full object-cover object-center"
-                      />
-                    </span>
-                  </div>
-                ))}
-            </ul>
-          </div>
-
-          <div className=" w-full grid gap-3">
-            <Card>
-              <CardHeader>
-                <CardTitle>Product Details</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-6">
-                  <p>
-                    <span className=" text-base font-semibold">
-                      Product Name:
-                    </span>{" "}
-                    <span>{`${product.productName}`}</span>
-                  </p>
-
-                  <p>
-                    <span className=" text-base font-semibold">
-                      Product Description:{" "}
-                    </span>{" "}
-                    <span>{product.productDescription}</span>
-                  </p>
-
-                  <p>
-                    <span className=" text-base font-semibold">
-                      Product Specification:{" "}
-                    </span>{" "}
-                    <span>{product.productSpecification}</span>
-                  </p>
-
-                  <p>
-                    <span className=" text-base font-semibold">
-                      Product SubCategory:
-                    </span>{" "}
-                    <span>{product.productSubCategory}</span>
-                  </p>
-
-                  <p>
-                    <span className=" text-base font-semibold">
-                      Product Category:
-                    </span>{" "}
-                    <span>{product.productCategory}</span>
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Stock</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-6">
-                  <p>
-                    <span className=" text-base font-semibold">
-                      Product Price:
-                    </span>{" "}
-                    <span>&#8358;{addCommasToNumber(product.productPrice as number)}</span>
-                  </p>
-
-                  <p>
-                    <span className=" text-base font-semibold">
-                      Product Quantity:
-                    </span>{" "}
-                    <span>{product.productQuantity}</span>
-                  </p>
-
-                  <p>
-                    <span className=" text-base font-semibold">
-                      Product Sizes:
-                    </span>{" "}
-                    {product.productSizes !== undefined &&
-                      product.productSizes.map((size, i: number) => (
-                        <Button disabled key={i}>{size}</Button>
-                      ))}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Other Data </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p>
-                  <span className=" text-base font-semibold">Owner Id:</span>{" "}
-                  <span>{product.storeID}</span>
-                </p>
-
-                <p>
-                  <span className=" text-base font-semibold">
-                    Verified Product:
-                  </span>{" "}
-                  {product.isVerifiedProduct !== false && (
-                    <span className="text-lg text-green-600">verified</span>
-                  )}
-                  {product.isVerifiedProduct === false && (
-                    <span className="text-lg text-red-600">Unverified</span>
-                  )}
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        {product.isVerifiedProduct === false && (
-          <div className="w-full border rounded-md p-3 mt-4">
-            <div>
-              <p className=" max-w-xl">
-                Verify that this product meets the criteria before approving it.
-              </p>
-              <form
-                onSubmit={(e) => handleSubmit("verifyProduct", e)}
-                className="flex justify-end pt-3"
-              >
-                <Button type="submit" className="hover:text-purple-600">
-                  {!isLoading && "verify Product"}
-                  {isLoading && (
-                    <Loader className=" animate-spin w-5 h-5 mr-4" />
-                  )}{" "}
-                  {isLoading && "Please wait..."}
-                </Button>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {product.isVerifiedProduct && (
-          <div className="w-full border rounded-md p-3 mt-4">
-            <div>
-              <p className=" max-w-xl">
-                You can unverify this product if necessary.
-              </p>
-              <form
-                onSubmit={(e) => handleSubmit("UnVerifyProduct", e)}
-                className="flex justify-end pt-3"
-              >
-                <Button type="submit" className="hover:text-purple-600">
-                  {!isLoading && "Unverify Product"}
-                  {isLoading && (
-                    <Loader className=" animate-spin w-5 h-5 mr-4" />
-                  )}{" "}
-                  {isLoading && "Please wait..."}
-                </Button>
-              </form>
-            </div>
-          </div>
-        )}
-      </div>
-    </section>
-  );
+type UnverifiedProducts = Products & {
+    createdAt: Date
 }
 
-export default AdminVerifyProduct;
+export default function AllUnverifiedProduct() {
+  const [allUnverifiedProduct, setAllUnverifiedProduct] = useState<UnverifiedProducts[] | null>(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.post<{ UnverifiedProducts: UnverifiedProducts[] }>(
+          "/api/admin/fetch-unverified-products"
+        );
+        // console.log("sellerdata", response);
+        // console.log("response.data.UnverifiedProducts", response.data.UnverifiedProducts);
+        setAllUnverifiedProduct(response.data.UnverifiedProducts);
+      } catch (error: any) {
+        console.error("Failed to fetch user data", error.message);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  if (allUnverifiedProduct === null) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center">
+        <p className="w-full h-full flex items-center justify-center">
+          <Loader className="animate-spin" /> Loading...
+        </p>
+      </div>
+    );
+  }
+
+  // Calculate total revenue and total sales
+  if (allUnverifiedProduct !== null) {
+    return (
+      <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
+        <h1 className="text-2xl font-semibold ">Products submitted for verification</h1>
+        <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-2">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Sum of all unverified products
+              </CardTitle>
+              <CreditCard className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">+ {allUnverifiedProduct.length}</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid gap-4 md:gap-8 lg:grid-cols-1 xl:grid-cols-1">
+          <Card>
+            <CardHeader>
+              <CardTitle>Unverified Products</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-8">
+              <Table>
+                <TableCaption>
+                  This tabel shows all products that are yet to be verified.
+                </TableCaption>
+                <TableHeader>
+                  <TableRow className=" text-[12.8px]">
+                    <TableHead>Image</TableHead>
+                    <TableHead>Product Name</TableHead>
+                    <TableHead>Product ID</TableHead>
+                    <TableHead>Product Price</TableHead>
+                    {/* <TableHead>Payment Status</TableHead> */}
+                    {/* <TableHead>Date</TableHead> */}
+                    <TableHead>More</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {allUnverifiedProduct!.map((product) => (
+                    <TableRow key={product._id}>
+                      <TableCell className="font-medium">
+                        <Image src={product.productImage[0]} className=" rounded-md object-fill h-20 w-20" width={100} height={100} alt={product.productName} />
+                      </TableCell>
+                      
+                      <TableCell className="font-medium">
+                        {product.productName}
+                      </TableCell>
+                      
+                      <TableCell className="font-medium">
+                        {product._id}
+                      </TableCell>
+                      
+                      <TableCell className="font-medium">
+                        {product.productPrice}
+                      </TableCell>
+
+                      {/* <TableCell>
+                        {new Date(product.createdAt).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </TableCell> */}
+
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              aria-haspopup="true"
+                              size="icon"
+                              variant="ghost"
+                            >
+                              <MoreHorizontalIcon className="h-4 w-4" />
+                              <span className="sr-only">Toggle menu</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <Link
+                              href={`/admin/pro/${product._id}`}
+                            >
+                              <DropdownMenuItem>More</DropdownMenuItem>
+                            </Link>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+                {/* <TableFooter>
+                  <TableRow>
+                    <TableCell colSpan={4}>Total</TableCell>
+                    <TableCell className="text-right">
+                      &#8358;{addCommasToNumber(totalRevenue)}
+                    </TableCell>
+                  </TableRow>
+                </TableFooter> */}
+              </Table>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    );
+  } else {
+    return (
+      <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8"></main>
+    );
+  }
+}

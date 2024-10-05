@@ -135,10 +135,16 @@ export type ProductOrder = {
 export type Order = {
   _id: string;
   user: string;
-  seller: string;
+  stores: string;
   products: ProductOrder[];
   totalAmount: number;
   status: string;
+  shippingAddress: string;
+  paymentMethod: string;
+  paymentStatus: string;
+  deliveryStatus: string;
+  createdAt: Date;
+
 };
 
 export type CartItems = Partial<Product>;

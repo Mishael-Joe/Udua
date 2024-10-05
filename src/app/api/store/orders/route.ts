@@ -19,12 +19,20 @@ export async function POST(request: NextRequest) {
 
     const product = await Product.findOne({}).select("_id productName").exec();
     //TODO: REVIEW THIS CODE DONW
-    const orders = await Order.find({ sellers: { $in: [storeID.toString()] } })
+    const orders = await Order.find({
+      stores: { $in: [storeID.toString()] },
+      deliveryStatus: {
+        $in: ["Order Placed", "Processing", "Shipped", "Out for Delivery"],
+      }, // Multiple statuses
+    })
       .populate({
         path: "products.product",
         match: { accountId: storeID.toString() },
       })
+      .select("-totalAmount -updatedAt")
       .exec();
+
+      // console.log(`orders`, orders)
 
     return NextResponse.json(
       { message: "Orders found", orders },

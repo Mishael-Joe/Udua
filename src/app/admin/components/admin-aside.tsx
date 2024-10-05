@@ -8,6 +8,7 @@ import {
   ShoppingCart,
   StoreIcon,
   Users,
+  XIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { useMediaQuery } from "@react-hook/media-query";
@@ -40,13 +41,26 @@ function AdminAside() {
             <Link
               href={"/admin/verify-products"}
               className={`show-dropdown-menu1 cursor-pointer ${
-                pathname.includes("product")
+                pathname.endsWith("verify-products")
                   ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
                   : "text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white"
               } rounded py-2 px-3`}
             >
               <p className="flex items-center gap-2">
                 <CheckCheckIcon className="" /> Verify Product
+              </p>
+            </Link>
+  
+            <Link
+              href={"/admin/unverify-product"}
+              className={`show-dropdown-menu1 cursor-pointer ${
+                pathname.includes("unverify")
+                  ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
+                  : "text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white"
+              } rounded py-2 px-3`}
+            >
+              <p className="flex items-center gap-2">
+                <XIcon className="" /> Unverify Product
               </p>
             </Link>
   
@@ -143,13 +157,26 @@ function AdminAside() {
           <Link
             href={"/admin/verify-products"}
             className={`show-dropdown-menu1 cursor-pointer ${
-              pathname.includes("product")
+              pathname.endsWith("verify-products")
                 ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
                 : "text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white"
             } rounded py-2 px-3`}
           >
             <p className="flex items-center gap-2">
               <CheckCheckIcon className="" /> Verify Product
+            </p>
+          </Link>
+          
+          <Link
+            href={"/admin/unverify-product"}
+            className={`show-dropdown-menu1 cursor-pointer ${
+              pathname.includes("unverify")
+                ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
+                : "text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white"
+            } rounded py-2 px-3`}
+          >
+            <p className="flex items-center gap-2">
+              <XIcon className="" /> Unverify Product
             </p>
           </Link>
 

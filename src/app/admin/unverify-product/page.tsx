@@ -1,11 +1,11 @@
 import { Suspense } from "react";
-import AdminOrderDetails from "../components/admin-order-details";
+import AdminUnVerifyProduct from "../components/admin-unverify-product";
 
 export default async function Page() {
   return (
     <div className="py-4">
       <Suspense fallback={"Admin dashboard"}>
-        <AdminOrderDetails />
+        <AdminUnVerifyProduct />
       </Suspense>
     </div>
   );

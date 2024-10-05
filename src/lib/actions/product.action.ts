@@ -94,7 +94,7 @@ export async function fetchProducts(
   try {
     await connectToDB();
 
-    const query: any = { isVerifiedProduct: false };
+    const query: any = { isVerifiedProduct: true };
 
     // Add category filter to the query if categories are provided
     if (categories && categories.length > 0) {
