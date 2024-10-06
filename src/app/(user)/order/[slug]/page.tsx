@@ -22,12 +22,28 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 import Aside1 from "@/app/(user)/components/aside-1";
-import { Loader } from "lucide-react";
+import { ClipboardEditIcon, Loader, Star } from "lucide-react";
+import { Order } from "@/types";
+import { Button } from "@/components/ui/button";
 
 export default function Page({ params }: { params: { slug: string } }) {
-  const [orderDetails, setOrderDetails] = useState<any>();
+  const [orderDetails, setOrderDetails] = useState<Order>();
+  const router = useRouter();
+  const { toast } = useToast();
+  const [deliveryStatus, setDeliverStatus] = useState({
+    status: "Delivered",
+  });
   useEffect(() => {
     const fetchOrderData = async () => {
       try {
@@ -35,7 +51,7 @@ export default function Page({ params }: { params: { slug: string } }) {
           orderID: params.slug,
         });
         setOrderDetails(response.data.orderDetail);
-        // console.log(`response.data`, response.data.orderDetail);
+        console.log(`response.data.oederDetail`, response.data.orderDetail);
       } catch (error: any) {
         console.error("Failed to fetch seller Products", error.message);
       }
@@ -43,6 +59,55 @@ export default function Page({ params }: { params: { slug: string } }) {
 
     fetchOrderData();
   }, []);
+
+  const handleSubmit = async () => {
+    if (deliveryStatus.status === "") {
+      toast({
+        variant: `destructive`,
+        title: `Error`,
+        description: `Please select an option`,
+      });
+      return;
+    }
+    const body = {
+      orderID: orderDetails !== undefined ? orderDetails._id : params.slug,
+      updatedDeliveryStatus: deliveryStatus.status,
+    };
+    try {
+      const response = await axios.post(
+        "/api/store/update-order-delivery-status",
+        {
+          body,
+        }
+      );
+
+      if (response.status === 200) {
+        toast({
+          title: `Success`,
+          description: `You have Successfully updated this product order status to ${deliveryStatus.status}.`,
+        });
+      } else {
+        toast({
+          variant: `destructive`,
+          title: `Error`,
+          description: `Failed to update this product order status.`,
+        });
+      }
+      // console.log(`response.data.oederDetail`, response.data.orderDetail);
+    } catch (error: any) {
+      console.error(
+        "Failed to update this product order status",
+        error.message
+      );
+      toast({
+        variant: `destructive`,
+        title: `Error`,
+        description: `Failed to update this product order status.`,
+      });
+    } finally {
+      router.refresh();
+    }
+  };
 
   if (orderDetails === null || orderDetails === undefined) {
     return (
@@ -93,7 +158,7 @@ export default function Page({ params }: { params: { slug: string } }) {
               <CardHeader>
                 <CardTitle>Order ID: {orderDetails._id}</CardTitle>
                 <CardDescription>
-                  Here's a summary for this order.
+                  Here's the summary for this order.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -119,50 +184,88 @@ export default function Page({ params }: { params: { slug: string } }) {
 
             <Card>
               <CardHeader>
-                <CardTitle>
-                  Product{orderDetails.products.length > 1 && "s"} Purchased
-                </CardTitle>
+                <div className="flex gap-3 w-full justify-between">
+                  <CardTitle>
+                    Product{orderDetails.products.length > 1 && "s"} Purchased
+                  </CardTitle>
+
+                  <CardDescription className="flex flex-col gap-2 items-end">
+                    Delivery Status: {orderDetails.deliveryStatus}
+                    {orderDetails.deliveryStatus === "Out for Delivery" && (
+                      <Button
+                        className="bg-purple-500 hover:bg-purple-600 text-xs w-fit"
+                        onClick={handleSubmit}
+                      >
+                        Mark as Delivered
+                      </Button>
+                    )}
+                  </CardDescription>
+                </div>
               </CardHeader>
 
               <CardContent>
-                <div className="grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:gap-x-8">
-                  {orderDetails.products.map((product: any) => (
-                    <div
-                      className="flex flex-col sm:flex-row gap-4 text-sm w-full"
-                      key={product.productName}
-                    >
-                      <div className="aspect-square w-full overflow-hidden rounded-lg border-2 border-gray-200 bg-gray-100 group-hover:opacity-75 dark:border-gray-800">
-                        {product.product !== null ||
-                          (product.product !== null && (
-                            <Image
-                              src={product.product.productImage[0]}
-                              alt={product.productName}
-                              width={300}
-                              height={150}
-                              className="h-full w-full object-cover object-center"
-                              quality={90}
-                            />
-                          ))}
-                      </div>
-
-                      <div>
-                        <h3 className="mt-4 font-medium">
-                          Product Name:
-                          {product.product &&
-                            product.product.productName}
-                        </h3>
-                        <p className="mt-2 font-medium">
-                          Quantity: {product.quantity && product.quantity}
-                        </p>
-                        {product.price && (
-                          <p className="mt-2 font-medium">
-                            Price: &#8358; {addCommasToNumber(product.price)}{" "}
-                          </p>
-                        )}
-                      </div>
+                {orderDetails.products.map((product) => (
+                  <div
+                    className="grid sm:grid-cols-2 gap-4 text-sm w-full relative"
+                    key={product.product.productName}
+                  >
+                    {orderDetails.deliveryStatus === "Delivered" && (
+                      <Dialog>
+                        <DialogTrigger
+                          asChild
+                          className="absolute flex gap-2 text-xs right-2 top-1 sm:bottom-2 sm:left-1 w-fit"
+                        >
+                          <Button className="bg-purple-500 hover:bg-purple-600">
+                            <ClipboardEditIcon /> <span>Review Product</span>
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[425px]">
+                          <DialogHeader>
+                            <DialogTitle>Edit Store Description</DialogTitle>
+                            <DialogDescription>
+                              Make changes to your store description here. Click
+                              save when you're done.
+                            </DialogDescription>
+                            <div>
+                              {[
+                                ...Array(5).map((star, i) => {
+                                  return <Star key={i}/>;
+                                }),
+                              ]}
+                            </div>
+                          </DialogHeader>
+                        </DialogContent>
+                      </Dialog>
+                    )}
+                    <div className="aspect-square w-full overflow-hidden rounded-lg border-2 border-gray-200 bg-gray-100 group-hover:opacity-75 dark:border-gray-800">
+                      {product.product !== null && product.product !== null && (
+                        <Image
+                          src={product.product.productImage[0]}
+                          alt={product.product.productName}
+                          width={300}
+                          height={150}
+                          className="h-full w-full object-cover object-center"
+                          quality={90}
+                        />
+                      )}
                     </div>
-                  ))}
-                </div>
+
+                    <div className="">
+                      <h3 className="mt-4 font-medium">
+                        Product Name:
+                        {product.product && product.product.productName}
+                      </h3>
+                      <p className="mt-2 font-medium">
+                        Quantity Bought: {product.quantity && product.quantity}
+                      </p>
+                      {product.price && (
+                        <p className="mt-2 font-medium">
+                          At Price: &#8358; {addCommasToNumber(product.price)}{" "}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </CardContent>
             </Card>
           </main>

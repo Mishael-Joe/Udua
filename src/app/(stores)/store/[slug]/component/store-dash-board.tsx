@@ -17,11 +17,21 @@ import { Order } from "@/types";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { addCommasToNumber } from "@/lib/utils";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-export default function StoreDashboard({ params }: { params: { slug: string }}) {
+export default function StoreDashboard({
+  params,
+}: {
+  params: { slug: string };
+}) {
   const [orders, setOrders] = useState<Order[] | null>(null);
 
   useEffect(() => {
@@ -191,26 +201,28 @@ export default function StoreDashboard({ params }: { params: { slug: string }}) 
                           day: "numeric",
                         })}
                       </TableCell>
-                      
+
                       <TableCell>
-                      <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button
-                                  aria-haspopup="true"
-                                  size="icon"
-                                  variant="ghost"
-                                >
-                                  <MoreHorizontalIcon className="h-4 w-4" />
-                                  <span className="sr-only">Toggle menu</span>
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                <Link href={`/store/${params.slug}/order/${order._id}`}>
-                                  <DropdownMenuItem>More</DropdownMenuItem>
-                                </Link>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              aria-haspopup="true"
+                              size="icon"
+                              variant="ghost"
+                            >
+                              <MoreHorizontalIcon className="h-4 w-4" />
+                              <span className="sr-only">Toggle menu</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <Link
+                              href={`/store/${params.slug}/order-details/${order._id}`}
+                            >
+                              <DropdownMenuItem>More</DropdownMenuItem>
+                            </Link>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   ))}

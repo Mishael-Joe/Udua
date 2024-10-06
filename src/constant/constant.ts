@@ -132,3 +132,21 @@ export const calculateCommission = (amount: number) => {
     settleAmount
   }
 }
+
+export let security = [
+  {
+    title: "Available Payout",
+    desc: "Total available balance for payout",
+    content: "0",
+  },
+  {
+    title: "Funds withheld",
+    desc: "Funds held for processing or disputes",
+    content: "0",
+  },
+  {
+    title: "Payout History",
+    desc: "Your all time earnings on Udua",
+    link: "/",
+  },
+];

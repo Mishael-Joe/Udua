@@ -40,8 +40,8 @@ export function OrderHistory() {
       try {
         const response = await axios.post("/api/user/orders");
         setOrders(response.data.orders);
-        // console.log("response.data.orders", response.data.orders);
-        // console.log(response.data.orders[0].products[0].product.productImage);
+        console.log("response.data.orders", response.data.orders);
+        console.log(response.data.orders[0].products[0].product.productImage);
       } catch (error: any) {
         console.error("Error fetching orders:", error.message);
       }
@@ -72,9 +72,10 @@ export function OrderHistory() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Image</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Total Amount</TableHead>
                     <TableHead>Order Date</TableHead>
+                    <TableHead>Payment Status</TableHead>
+                    <TableHead>Delivery Status</TableHead>
+                    <TableHead>Total Amount</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -82,8 +83,8 @@ export function OrderHistory() {
                   {orders.map((order: any) => (
                     <TableRow key={order._id}>
                       <TableCell className="font-medium">
-                        {order.products !== null ||
-                          (order.products[0].product.productImage[0] !==
+                        {order.products !== null &&
+                          order.products[0].product.productImage[0] !==
                             undefined && (
                             <Image
                               alt="Product image"
@@ -93,16 +94,19 @@ export function OrderHistory() {
                               loading="lazy"
                               width="64"
                             />
-                          ))}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{order.status}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        &#8358;{addCommasToNumber(order.totalAmount)}
+                          )}
                       </TableCell>
                       <TableCell>
                         {new Date(order.createdAt).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>
+                        {order.status}
+                      </TableCell>
+                      <TableCell>
+                        {order.deliveryStatus}
+                      </TableCell>
+                      <TableCell>
+                        &#8358;{addCommasToNumber(order.totalAmount)}
                       </TableCell>
                       <TableCell>
                         <DropdownMenu>

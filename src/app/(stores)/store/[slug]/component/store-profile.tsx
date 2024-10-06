@@ -17,6 +17,7 @@ import { Loader, Star, StoreIcon } from "lucide-react";
 import Image from "next/image";
 import StoreDescription from "./store-description";
 import { Store } from "@/types";
+import { ProductGrid } from "@/components/product-grid";
 
 export default function StoreProfile({ params }: { params: { slug: string } }) {
   const [store, setStore] = useState<Store | null>(null);
@@ -37,6 +38,17 @@ export default function StoreProfile({ params }: { params: { slug: string } }) {
     fetchStoreData();
   }, []);
   // console.log('params', params.slug)
+
+  if (store === null) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center">
+        <p className="w-full h-full flex items-center justify-center">
+          <Loader className="animate-spin" /> Loading...
+        </p>
+      </div>
+    );
+  }
+
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
       <section className="">
@@ -92,6 +104,10 @@ export default function StoreProfile({ params }: { params: { slug: string } }) {
                 <CardHeader>
                   <CardTitle>Products on this store</CardTitle>
                 </CardHeader>
+
+                <CardContent>
+               <ProductGrid products={store?.products !== null ? store.products : []} />
+              </CardContent>
               </Card>
             </TabsContent>
             <TabsContent value="description">

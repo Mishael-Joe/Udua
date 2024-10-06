@@ -156,11 +156,11 @@ export default function StoreInventory({
                       </TableCell>
                       <TableCell>
                         {product.isVerifiedProduct === true ? (
-                          <Badge variant="outline" className="text-green-500">
+                          <Badge variant="outline" className="text-green-500 border-none">
                             Verified
                           </Badge>
                         ) : (
-                          <Badge variant="outline" className="text-yellow-500">
+                          <Badge variant="outline" className="text-yellow-500 border-none">
                             unverified
                           </Badge>
                         )}
@@ -193,7 +193,7 @@ export default function StoreInventory({
                             >
                               <DropdownMenuItem>Edit</DropdownMenuItem>
                             </Link>
-                            <DropdownMenuItem
+                            {/* <DropdownMenuItem
                               onClick={() =>
                                 handleDelete(product._id as string)
                               }
@@ -209,7 +209,7 @@ export default function StoreInventory({
                               ) : (
                                 "Delete"
                               )}
-                            </DropdownMenuItem>
+                            </DropdownMenuItem> */}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>

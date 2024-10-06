@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
   try {
     // Connect to the database
     await connectToDB();
-    
+
     // Retrieve the store ID from the token
     const storeID = await getStoreIDFromToken(request);
 
@@ -19,13 +19,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Find the store by its ID
-    const store = await Store.findById(storeID).select('-password -storeOwner -updatedAt').exec();
+    const store = await Store.findById(storeID)
+      .select("-password -storeOwner -updatedAt")
+      .populate({
+        path: "products",
+        match: { isVerifiedProduct: true },
+        select: "_id productName productImage productPrice", // Replace with the fields you want to include
+      })
+      .exec();
 
     if (!store) {
-      return NextResponse.json(
-        { error: "Store not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Store not found" }, { status: 404 });
     }
 
     // Return success response
@@ -34,7 +38,6 @@ export async function POST(request: NextRequest) {
       { message: "Store details fetched successfully.", store: store },
       { status: 200 }
     );
-
   } catch (error: any) {
     console.error("Error fetching store details", error);
     return NextResponse.json(

@@ -48,7 +48,7 @@ export type Store = {
   uniqueId: string;
   description: string;
   createdAt: Date;
-  products: string[];
+  products: Product[];
   availableBalance: number;
   pendingBalance: number;
   platformFee: number;
@@ -135,11 +135,12 @@ export type ProductOrder = {
 export type Order = {
   _id: string;
   user: string;
-  stores: string;
+  stores: string[];
   products: ProductOrder[];
   totalAmount: number;
   status: string;
   shippingAddress: string;
+  shippingMethod: string;
   paymentMethod: string;
   paymentStatus: string;
   deliveryStatus: string;

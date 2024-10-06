@@ -12,10 +12,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Star, StoreIcon } from "lucide-react";
+import { Loader, Star, StoreIcon } from "lucide-react";
 import Image from "next/image";
 import { Store } from "@/types";
 import BrandDescription from "./brand-description";
+import { ProductGrid } from "./product-grid";
 
 export default function BrandProfile({ params }: { params: { slug: string } }) {
   const [store, setStore] = useState<Store | null>(null);
@@ -39,6 +40,17 @@ export default function BrandProfile({ params }: { params: { slug: string } }) {
 
     fetchStoreData();
   }, []);
+
+  if (store === null) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center">
+        <p className="w-full h-full flex items-center justify-center">
+          <Loader className="animate-spin" /> Loading...
+        </p>
+      </div>
+    );
+  }
+
   return (
     <section className=" max-w-5xl mx-auto my-3 px-6 xl:px-0">
       <div className="p-4 border border-gray-700 h-72 w-full rounded-md bg-muted/50">
@@ -89,6 +101,10 @@ export default function BrandProfile({ params }: { params: { slug: string } }) {
               <CardHeader>
                 <CardTitle>Products on this store</CardTitle>
               </CardHeader>
+
+              <CardContent>
+               <ProductGrid products={store?.products !== null ? store.products : []} />
+              </CardContent>
             </Card>
           </TabsContent>
           <TabsContent value="description">
