@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Return success response
-    console.log("store", store);
+    // console.log("store", store);
     return NextResponse.json(
       { message: "Store details fetched successfully.", store: store },
       { status: 200 }

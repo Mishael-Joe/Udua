@@ -1,5 +1,6 @@
 import { ProductGallery } from "@/components/product-gallery";
 import { ProductInfo } from "@/components/product-info";
+import ProductReviewComponent from "@/components/product-review";
 import { ProductSpecification } from "@/components/product-specification";
 import { fetchProductData } from "@/lib/actions/product.action";
 
@@ -28,6 +29,9 @@ export default async function Page({ params }: Props) {
 
         {/* Product Specification */}
         <ProductSpecification product={product.productData} />
+        
+        {/* Product Specification */}
+        <ProductReviewComponent product={product.productData} />
       </div>
     </main>
   );

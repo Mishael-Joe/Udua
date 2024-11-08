@@ -11,26 +11,24 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import axios from "axios";
-import { useEffect, useState } from "react";
-import { Loader, Star, StoreIcon } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { icons, Loader, Star, StoreIcon } from "lucide-react";
 import Image from "next/image";
 import { Store } from "@/types";
 import BrandDescription from "./brand-description";
 import { ProductGrid } from "./product-grid";
+import Rating from "@/lib/helpers/rating";
 
 export default function BrandProfile({ params }: { params: { slug: string } }) {
   const [store, setStore] = useState<Store | null>(null);
 
   const body = {
-    storeID: params.slug
-  }
+    storeID: params.slug,
+  };
   useEffect(() => {
     const fetchStoreData = async () => {
       try {
-        const response = await axios.post<{ store: Store }>(
-          "/api/brand",
-          body
-        );
+        const response = await axios.post<{ store: Store }>("/api/brand", body);
         // console.log("storedata", response.data);
         setStore(response.data.store);
       } catch (error: any) {
@@ -39,6 +37,33 @@ export default function BrandProfile({ params }: { params: { slug: string } }) {
     };
 
     fetchStoreData();
+  }, []);
+
+  const elementRef = useRef<HTMLDivElement | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (elementRef.current) {
+        const rect = elementRef.current.getBoundingClientRect();
+        const isVisible =
+          rect.top >= 0 &&
+          rect.left >= 0 &&
+          rect.bottom <=
+            (window.innerHeight || document.documentElement.clientHeight) &&
+          rect.right <=
+            (window.innerWidth || document.documentElement.clientWidth);
+        setIsVisible(isVisible);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    // Initial check on component mount
+    handleScroll();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   if (store === null) {
@@ -80,13 +105,7 @@ export default function BrandProfile({ params }: { params: { slug: string } }) {
             </p>
           </div>
         </div>
-        <div className="flex items-center justify-center gap-2 h-1/3 w-full">
-          <Star />
-          <Star />
-          <Star />
-          <Star />
-          <Star />
-        </div>
+        <Rating />
       </div>
 
       <div className="pt-4 w-full h-fit">
@@ -103,7 +122,9 @@ export default function BrandProfile({ params }: { params: { slug: string } }) {
               </CardHeader>
 
               <CardContent>
-               <ProductGrid products={store?.products !== null ? store.products : []} />
+                <ProductGrid
+                  products={store?.products !== null ? store.products : []}
+                />
               </CardContent>
             </Card>
           </TabsContent>
@@ -118,6 +139,23 @@ export default function BrandProfile({ params }: { params: { slug: string } }) {
                   What people are saying about this store.
                 </CardDescription>
               </CardHeader>
+
+              <CardContent>
+                <div>
+                  <div
+                    ref={elementRef}
+                    style={{
+                      width: "100px",
+                      height: "100px",
+                      backgroundColor: isVisible ? "green" : "red",
+                      margin: "50px",
+                    }}
+                  >
+                    {isVisible ? "Visible" : "Not Visible"}
+                  </div>
+                  <p>Scroll to see visibility changes!</p>
+                </div>
+              </CardContent>
             </Card>
           </TabsContent>
         </Tabs>

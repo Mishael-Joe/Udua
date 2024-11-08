@@ -36,6 +36,8 @@ import Aside1 from "@/app/(user)/components/aside-1";
 import { ClipboardEditIcon, Loader, Star } from "lucide-react";
 import { Order } from "@/types";
 import { Button } from "@/components/ui/button";
+import Rating from "@/lib/helpers/rating";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function Page({ params }: { params: { slug: string } }) {
   const [orderDetails, setOrderDetails] = useState<Order>();
@@ -44,6 +46,11 @@ export default function Page({ params }: { params: { slug: string } }) {
   const [deliveryStatus, setDeliverStatus] = useState({
     status: "Delivered",
   });
+  const [rating, setRating] = useState<number | null>(null);
+  const [hover, setHover] = useState<number | null>(null);
+  const [reviewWriteUp, setReviewWriteUp] = useState("");
+  const [productID, setProductID] = useState<string | undefined>("");
+
   useEffect(() => {
     const fetchOrderData = async () => {
       try {
@@ -51,7 +58,7 @@ export default function Page({ params }: { params: { slug: string } }) {
           orderID: params.slug,
         });
         setOrderDetails(response.data.orderDetail);
-        console.log(`response.data.oederDetail`, response.data.orderDetail);
+        // console.log(`response.data.oederDetail`, response.data.orderDetail);
       } catch (error: any) {
         console.error("Failed to fetch seller Products", error.message);
       }
@@ -109,6 +116,77 @@ export default function Page({ params }: { params: { slug: string } }) {
     }
   };
 
+  const handleSubmitReview = async (type: string) => {
+    console.log(`productID`, productID);
+    if (reviewWriteUp === "") {
+      toast({
+        variant: `destructive`,
+        title: `Error`,
+        description: `Text box cannot be empty`,
+      });
+      return;
+    } else if (rating === null) {
+      toast({
+        variant: `destructive`,
+        title: `Error`,
+        description: `Please choose a Rate or Star`,
+      });
+      return;
+    } else if (productID === undefined || productID === "") {
+      toast({
+        variant: `destructive`,
+        title: `Error`,
+        description: `An error occured. Please refresh the page.`,
+      });
+      return;
+    }
+
+    const body = {
+      rating: rating,
+      writeUp: reviewWriteUp,
+      orderID: orderDetails?._id,
+      productID: productID,
+    };
+
+    if (type === "ProductReview") {
+      try {
+        const response = await axios.post("/api/store/product-store-reviews", {
+          body,
+        });
+
+        if (response.status === 200) {
+          toast({
+            variant: `default`,
+            title: `Success`,
+            description: `You have successfully review this product.`,
+          });
+        } else {
+          toast({
+            variant: `destructive`,
+            title: `Error`,
+            description: `An error occured while submitting your review.`,
+          });
+        }
+      } catch (error: any) {
+        if (error.code === `ERR_BAD_REQUEST`) {
+          // console.log(`response`, error);
+          toast({
+            variant: `destructive`,
+            title: `Error`,
+            description: `${error.response.data.error}`,
+          });
+          return;
+        }
+        console.error(`An error occured while submitting your review.`, error);
+        toast({
+          variant: `destructive`,
+          title: `Error`,
+          description: `An error occured while submitting your review.`,
+        });
+      }
+    }
+  };
+
   if (orderDetails === null || orderDetails === undefined) {
     return (
       <div className="w-full min-h-screen flex items-center justify-center">
@@ -156,7 +234,9 @@ export default function Page({ params }: { params: { slug: string } }) {
 
             <Card>
               <CardHeader>
-                <CardTitle>Order ID: {orderDetails._id}</CardTitle>
+                <CardTitle className="text-sm sm:text-2xl">
+                  Order ID: {orderDetails._id}
+                </CardTitle>
                 <CardDescription>
                   Here's the summary for this order.
                 </CardDescription>
@@ -215,24 +295,69 @@ export default function Page({ params }: { params: { slug: string } }) {
                           asChild
                           className="absolute flex gap-2 text-xs right-2 top-1 sm:bottom-2 sm:left-1 w-fit"
                         >
-                          <Button className="bg-purple-500 hover:bg-purple-600">
+                          <Button
+                            className="bg-purple-500 hover:bg-purple-600"
+                            onClick={() => setProductID(product.product._id)}
+                          >
                             <ClipboardEditIcon /> <span>Review Product</span>
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px]">
+                        <DialogContent className="sm:max-w-lg">
                           <DialogHeader>
-                            <DialogTitle>Edit Store Description</DialogTitle>
+                            <DialogTitle>Rate this product</DialogTitle>
                             <DialogDescription>
-                              Make changes to your store description here. Click
-                              save when you're done.
+                              Share your feedback on this product. Click
+                              "Submit" when you're ready to submit.
                             </DialogDescription>
-                            <div>
-                              {[
-                                ...Array(5).map((star, i) => {
-                                  return <Star key={i}/>;
-                                }),
-                              ]}
+                            <div className="flex flex-col gap-2 items-center justify-center w-full h-fit py-5">
+                              <div className="flex items-center justify-center gap-2 w-full">
+                                {Array.from({ length: 5 }, (_, i) => {
+                                  const currentRating = i + 1;
+                                  return (
+                                    <label key={i}>
+                                      <Star
+                                        width={25}
+                                        height={25}
+                                        className={`cursor-pointer ${
+                                          currentRating <=
+                                          (hover ?? rating ?? 0)
+                                            ? `text-yellow-500 fill-yellow-500`
+                                            : `dark:text-white dark:fill-white fill-gray-500 text-gray-500`
+                                        }`}
+                                        onMouseEnter={() =>
+                                          setHover(currentRating)
+                                        }
+                                        onMouseLeave={() => setHover(null)}
+                                      />
+                                      <input
+                                        type="radio"
+                                        name="rating"
+                                        value={currentRating}
+                                        onClick={() => setRating(currentRating)}
+                                        className="hidden"
+                                      />
+                                    </label>
+                                  );
+                                })}
+                              </div>
+
+                              <div className="w-full p-4">
+                                <Textarea
+                                  className="block w-full  mt-5 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:text-slate-200 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+                                  onChange={(e) =>
+                                    setReviewWriteUp(e.target.value)
+                                  }
+                                />
+                              </div>
                             </div>
+
+                            <Button
+                              onClick={() =>
+                                handleSubmitReview("ProductReview")
+                              }
+                            >
+                              Submit
+                            </Button>
                           </DialogHeader>
                         </DialogContent>
                       </Dialog>
