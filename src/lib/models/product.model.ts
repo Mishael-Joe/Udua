@@ -12,6 +12,7 @@ interface IProduct extends Document {
   productCategory: string[];
   productSubCategory: string[],
   isVerifiedProduct: boolean;
+  isVisible: boolean;
 } // NOTE: storeID serves as the store the product belongs to.
 
 const productSchema = new Schema<IProduct>({
@@ -26,6 +27,7 @@ const productSchema = new Schema<IProduct>({
   productCategory: { type: [String], required: true },
   productSubCategory: { type: [String], required: true },
   isVerifiedProduct: { type: Boolean, default: false },
+  isVisible: { type: Boolean, default: true },
 });
 
 const Product =

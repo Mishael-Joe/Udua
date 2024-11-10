@@ -5,6 +5,7 @@ import {
   CheckCheckIcon,
   FileEdit,
   Settings2Icon,
+  ShieldCheckIcon,
   ShoppingCart,
   StoreIcon,
   Users,
@@ -17,7 +18,7 @@ function AdminAside() {
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const pathname = usePathname();
   // console.log("pathname", pathname);
-  if(!isDesktop) {
+  if (!isDesktop) {
     return (
       <section className="rounded-md">
         <h1 className="text-center pb-3.5 px-3 border-b font-bold text-black dark:text-slate-200">
@@ -37,7 +38,7 @@ function AdminAside() {
                 <StoreIcon className="" /> Create Store
               </p>
             </Link>
-            
+
             <Link
               href={"/admin/verify-products"}
               className={`show-dropdown-menu1 cursor-pointer ${
@@ -50,7 +51,7 @@ function AdminAside() {
                 <CheckCheckIcon className="" /> Verify Product
               </p>
             </Link>
-  
+
             <Link
               href={"/admin/unverify-product"}
               className={`show-dropdown-menu1 cursor-pointer ${
@@ -63,7 +64,7 @@ function AdminAside() {
                 <XIcon className="" /> Unverify Product
               </p>
             </Link>
-  
+
             {/* <Link
               href={`/admin/verify-seller`}
               className={`show-dropdown-menu1 cursor-pointer ${
@@ -76,7 +77,7 @@ function AdminAside() {
                 <FileEdit className="" /> Verify Seller
               </p>
             </Link> */}
-  
+
             <Link
               href={`/admin/order-details`}
               className={`show-dropdown-menu1 cursor-pointer ${
@@ -89,7 +90,7 @@ function AdminAside() {
                 <ShoppingCart className="" /> Order details
               </p>
             </Link>
-  
+
             <Link
               href={`/admin/dispute-resolution`}
               className={`show-dropdown-menu1 cursor-pointer ${
@@ -102,7 +103,7 @@ function AdminAside() {
                 <FileEdit className="" /> Dispute & Resolution
               </p>
             </Link>
-  
+
             <Link
               href={`/admin/settlement`}
               className={`show-dropdown-menu1 cursor-pointer ${
@@ -115,7 +116,7 @@ function AdminAside() {
                 <Settings2Icon className="" /> Finance and Settlement
               </p>
             </Link>
-  
+
             <Link
               href={`/admin/manage-admins`}
               className={`show-dropdown-menu1 cursor-pointer ${
@@ -126,6 +127,19 @@ function AdminAside() {
             >
               <p className="flex items-center gap-2">
                 <Users className="" /> Manage Admins
+              </p>
+            </Link>
+
+            <Link
+              href={`/admin/password`}
+              className={`show-dropdown-menu1 cursor-pointer ${
+                pathname.includes("password")
+                  ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
+                  : "text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white"
+              } rounded py-2 px-3`}
+            >
+              <p className="flex items-center gap-2">
+                <ShieldCheckIcon className="" /> Update password
               </p>
             </Link>
           </ul>
@@ -153,7 +167,7 @@ function AdminAside() {
               <StoreIcon className="" /> Create Store
             </p>
           </Link>
-          
+
           <Link
             href={"/admin/verify-products"}
             className={`show-dropdown-menu1 cursor-pointer ${
@@ -166,7 +180,7 @@ function AdminAside() {
               <CheckCheckIcon className="" /> Verify Product
             </p>
           </Link>
-          
+
           <Link
             href={"/admin/unverify-product"}
             className={`show-dropdown-menu1 cursor-pointer ${
@@ -231,7 +245,7 @@ function AdminAside() {
               <Settings2Icon className="" /> Finance and Settlement
             </p>
           </Link>
-          
+
           <Link
             href={`/admin/manage-admins`}
             className={`show-dropdown-menu1 cursor-pointer ${
@@ -244,11 +258,23 @@ function AdminAside() {
               <Users className="" /> Manage Admins
             </p>
           </Link>
+
+          <Link
+            href={`/admin/password`}
+            className={`show-dropdown-menu1 cursor-pointer ${
+              pathname.includes("password")
+                ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
+                : "text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white"
+            } rounded py-2 px-3`}
+          >
+            <p className="flex items-center gap-2">
+              <ShieldCheckIcon className="" /> Update password
+            </p>
+          </Link>
         </ul>
       </div>
     </section>
   );
-  
 }
 
 export default AdminAside;

@@ -7,7 +7,6 @@ import { Loader } from "lucide-react";
 import Link from "next/link";
 import Aside1 from "./aside-1";
 import { Button } from "@/components/ui/button";
-import { admins } from "@/config/site";
 
 type user = USER & {
   store: string

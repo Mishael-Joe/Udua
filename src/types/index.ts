@@ -38,6 +38,7 @@ export type Product = {
   colors?: string[];
   size?: string;
   isVerifiedProduct?: boolean;
+  isVisible?: boolean;
 };
 
 export type Store = {

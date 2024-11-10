@@ -12,9 +12,9 @@ import { ThemeProvider } from "@/components/theme-provider";
 
 import { StateContext } from "@/context/stateContext";
 
-import { Rubik } from 'next/font/google'
+import { Montserrat } from 'next/font/google'
  
-const rubik = Rubik({
+const rubik = Montserrat({
   weight: ['400', '600', '700'],
   subsets: ['latin'],
 })

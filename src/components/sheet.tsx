@@ -9,15 +9,13 @@ function Sheets() {
     <Fragment>
       <Sheet>
         <SheetTrigger asChild>
-          <Button variant="outline" size="icon" className="shrink-0 md:hidden">
+          <Button variant="ghost" size="icon" className="shrink-0 md:hidden dark:hover:bg-transparent dark:hover:text-udua-orange-primary hover:bg-transparent hover:text-udua-orange-primary delay-75 transition-all ease-in-out">
             <MenuIcon className="h-5 w-5" />
             <span className="sr-only">Toggle navigation menu</span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="flex flex-col">
-          <nav className="grid gap-2 text-lg font-medium">
-            <ResponsiveLeftSidebar />
-          </nav>
+        <SheetContent side="left" className="p-0">
+          <ResponsiveLeftSidebar />
         </SheetContent>
       </Sheet>
     </Fragment>

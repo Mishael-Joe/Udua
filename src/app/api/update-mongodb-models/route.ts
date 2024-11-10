@@ -1,3 +1,4 @@
+import Product from "@/lib/models/product.model";
 import Store from "@/lib/models/store.model";
 import User from "@/lib/models/user.model";
 import { connectToDB } from "@/lib/mongoose";
@@ -27,6 +28,15 @@ export async function POST() {
     //     $unset: {
     //       isSeller: '', // Setting default as null
     //       userProducts: '',
+    //     },
+    //   }
+    // );
+
+    // const results = await Product.updateMany(
+    //   {},
+    //   {
+    //     $set: {
+    //       isVisible: true, // Add or update the 'isVisible' field for all products
     //     },
     //   }
     // );

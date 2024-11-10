@@ -79,13 +79,13 @@ export default function StoreProfile({ params }: { params: { slug: string } }) {
               </p>
             </div>
           </div>
-          <div className="flex items-center justify-center gap-2 h-1/3 w-full">
+          {/* <div className="flex items-center justify-center gap-2 h-1/3 w-full">
             <Star />
             <Star />
             <Star />
             <Star />
             <Star />
-          </div>
+          </div> */}
         </div>
 
         <div className="pt-4 w-full h-full">
@@ -93,10 +93,10 @@ export default function StoreProfile({ params }: { params: { slug: string } }) {
             defaultValue="products"
             className="sm:max-w-4xl mx-auto w-full"
           >
-            <TabsList className="grid w-full grid-cols-3 text-xl font-bold">
+            <TabsList className="grid w-full grid-cols-2 text-xl font-bold">
               <TabsTrigger value="products">Products</TabsTrigger>
               <TabsTrigger value="description">Description</TabsTrigger>
-              <TabsTrigger value="reviews">Reviews</TabsTrigger>
+              {/* <TabsTrigger value="reviews">Reviews</TabsTrigger> */}
             </TabsList>
 
             <TabsContent value="products">
@@ -114,7 +114,7 @@ export default function StoreProfile({ params }: { params: { slug: string } }) {
               <StoreDescription store={store} />
             </TabsContent>
 
-            <TabsContent value="reviews">
+            {/* <TabsContent value="reviews">
               <Card>
                 <CardHeader>
                   <CardTitle>Reviews</CardTitle>
@@ -123,7 +123,7 @@ export default function StoreProfile({ params }: { params: { slug: string } }) {
                   </CardDescription>
                 </CardHeader>
               </Card>
-            </TabsContent>
+            </TabsContent> */}
           </Tabs>
         </div>
       </section>

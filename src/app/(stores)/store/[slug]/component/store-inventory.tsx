@@ -32,12 +32,14 @@ import axios from "axios";
 import { Product } from "@/types";
 import Link from "next/link";
 import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 
 export default function StoreInventory({
   params,
 }: {
   params: { slug: string };
 }) {
+  const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [storeProducts, setStoreProducts] = useState<Product[]>([]);
@@ -87,6 +89,35 @@ export default function StoreInventory({
     }
   };
 
+  const toggleProductVisibility = async (productId: string) => {
+    setIsLoading(true);
+    try {
+      const response = await axios.post(
+        "/api/store/toggle-product-visibility",
+        {
+          data: { productId },
+        }
+      );
+
+      if (response.status === 200) {
+        toast({
+          title: `Success`,
+          description: `Product visibility Updated Successfully.`,
+        });
+      }
+    } catch (error: any) {
+      console.error("Failed to update Product visibility.", error.message);
+      toast({
+        title: `Error`,
+        variant: `destructive`,
+        description: `An error occured while updating Product visibility..`,
+      });
+    } finally {
+      setIsLoading(false);
+      router.refresh();
+    }
+  };
+
   const totalProducts = storeProducts.length;
   const totalPages = Math.ceil(totalProducts / pageSize);
   const startIndex = (currentPage - 1) * pageSize;
@@ -123,6 +154,7 @@ export default function StoreInventory({
                     </TableHead>
                     <TableHead>Name</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Visibility</TableHead>
                     <TableHead className="hidden lg:table-cell">
                       Price
                     </TableHead>
@@ -132,7 +164,7 @@ export default function StoreInventory({
                     <TableHead className="hidden lg:table-cell">
                       Created At
                     </TableHead>
-                    <TableHead className="hidden lg:table-cell">More</TableHead>
+                    <TableHead>More</TableHead>
                     <TableHead>
                       <span className="sr-only">Actions</span>
                     </TableHead>
@@ -151,17 +183,51 @@ export default function StoreInventory({
                           width="64"
                         />
                       </TableCell>
-                      <TableCell className="font-medium">
+                      <TableCell className="font-medium"
+                      style={{
+                        marginTop: "1.5em",
+                        display: "-webkit-box",
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        WebkitLineClamp: 2, // Limits the text to 3 lines
+                        maxHeight: "2.5em", // Adjust this based on the number of lines and line height
+                        lineHeight: "1.5em", // Adjust based on font size for accurate height control
+                      }}
+                      >
                         {product.productName}
                       </TableCell>
                       <TableCell>
                         {product.isVerifiedProduct === true ? (
-                          <Badge variant="outline" className="text-green-500 border-none">
+                          <Badge
+                            variant="outline"
+                            className="text-green-500 border-none"
+                          >
                             Verified
                           </Badge>
                         ) : (
-                          <Badge variant="outline" className="text-yellow-500 border-none">
+                          <Badge
+                            variant="outline"
+                            className="text-yellow-500 border-none"
+                          >
                             unverified
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {product.isVisible === true ? (
+                          <Badge
+                            variant="outline"
+                            className="text-green-500 border-none"
+                          >
+                            Visible
+                          </Badge>
+                        ) : (
+                          <Badge
+                            variant="outline"
+                            className="text-yellow-500 border-none"
+                          >
+                            Hidden
                           </Badge>
                         )}
                       </TableCell>
@@ -210,6 +276,23 @@ export default function StoreInventory({
                                 "Delete"
                               )}
                             </DropdownMenuItem> */}
+                            <DropdownMenuItem
+                              onClick={() =>
+                                toggleProductVisibility(product._id as string)
+                              }
+                            >
+                              {isLoading ? (
+                                <p className="flex flex-row items-center gap-4">
+                                  <Loader
+                                    className=" animate-spin"
+                                    width={25}
+                                    height={25}
+                                  />{" "}
+                                </p>
+                              ) : (
+                                "Toggle Visibility"
+                              )}
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>

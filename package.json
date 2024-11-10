@@ -30,8 +30,10 @@
     "cloudinary": "^2.2.0",
     "clsx": "^2.1.1",
     "cookies-next": "^4.2.1",
+    "dompurify": "^3.1.7",
     "framer-motion": "^11.1.9",
     "input-otp": "^1.2.4",
+    "isomorphic-dompurify": "^2.16.0",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.376.0",
     "mongoose": "^8.3.4",
@@ -50,6 +52,7 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
+    "@types/dompurify": "^3.0.5",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20",
     "@types/nodemailer": "^6.4.15",

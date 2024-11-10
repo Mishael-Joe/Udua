@@ -39,33 +39,6 @@ export default function BrandProfile({ params }: { params: { slug: string } }) {
     fetchStoreData();
   }, []);
 
-  const elementRef = useRef<HTMLDivElement | null>(null);
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (elementRef.current) {
-        const rect = elementRef.current.getBoundingClientRect();
-        const isVisible =
-          rect.top >= 0 &&
-          rect.left >= 0 &&
-          rect.bottom <=
-            (window.innerHeight || document.documentElement.clientHeight) &&
-          rect.right <=
-            (window.innerWidth || document.documentElement.clientWidth);
-        setIsVisible(isVisible);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    // Initial check on component mount
-    handleScroll();
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
   if (store === null) {
     return (
       <div className="w-full min-h-screen flex items-center justify-center">
@@ -105,15 +78,14 @@ export default function BrandProfile({ params }: { params: { slug: string } }) {
             </p>
           </div>
         </div>
-        <Rating />
       </div>
 
       <div className="pt-4 w-full h-fit">
         <Tabs defaultValue="products" className="max-w-6xl mx-auto">
-          <TabsList className="grid w-full grid-cols-3 text-xl font-bold">
+          <TabsList className="grid w-full grid-cols-2 text-xl font-bold">
             <TabsTrigger value="products">Products</TabsTrigger>
             <TabsTrigger value="description">Description</TabsTrigger>
-            <TabsTrigger value="reviews">Reviews</TabsTrigger>
+            {/* <TabsTrigger value="reviews">Reviews</TabsTrigger> */}
           </TabsList>
           <TabsContent value="products">
             <Card>
@@ -131,7 +103,8 @@ export default function BrandProfile({ params }: { params: { slug: string } }) {
           <TabsContent value="description">
             <BrandDescription store={store} />
           </TabsContent>
-          <TabsContent value="reviews">
+
+          {/* <TabsContent value="reviews">
             <Card>
               <CardHeader>
                 <CardTitle>Reviews</CardTitle>
@@ -139,25 +112,8 @@ export default function BrandProfile({ params }: { params: { slug: string } }) {
                   What people are saying about this store.
                 </CardDescription>
               </CardHeader>
-
-              <CardContent>
-                <div>
-                  <div
-                    ref={elementRef}
-                    style={{
-                      width: "100px",
-                      height: "100px",
-                      backgroundColor: isVisible ? "green" : "red",
-                      margin: "50px",
-                    }}
-                  >
-                    {isVisible ? "Visible" : "Not Visible"}
-                  </div>
-                  <p>Scroll to see visibility changes!</p>
-                </div>
-              </CardContent>
             </Card>
-          </TabsContent>
+          </TabsContent> */}
         </Tabs>
       </div>
     </section>

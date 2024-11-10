@@ -2,7 +2,6 @@ import User from "@/lib/models/user.model";
 import { connectToDB } from "@/lib/mongoose";
 import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
-import Store from "@/lib/models/store.model";
 
 export async function POST(request: NextRequest) {
   const requestBody = await request.json();
@@ -11,9 +10,9 @@ export async function POST(request: NextRequest) {
   try {
     connectToDB();
 
-    const store = await Store.findOne({ forgotpasswordToken: token });
+    const user = await User.findOne({ forgotpasswordToken: token });
 
-    if (!store) {
+    if (!user) {
       return NextResponse.json(
         { message: `Invalid or expired token` },
         { status: 400 }
@@ -22,24 +21,24 @@ export async function POST(request: NextRequest) {
 
     const salt = await bcryptjs.genSalt(10);
     const hashedPassword = await bcryptjs.hash(newPassword, salt);
-    const savedToken = store.forgotpasswordToken;
-    const tokenExpiry = new Date(store.forgotpasswordTokenExpiry).getTime();
+    const savedToken = user.forgotpasswordToken;
+    const tokenExpiry = new Date(user.forgotpasswordTokenExpiry).getTime();
 
     if (
       savedToken.toString() === token.toString() &&
       Date.now() < tokenExpiry
     ) {
-      store.password = hashedPassword;
-      store.forgotpasswordToken = null;
-      store.forgotpasswordTokenExpiry = null;
-      await store.save();
+      user.adminPassword = hashedPassword;
+      user.forgotpasswordToken = null;
+      user.forgotpasswordTokenExpiry = null;
+      await user.save();
 
       const response = NextResponse.json(
         { message: "Password reset successful", success: true },
         { status: 200 }
       );
 
-      response.cookies.delete("storeToken");
+      response.cookies.delete("adminToken");
 
       return response;
     } else {

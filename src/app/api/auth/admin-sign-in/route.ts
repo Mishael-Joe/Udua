@@ -26,7 +26,10 @@ export async function POST(request: NextRequest) {
 
     if (user.adminPassword !== undefined || user.adminPassword !== false) {
       // check it password is correct
-      const validatePassword = await bcryptjs.compare(password, user.adminPassword);
+      const validatePassword = await bcryptjs.compare(
+        password,
+        user.adminPassword
+      );
 
       if (!validatePassword) {
         return NextResponse.json(
@@ -41,12 +44,19 @@ export async function POST(request: NextRequest) {
       };
 
       // Three Days in seconds
-      const threeDaysInSeconds = 3 * 24 * 60 * 60;
+      // const threeDaysInSeconds = 3 * 24 * 60 * 60;
+
+      // One Day in seconds
+      const oneDayInSeconds = 24 * 60 * 60;
 
       // create token
-      const token = await jwt.sign(adminTokenData, process.env.JWT_SECRET_KEY!, {
-        expiresIn: threeDaysInSeconds,
-      });
+      const token = await jwt.sign(
+        adminTokenData,
+        process.env.JWT_SECRET_KEY!,
+        {
+          expiresIn: oneDayInSeconds,
+        }
+      );
 
       const response = NextResponse.json(
         { message: "Login successful", success: true, adminTokenData },
@@ -55,15 +65,12 @@ export async function POST(request: NextRequest) {
 
       response.cookies.set("adminToken", token, {
         httpOnly: true,
-        maxAge: threeDaysInSeconds,
+        maxAge: oneDayInSeconds,
       });
 
       return response;
     } else {
-      return NextResponse.json(
-        { error: "Access Denied" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Access Denied" }, { status: 401 });
     }
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

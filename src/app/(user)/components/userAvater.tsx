@@ -51,38 +51,55 @@ function UserAvatar({ name }: UserAvatarProps) {
       <DropdownMenu>
         <DropdownMenuTrigger>
           {userName ? (
-            userName
+            <span className="hover:bg-transparent hover:text-udua-orange-primary delay-75 transition-all ease-in-out">
+              {userName}
+            </span>
           ) : (
-            <Avatar>
-              <AvatarFallback>
-                <User2Icon />
-              </AvatarFallback>
-            </Avatar>
+            <User2Icon className="hover:!bg-transparent hover:!text-udua-orange-primary !delay-75 !transition-all !ease-in-out" />
           )}
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           {userName ? (
             <>
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator className=" border" />
               <Link href={`/profile`}>
-                <DropdownMenuItem>Profile</DropdownMenuItem>
+                <DropdownMenuItem className=" cursor-pointer hover:!bg-transparent hover:!text-udua-orange-primary !delay-75 !transition-all !ease-in-out hover:font-semibold">
+                  Profile
+                </DropdownMenuItem>
               </Link>
               <Link href={`/wishlist`}>
-                <DropdownMenuItem>Wishlist</DropdownMenuItem>
+                <DropdownMenuItem className=" cursor-pointer hover:!bg-transparent hover:!text-udua-orange-primary !delay-75 !transition-all !ease-in-out hover:font-semibold">
+                  Wishlist
+                </DropdownMenuItem>
               </Link>
               <Link href={`/order-history`}>
-                <DropdownMenuItem>Orders</DropdownMenuItem>
+                <DropdownMenuItem className=" cursor-pointer hover:!bg-transparent hover:!text-udua-orange-primary !delay-75 !transition-all !ease-in-out hover:font-semibold">
+                  Orders
+                </DropdownMenuItem>
               </Link>
-              <DropdownMenuSeparator />
+              <DropdownMenuSeparator className=" border" />
               <DropdownMenuLabel>
-                <Button onClick={signOut} className="w-full">
+                <Button
+                  onClick={signOut}
+                  variant={`ghost`}
+                  className="w-full dark:hover:bg-transparent dark:hover:text-udua-orange-primary font-semibold hover:bg-transparent hover:text-udua-orange-primary delay-75 transition-all ease-in-out h-5"
+                >
                   Sign out
                 </Button>
               </DropdownMenuLabel>
             </>
           ) : (
             <Link href={`/sign-in`}>
-              <DropdownMenuItem>Sign In</DropdownMenuItem>
+              <DropdownMenuLabel>
+                <Button
+                  onClick={signOut}
+                  variant={`ghost`}
+                  className="w-full dark:hover:bg-transparent dark:hover:text-udua-orange-primary font-semibold hover:bg-transparent hover:text-udua-orange-primary delay-75 transition-all ease-in-out h-5"
+                >
+                  Sign In
+                </Button>
+              </DropdownMenuLabel>
             </Link>
           )}
         </DropdownMenuContent>

@@ -35,11 +35,11 @@ export default function RootLayout({
       <body className={`${rubik.className} scroll-smooth`}>
         <StateContext>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <AuthHeader />
+            {/* <AuthHeader /> */}
             <SiteBlob />
             <Toaster />
             <div>{children}</div>
-            <SiteFooter />
+            {/* <SiteFooter /> */}
             <TailwindIndicator />
           </ThemeProvider>
         </StateContext>
