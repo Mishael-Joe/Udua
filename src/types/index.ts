@@ -54,6 +54,7 @@ export type Store = {
   pendingBalance: number;
   platformFee: number;
   transactionFees: number;
+  totalEarnings: number;
   payoutAccounts: PayoutAccounts[];
   payoutHistory: PayoutHistory[];
 };
@@ -197,3 +198,54 @@ export type ForProductGallery = {
 };
 
 // type ProductPrice = Exclude<Product, null>["productPrice"];
+
+
+// Define a single Bank type
+export type Bank = {
+  id: number;
+  name: string;
+  slug: string;
+  code: string;
+  longcode: string;
+  gateway: string | null; // Gateway can be null
+  pay_with_bank: boolean;
+  supports_transfer: boolean;
+  active: boolean;
+  country: string;
+  currency: string;
+  type: string;
+  is_deleted: boolean;
+  createdAt: string; // Date can be used if you want to handle date objects
+  updatedAt: string; // Date can be used if you want to handle date objects
+};
+
+// Type Definitions
+export interface BankDetails {
+  bankName: string;
+  accountNumber: string;
+  accountHolderName: string;
+}
+
+export interface PayoutAccount {
+  payoutMethod: string;
+  bankDetails: BankDetails;
+}
+
+export interface Payout_Account {
+  bankName: string;
+  accountNumber: string;
+  accountHolderName: string;
+  _id: string;
+}
+
+export interface Settlement {
+  _id: string;
+  storeID: string;
+  orderID: string;
+  settlementAmount: number;
+  payoutAccount: Payout_Account;
+  payoutStatus: "requested" | "completed" | "failed"; // assuming there could be other statuses
+  createdAt: string; // ISO Date string
+  updatedAt: string; // ISO Date string
+  __v: number;
+}

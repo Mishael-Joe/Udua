@@ -27,12 +27,12 @@ export async function POST(request: NextRequest) {
     })
       .populate({
         path: "products.product",
-        match: { accountId: storeID.toString() },
+        match: { storeID: storeID.toString() },
       })
       .select("-totalAmount -updatedAt")
       .exec();
 
-      console.log(`orders`, orders)
+      // console.log(`orders`, orders)
 
     return NextResponse.json(
       { message: "Orders found", fulfiliedOrders: orders },

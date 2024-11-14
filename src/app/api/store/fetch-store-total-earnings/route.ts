@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectToDB } from "@/lib/mongoose";
 import { getStoreIDFromToken } from "@/lib/helpers/getStoreIDFromToken";
 import Store from "@/lib/models/store.model";
-import Product from "@/lib/models/product.model";
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,16 +18,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const product = await Product.findOne().select("_id");
-
     // Find the store by its ID
     const store = await Store.findById(storeID)
-      .select("-password -storeOwner -updatedAt")
-      .populate({
-        path: "products",
-        match: { isVerifiedProduct: true },
-        select: "_id productName productImage productPrice", // Replace with the fields you want to include
-      })
+      .select("totalEarnings")
       .exec();
 
     if (!store) {
@@ -38,11 +30,11 @@ export async function POST(request: NextRequest) {
     // Return success response
     // console.log('store', store)
     return NextResponse.json(
-      { message: "Store details fetched successfully.", store: store },
+      { message: "Store Total Earnings fetched successfully.", store: store },
       { status: 200 }
     );
   } catch (error: any) {
-    console.error("Error fetching store details", error);
+    console.error("Error fetching Store Total Earnings", error);
     return NextResponse.json(
       { error: `Error fetching store details: ${error.message}` },
       { status: 500 }

@@ -19,14 +19,17 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader } from "lucide-react";
-import { Order } from "@/types";
+import { Order, Settlement } from "@/types";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import PayoutDialog from "./payout-dialog-component";
+import { calculateCommission } from "@/constant/constant";
 
 const orderStatus = ["Processing", "Shipped", "Out for Delivery"];
 
@@ -40,21 +43,62 @@ export default function OrderDetails({
   const [deliveryStatus, setDeliverStatus] = useState({
     status: "",
   });
+  const [payoutStatus, setPayoutStatus] = useState<string | null>(null);
   const [orderDetails, setOrderDetails] = useState<Order>();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
   useEffect(() => {
     const fetchOrderData = async () => {
       try {
-        const response = await axios.post("/api/user/orderDetails", {
+        const response = await axios.post("/api/store/order-details", {
           orderID: params.orderID,
         });
         setOrderDetails(response.data.orderDetail);
+        // console.log(`response.data.oederDetail`, response.data.orderDetail);
+        setLoading(false); // Stop loading when data is fetched
+      } catch (error: any) {
+        setError(true);
+        setLoading(false);
+        console.error("Failed to fetch seller Products", error.message);
+      }
+    };
+
+    // Fetch data when component mounts
+    fetchOrderData();
+
+    // Set a timeout to show error message if data isn't fetched within 10 seconds
+    const timeoutId = setTimeout(() => {
+      if (loading) {
+        setError(true);
+        setLoading(false);
+      }
+    }, 10000); // 10 seconds timeout
+
+    // Cleanup the timeout when the component unmounts or fetch is successful
+    return () => clearTimeout(timeoutId);
+  }, [loading]);
+
+  useEffect(() => {
+    const fetchSettlementStatus = async () => {
+      try {
+        const response = await axios.post<{ settlement: Settlement }>(
+          "/api/store/fetch-settlement-status",
+          {
+            orderID: params.orderID,
+          }
+        );
+        if (response.status === 200) {
+          setPayoutStatus(response.data.settlement.payoutStatus);
+        }
+        // setOrderDetails(response.data.orderDetail);
         // console.log(`response.data.oederDetail`, response.data.orderDetail);
       } catch (error: any) {
         console.error("Failed to fetch seller Products", error.message);
       }
     };
 
-    fetchOrderData();
+    fetchSettlementStatus();
   }, []);
 
   const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -120,6 +164,26 @@ export default function OrderDetails({
     }
   };
 
+  if (loading && !error) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center">
+        <p className="w-full h-full flex items-center justify-center">
+          <Loader className="animate-spin" /> Loading...
+        </p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center">
+        <p className="text-center text-red-600">
+          An error occurred. Please check your internet connection.
+        </p>
+      </div>
+    );
+  }
+
   if (orderDetails === null || orderDetails === undefined) {
     return (
       <div className="w-full min-h-screen flex items-center justify-center">
@@ -129,6 +193,11 @@ export default function OrderDetails({
       </div>
     );
   }
+
+  const totalAvailablePayout = orderDetails.products.reduce((total, order) => {
+    // Sum the prices of all products in order
+    return total + calculateCommission(order.price).settleAmount;
+  }, 0);
 
   if (orderDetails !== undefined) {
     return (
@@ -159,7 +228,9 @@ export default function OrderDetails({
 
         <Card>
           <CardHeader>
-            <CardTitle>Order ID: {orderDetails._id}</CardTitle>
+            <CardTitle className="text-sm sm:text-2xl">
+              Order ID: {orderDetails._id}
+            </CardTitle>
             <CardDescription>
               Here's the summary for this order.
             </CardDescription>
@@ -170,7 +241,7 @@ export default function OrderDetails({
               <p>
                 Order Date: {new Date(orderDetails.createdAt).toLocaleString()}
               </p>
-              <p>Status: {orderDetails.status}</p>
+              <p>Order Status: {orderDetails.status}</p>
               {/* <p>
                 Total Amount: &#8358;
                 {addCommasToNumber(orderDetails.totalAmount)}
@@ -178,10 +249,36 @@ export default function OrderDetails({
               <p>Shipping Address: {orderDetails.shippingAddress}</p>
               <p>Shipping Method: {orderDetails.shippingMethod}</p>
               <p>Tracking Number: {orderDetails.trackingNumber}</p> */}
-              <p>Payment Method: {orderDetails.paymentMethod}</p>
-              <p>Payment Status: {orderDetails.paymentStatus}</p>
+              <p>Customer Payment Method: {orderDetails.paymentMethod}</p>
+              <p>Customer Payment Status: {orderDetails.paymentStatus}</p>
+              {orderDetails.deliveryStatus === "Delivered" && (
+                <p>
+                  Payout Amount: &#8358;{" "}
+                  {addCommasToNumber(totalAvailablePayout)}
+                </p>
+              )}
             </div>
           </CardContent>
+
+          <CardFooter className="float-right">
+            {orderDetails.deliveryStatus === "Delivered" && (
+              <>
+                {payoutStatus === null ? (
+                  <PayoutDialog
+                    payableAmount={totalAvailablePayout}
+                    orderID={orderDetails._id}
+                  />
+                ) : payoutStatus === "requested" ? (
+                  <p>Payout Requested</p>
+                ) : payoutStatus === "paid" ? (
+                  <p>Payout Paid</p>
+                ) : (
+                  <p>Unknown Payout Status. Please, contact Udua</p>
+                )}
+                {/* Fallback for other possible statuses */}
+              </>
+            )}
+          </CardFooter>
         </Card>
 
         <Card>

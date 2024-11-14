@@ -35,7 +35,7 @@ export function SiteHeader() {
         <div className="flex items-center space-x-1">
           <CartCount />
 
-          <ThemeToggle />
+          {/* <ThemeToggle /> */}
 
           <UserAvatar name={name} />
         </div>

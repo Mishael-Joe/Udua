@@ -12,9 +12,9 @@ import { SiteFooter } from "@/components/site-footer";
 import StoreAside from "./component/store-aside";
 import { StoreHeader } from "./component/store-header";
 
-import { Rubik } from 'next/font/google'
-
-const rubik = Rubik({
+import { Montserrat } from 'next/font/google'
+ 
+const montserrat = Montserrat({
   weight: ['400', '600', '700'],
   subsets: ['latin'],
 })
@@ -39,8 +39,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${rubik.className} scroll-smooth`}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <body className={`${montserrat.className} scroll-smooth`}>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <StoreHeader params={params} />
           <SiteBlob />
           <Toaster />

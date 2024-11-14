@@ -6,37 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Loader2Icon } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-
-// Define a single Bank type
-type Bank = {
-  id: number;
-  name: string;
-  slug: string;
-  code: string;
-  longcode: string;
-  gateway: string | null; // Gateway can be null
-  pay_with_bank: boolean;
-  supports_transfer: boolean;
-  active: boolean;
-  country: string;
-  currency: string;
-  type: string;
-  is_deleted: boolean;
-  createdAt: string; // Date can be used if you want to handle date objects
-  updatedAt: string; // Date can be used if you want to handle date objects
-};
-
-// Type Definitions
-interface BankDetails {
-  bankName: string;
-  accountNumber: string;
-  accountHolderName: string;
-}
-
-interface PayoutAccount {
-  payoutMethod: string;
-  bankDetails: BankDetails;
-}
+import { Bank, PayoutAccount } from "@/types";
 
 const UpdatePayoutForm = () => {
   //   const [payoutMethod, setPayoutMethod] = useState("bank transfer");

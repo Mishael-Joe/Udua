@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     })
       .populate({
         path: "products.product",
-        match: { accountId: storeID.toString() },
+        match: { storeID: storeID.toString() },
       })
       .select("-totalAmount -updatedAt")
       .exec();

@@ -10,7 +10,7 @@ interface IProduct extends Document {
   productDescription: string;
   productSpecification: string[];
   productCategory: string[];
-  productSubCategory: string[],
+  productSubCategory: string[];
   isVerifiedProduct: boolean;
   isVisible: boolean;
 } // NOTE: storeID serves as the store the product belongs to.

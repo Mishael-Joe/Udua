@@ -9,9 +9,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { StateContext } from "@/context/stateContext";
 import { AuthHeader } from "./component/authHeader";
 
-import { Rubik } from 'next/font/google'
+import { Montserrat } from 'next/font/google'
  
-const rubik = Rubik({
+const montserrat = Montserrat({
   weight: ['400', '600', '700'],
   subsets: ['latin'],
 })
@@ -32,9 +32,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${rubik.className} scroll-smooth`}>
+      <body className={`${montserrat.className} scroll-smooth`}>
         <StateContext>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
             {/* <AuthHeader /> */}
             <SiteBlob />
             <Toaster />

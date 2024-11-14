@@ -46,10 +46,11 @@ export async function POST() {
       {
         $set: {
           // Add new fields if they don't exist
-          availableBalance: 0,
-          pendingBalance: 0,
-          platformFee: 0,
-          transactionFees: 0,
+          // availableBalance: 0,
+          // pendingBalance: 0,
+          // platformFee: 0,
+          // transactionFees: 0,
+          totalEarnings: 0,
         },
       },
       { multi: true } // Update all documents

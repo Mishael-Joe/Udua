@@ -7,8 +7,8 @@ export async function POST(request: NextRequest) {
   try {
     const requestBody = await request.json();
     const { payoutMethod, bankDetails } = requestBody;
-    console.log('payoutMethod', payoutMethod)
-    console.log('bankDetails', bankDetails)
+    // console.log("payoutMethod", payoutMethod);
+    // console.log("bankDetails", bankDetails);
 
     // Validate request payload
     if (!payoutMethod || !bankDetails) {
@@ -38,9 +38,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Store not found" }, { status: 404 });
     }
 
-    // Check if the payout method already exists in the payoutAccounts array
+    // Check if the store already has 3 payout accounts
+    if (store.payoutAccounts.length >= 3) {
+      return NextResponse.json(
+        { error: "You can only add up to 3 payout accounts." },
+        { status: 400 }
+      );
+    }
+
+    // Check if a payout account with the same payout method and bank details already exists
     const existingPayoutAccount = store.payoutAccounts.find(
-      (account: any) => account.payoutMethod === payoutMethod
+      (account: any) =>
+        account.payoutMethod === payoutMethod &&
+        account.bankDetails.accountNumber === bankDetails.accountNumber && 
+        account.bankDetails.bankName === bankDetails.bankName && 
+        account.bankDetails.accountHolderName === bankDetails.accountHolderName
     );
 
     if (existingPayoutAccount) {

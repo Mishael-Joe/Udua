@@ -5,7 +5,7 @@ const PayoutAccountSchema = new Schema(
   {
     payoutMethod: {
       type: String,
-      enum: ["bank transfer"],
+      enum: ["Bank Transfer"],
       required: true,
     },
     bankDetails: {
@@ -93,6 +93,10 @@ const StoreSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    totalEarnings: {
+      type: Number,
+      default: 0,
+    }, // TODO: update this model in the DB
 
     // Payout accounts associated with the store
     payoutAccounts: [PayoutAccountSchema],

@@ -9,13 +9,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { StateContext } from "@/context/stateContext";
 import { AdminHeader } from "./components/admin-header";
 
-import { Rubik } from "next/font/google";
 import AdminAside from "./components/admin-aside";
-
-const rubik = Rubik({
-  weight: ["400", "600", "700"],
-  subsets: ["latin"],
-});
+import { Montserrat } from 'next/font/google'
+ 
+const montserrat = Montserrat({
+  weight: ['400', '600', '700'],
+  subsets: ['latin'],
+})
 
 export const metadata: Metadata = {
   title: siteConfig.siteName,
@@ -33,9 +33,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${rubik.className} scroll-smooth`}>
+      <body className={`${montserrat.className} scroll-smooth`}>
         <StateContext>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
             <AdminHeader />
             <SiteBlob />
             <Toaster />
