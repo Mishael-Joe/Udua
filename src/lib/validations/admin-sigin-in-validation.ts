@@ -6,5 +6,7 @@ export const adminSignInInfoValidation = z.object({
   }),
   password: z.string({
     required_error: "Required",
-  }),
+  })  
+  .min(3, { message: "Your Admin Password" })
+  .max(15),
 });

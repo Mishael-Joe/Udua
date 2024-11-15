@@ -16,13 +16,13 @@ export const siteConfig = {
   ],
   paymentmethods:[
     {
-      img: 'mastercard-full-svgrepo-com.svg'
+      img: '/mastercard-full-svgrepo-com.svg'
     },
     {
-      img: 'visa-svgrepo-com.svg'
+      img: '/visa-svgrepo-com.svg'
     },
     {
-      img: 'verve-svgrepo-com.svg'
+      img: '/verve-svgrepo-com.svg'
     },
   ]
 };

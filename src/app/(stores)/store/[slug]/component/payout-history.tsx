@@ -42,9 +42,7 @@ import { Button } from "@/components/ui/button";
 function PayoutHistory() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [storeTotalEarnings, setStoreTotalEarnings] = useState<number | null>(
-    null
-  );
+  const [storeTotalEarnings, setStoreTotalEarnings] = useState<number>(0);
   const [pendingSettlementAmount, setPendingSettlementAmount] =
     useState<number>(0);
   const [pendingSettlements, setPendingSettlements] = useState<
@@ -140,6 +138,16 @@ function PayoutHistory() {
       <div className="w-full min-h-screen flex items-center justify-center">
         <p className="text-center text-red-600">
           An error occurred. Please check your internet connection.
+        </p>
+      </div>
+    );
+  }
+
+  if (pendingSettlements === null || successfulSettlements === null) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center">
+        <p className="w-full h-full flex items-center justify-center">
+          <Loader className="animate-spin" /> Loading...
         </p>
       </div>
     );
@@ -333,7 +341,9 @@ function PayoutHistory() {
                 <TableBody>
                   {payoutAccounts!.map((account) => (
                     <TableRow key={account.payoutMethod}>
-                      <TableCell>{account.payoutMethod.toUpperCase()}</TableCell>
+                      <TableCell>
+                        {account.payoutMethod.toUpperCase()}
+                      </TableCell>
 
                       <TableCell>{account.bankDetails.bankName}</TableCell>
 

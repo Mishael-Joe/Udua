@@ -46,7 +46,6 @@ function SignIn() {
     try {
       if (values.email === "") {
         toast({
-          variant: "destructive",
           title: `Error`,
           description: `Please, input a valid Email.`,
         });

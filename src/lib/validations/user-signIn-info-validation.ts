@@ -8,6 +8,6 @@ export const userSignInInfoValidation = z.object({
     .string({
       required_error: "Required",
     })
-    .min(3, { message: "Minimum 6 Characters" })
+    .min(3, { message: "Required" })
     .max(15),
 });
