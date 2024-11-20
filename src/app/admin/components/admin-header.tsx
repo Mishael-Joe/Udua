@@ -10,7 +10,7 @@ export function AdminHeader() {
         <MainNav />
 
         <div className="flex items-center space-x-1">
-          <ThemeToggle />
+          {/* <ThemeToggle /> */}
 
           <AdminSheets />
         </div>

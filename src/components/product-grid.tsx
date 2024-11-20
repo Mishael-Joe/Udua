@@ -44,8 +44,18 @@ export function ProductGrid({ products }: ForProductGrid) {
             />
           </div>
 
-          <h3 className="mt-4 font-medium">{product.productName}</h3>
-          <p className="mt-2 font-medium">
+          <h3 className="mt-1 font-medium"
+          style={{
+            display: "-webkit-box",
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            WebkitLineClamp: 1, // Limits the text to 3 lines
+            maxHeight: "1.5em", // Adjust this based on the number of lines and line height
+            lineHeight: "1.5em", // Adjust based on font size for accurate height control
+          }}
+          >{product.productName}</h3>
+          <p className="mt-1 font-medium">
             &#8358; {addCommasToNumber(product.productPrice as number)}{" "}
           </p>
         </Link>
