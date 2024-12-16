@@ -32,32 +32,37 @@ export async function POST() {
     //   }
     // );
 
-    // const results = await Product.updateMany(
-    //   {},
-    //   {
-    //     $set: {
-    //       isVisible: true, // Add or update the 'isVisible' field for all products
-    //     },
-    //   }
-    // );
+    // Rename productPrice to price in all documents
+    const resultss = await Product.updateMany(
+      {},
+      { $rename: { productPrice: "price" } }
+    );
+
+    const result = await Product.updateMany(
+      {},
+      {
+        $set: {
+          productType: "Physical Product", // Add or update the 'isVisible' field for all products
+        },
+      }
+    );
 
     const results = await Store.updateMany(
       {}, // Apply to all stores
       {
         $set: {
-          // Add new fields if they don't exist
-          // availableBalance: 0,
-          // pendingBalance: 0,
-          // platformFee: 0,
-          // transactionFees: 0,
-          totalEarnings: 0,
+          ebooks: [],
         },
       },
       { multi: true } // Update all documents
     );
 
+    const body = {
+      result,
+      results,
+    };
     return NextResponse.json(
-      { message: "Store model updated successfully", results },
+      { message: "Store model updated successfully", body },
       { status: 200 }
     );
   } catch (error) {

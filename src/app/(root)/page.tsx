@@ -1,9 +1,9 @@
 import HeroBanners from "@/components/banners";
 import LeftSidebar from "@/components/left-sidebar";
 import { ProductGrid } from "@/components/product-grid";
-import { fetchProducts } from "@/lib/actions/product.action";
+import { fetchProductsAndEBooks } from "@/lib/actions/product.action";
 import SkeletonLoader from "@/lib/loaders/skeletonLoader";
-import { Product } from "@/types";
+import { CombinedProduct, Product } from "@/types";
 import { Suspense } from "react";
 
 type Props = {
@@ -42,7 +42,7 @@ export default async function Home({ searchParams }: Props) {
   const categoriesArray = categories ? (categories as string).split(" ") : [];
   // console.log(`categoriesArray`, categoriesArray);
 
-  const products: Product[] = await fetchProducts(
+  const products: CombinedProduct[] = await fetchProductsAndEBooks(
     categoriesArray,
     page,
     limit,
@@ -56,6 +56,8 @@ export default async function Home({ searchParams }: Props) {
     // dateFrom,
     // dateTo
   );
+
+  console.log("combinedResults", products)
 
   return (
     <main className="grid min-h-screen mx-auto md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr] px-5 md:px-4 gap-4 max-w-7xl">

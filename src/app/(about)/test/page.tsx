@@ -1,59 +1,3 @@
-// "use client"
-
-// import axios from "axios";
-// import { ChangeEvent } from "react";
-
-// async function uploadToS3(e: ChangeEvent<HTMLFormElement>) {
-//   const formData = new FormData(e.target);
-
-//   const file = formData.get("file");
-//   console.log('file', file)
-
-//   if (!file) {
-//     return null;
-//   }
-
-//   // @ts-ignore
-//   const fileType = encodeURIComponent(file.type);
-
-//   const req = {
-//     req: fileType
-//   }
-
-//   const { data } = await axios.get(`/api/store/ebooks/media`, {
-//     params: {
-//         fileType,
-//     },
-//   });
-//   console.log('data', data)
-
-//   const { uploadUrl, key } = data;
-
-//   await axios.put(uploadUrl, file);
-
-//   return key;
-// }
-
-// function Page() {
-//   async function handleSubmit(e: ChangeEvent<HTMLFormElement>) {
-//     e.preventDefault();
-
-//     const key = await uploadToS3(e);
-//   }
-
-//   return (
-//     <>
-//       <p>Please select file to upload</p>
-//       <form onSubmit={handleSubmit}>
-//         <input type="file" accept="image/jpeg image/png" name="file" />
-//         <button type="submit">Upload</button>
-//       </form>
-//     </>
-//   );
-// }
-
-// export default Page;
-
 "use client";
 
 import axios from "axios";
@@ -78,17 +22,14 @@ async function uploadToS3(e: ChangeEvent<HTMLFormElement>) {
       params: { fileType },
     });
 
-    const res = data.data.data
+    const res = data.data.data;
     const { uploadUrl, key } = res;
     console.log("Generated upload URL: ", uploadUrl);
-
-
 
     if (!uploadUrl || typeof uploadUrl !== "string") {
       console.error("Invalid upload URL:", uploadUrl);
       return null;
     }
-    
 
     // Upload the file to S3 using the signed URL
     await axios.put(uploadUrl, file, {
@@ -103,6 +44,28 @@ async function uploadToS3(e: ChangeEvent<HTMLFormElement>) {
     return null;
   }
 }
+
+async function deleteFiles(fileKeys: string[]) {
+  try {
+    const response = await axios.delete(`/api/s3-bucket/delete-action`, {
+      params: { keys: fileKeys }, // Pass an array of keys
+    });
+
+    console.log("Files deleted:", response.data);
+  } catch (error) {
+    console.error("Error deleting files:", error);
+  }
+}
+
+// Call the deleteFiles function with the keys of the files you want to delete
+// deleteFiles([
+//   "4426f2ff-fd32-4f72-8918-d577cc5e92b0.png",
+//   "f9028e18-db4b-4143-9608-88f6cbd174db.pdf",
+//   "c89569be-7d3f-49c6-8164-976d233707ad.pdf",
+//   "f1002aed-31e1-454d-8d97-57390f0c9542.pdf",
+//   "1748d4e2-9406-4185-a83e-63b09b6758ac.octet-stream",
+//   "11071f7a-4e03-4df9-9491-de8d9958039f.jpeg",
+// ]);
 
 function Page() {
   // Handle form submission
@@ -122,7 +85,11 @@ function Page() {
       <p>Please select a file to upload</p>
       <form onSubmit={handleSubmit}>
         {/* Accept only image/jpeg and image/png formats */}
-        <input type="file" accept="image/jpeg, image/png" name="file" />
+        <input
+          type="file"
+          accept="image/jpeg, image/png, application/pdf"
+          name="file"
+        />
         <button type="submit">Upload</button>
       </form>
     </>

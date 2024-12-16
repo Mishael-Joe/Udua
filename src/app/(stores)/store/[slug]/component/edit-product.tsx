@@ -53,6 +53,7 @@ export default function EditProduct({ params }: { params: { productID: string } 
     productSpecification: "",
     productCategory: "",
     productSubCategory: "",
+    productType: "Physical Product"
   });
 
   const possibleSizes = [

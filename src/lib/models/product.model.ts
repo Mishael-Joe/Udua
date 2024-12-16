@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 interface IProduct extends Document {
   storeID: string;
+  productType: "Physical Product" | "Digital Product";
   productName: string;
   productPrice: number;
   productSizes?: string[];
@@ -17,6 +18,12 @@ interface IProduct extends Document {
 
 const productSchema = new Schema<IProduct>({
   storeID: { type: String, required: true }, // The store a product belongs to
+  productType: {
+    type: String,
+    enum: ["Physical Product", "Digital Product"],
+    default: "Physical Product",
+    required: true,
+  },
   productName: { type: String, required: true },
   productPrice: { type: Number, required: true },
   productSizes: { type: [String] },

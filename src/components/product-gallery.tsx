@@ -16,7 +16,7 @@ import Link from "next/link";
 type Response = {
   status: number;
   message: any;
-}
+};
 
 export function ProductGallery({ product, isLikedProduct }: ForProductGallery) {
   const { toast } = useToast();
@@ -31,10 +31,10 @@ export function ProductGallery({ product, isLikedProduct }: ForProductGallery) {
         const response: Response = await addToWishlist(product._id!);
         // console.log('res', response)
 
-        if (response.message === 'User not authenticated') {
-          router.push('/sign-in')
+        if (response.message === "User not authenticated") {
+          router.push("/sign-in");
         }
-        
+
         if (response.status === 200) {
           toast({
             variant: "default",
@@ -42,7 +42,7 @@ export function ProductGallery({ product, isLikedProduct }: ForProductGallery) {
             description: `Product added to your Wishlist`,
           });
         }
-        
+
         if (response.status === 401) {
           toast({
             variant: "destructive",
@@ -82,75 +82,145 @@ export function ProductGallery({ product, isLikedProduct }: ForProductGallery) {
   };
 
   return (
-    <div className="flex flex-col-reverse">
+    <div className="flex flex-col md:sticky md:top-0">
       {/* Image Grid */}
-      <div className="mx-auto mt-6 w-full max-w-2xl px-3.5 lg:max-w-none">
-        <ul className="grid grid-cols-3 gap-2 sm:gap-6">
-          {product.productImage.map((image, imageIndex) => (
-            <div
-              key={imageIndex}
-              onClick={() => setSelectedImage(imageIndex)}
-              className="relative flex h-24 cursor-pointer items-center justify-center rounded-md bg-white text-sm font-medium uppercase hover:bg-gray-50"
-            >
-              <span className="absolute inset-0 overflow-hidden rounded-md">
-                <Image
-                  placeholder="blur"
-                  blurDataURL={`data:image/svg+xml;base64,${toBase64(
-                    shimmer(200, 200)
-                  )}`}
-                  src={image}
-                  width={200}
-                  height={200}
-                  alt=""
-                  className="h-full w-full object-cover object-center"
-                />
-              </span>
-              {imageIndex === selectedImage && (
-                <span
-                  className="pointer-events-none absolute inset-0 rounded-md ring-4 ring-indigo-500 ring-offset-2"
-                  aria-hidden="true"
-                />
-              )}
-            </div>
-          ))}
-        </ul>
-      </div>
+      {product.productType === "Physical Product" ? (
+        <>
+          {/* Main Image */}
+          <div className="aspect-h-1 aspect-w-1 w-full p-3.5 sm:p-0 relative">
+            {isLoading && (
+              <button>
+                <Loader className="w-8 h-8 z-10 p-1 top-12 left-6 md:top-10 md:left-3 absolute animate-spin" />
+              </button>
+            )}
+            {isLikedProduct && !isLoading && (
+              <button onClick={() => handleWishlist("removeFromWishlist")}>
+                <Heart className=" text-white rounded p-1 top-12 left-6 md:top-10 md:left-3 bg-red-500 w-8 h-8 z-10 absolute" />
+              </button>
+            )}
+            {!isLikedProduct && !isLoading && (
+              <button onClick={() => handleWishlist("addToWishlist")}>
+                <Heart className=" rounded p-1 top-12 left-6 md:top-10 md:left-3 text-black bg-slate-100 w-8 h-8 z-10 absolute" />
+              </button>
+            )}
+            <Link href={`/brand/${product.storeID}`}>
+              <button>
+                <Store className=" rounded p-1 top-12 right-6 md:top-10 md:right-3 text-black bg-slate-100 w-8 h-8 z-10 absolute" />
+              </button>
+            </Link>
+            <Image
+              priority
+              src={product.productImage[selectedImage]}
+              alt={`Main ${product.productName} image`}
+              width={600}
+              height={750}
+              placeholder="blur"
+              blurDataURL={`data:image/svg+xml;base64,${toBase64(
+                shimmer(600, 750)
+              )}`}
+              className="h-96 w-full border-2 border-gray-200 object-cover object-center shadow-sm dark:border-gray-800 sm:rounded-lg"
+            />
+          </div>
 
-      {/* Main Image */}
-      <div className="aspect-h-1 aspect-w-1 w-full p-3.5 sm:p-0 relative">
-        {isLoading && (
-          <button>
-            <Loader className="w-10 h-10 z-10 p-1 top-12 left-6 md:top-10 md:left-3 absolute animate-spin" />
-          </button>
-        )}
-        {isLikedProduct && !isLoading && (
-          <button onClick={() => handleWishlist("removeFromWishlist")}>
-            <Heart className=" text-white rounded p-1 top-12 left-6 md:top-10 md:left-3 bg-red-500 w-10 h-10 z-10 absolute" />
-          </button>
-        )}
-        {!isLikedProduct && !isLoading && (
-          <button onClick={() => handleWishlist("addToWishlist")}>
-            <Heart className=" rounded p-1 top-12 left-6 md:top-10 md:left-3 text-black bg-slate-100 w-10 h-10 z-10 absolute" />
-          </button>
-        )}
-        <Link href={`/brand/${product.storeID}`}>
-        <button>
-            <Store className=" rounded p-1 top-12 right-6 md:top-10 md:right-3 text-black bg-slate-100 w-10 h-10 z-10 absolute" />
-          </button>
-        </Link>
-        <Image
-          priority
-          src={product.productImage[selectedImage]}
-          alt={`Main ${product.productName} image`}
-          width={600}
-          height={750}
-          placeholder="blur"
-          blurDataURL={`data:image/svg+xml;base64,${toBase64(
-            shimmer(600, 750)
-          )}`}
-          className="h-96 w-full border-2 border-gray-200 object-cover object-center shadow-sm dark:border-gray-800 sm:rounded-lg"
-        />
-      </div>
+          <div className="mx-auto mt-6 w-full max-w-2xl px-3.5 lg:max-w-none">
+            <ul className="grid grid-cols-3 gap-2 sm:gap-6">
+              {product.productImage.map((image, imageIndex) => (
+                <div
+                  key={imageIndex}
+                  onClick={() => setSelectedImage(imageIndex)}
+                  className="relative flex h-24 cursor-pointer items-center justify-center rounded-md bg-white text-sm font-medium uppercase hover:bg-gray-50"
+                >
+                  <span className="absolute inset-0 overflow-hidden rounded-md">
+                    <Image
+                      placeholder="blur"
+                      blurDataURL={`data:image/svg+xml;base64,${toBase64(
+                        shimmer(200, 200)
+                      )}`}
+                      src={image}
+                      width={200}
+                      height={200}
+                      alt=""
+                      className="h-full w-full object-cover object-center"
+                    />
+                  </span>
+                  {imageIndex === selectedImage && (
+                    <span
+                      className="pointer-events-none absolute inset-0 rounded-md ring-2 ring-udua-orange-primary ring-offset-2"
+                      aria-hidden="true"
+                    />
+                  )}
+                </div>
+              ))}
+            </ul>
+          </div>
+        </>
+      ) : (
+        <>
+          {/* Main Image */}
+          <div className="aspect-h-1 aspect-w-1 w-full sm:max-w-lg sm:mx-auto p-3.5 sm:p-0 relative">
+            {isLoading && (
+              <button>
+                <Loader className="w-8 h-8 z-10 p-1 top-12 left-6 md:top-10 md:left-3 absolute animate-spin" />
+              </button>
+            )}
+            {isLikedProduct && !isLoading && (
+              <button onClick={() => handleWishlist("removeFromWishlist")}>
+                <Heart className=" text-white rounded p-1 top-12 left-6 md:top-10 md:left-3 bg-red-500 w-8 h-8 z-10 absolute" />
+              </button>
+            )}
+            {!isLikedProduct && !isLoading && (
+              <button onClick={() => handleWishlist("addToWishlist")}>
+                <Heart className=" rounded p-1 top-12 left-6 md:top-10 md:left-3 text-black bg-slate-100 w-8 h-8 z-10 absolute" />
+              </button>
+            )}
+
+            <Image
+              priority
+              src={product.coverIMG[selectedImage]}
+              alt={`Main ${product.productName} image`}
+              width={500}
+              height={650}
+              placeholder="blur"
+              blurDataURL={`data:image/svg+xml;base64,${toBase64(
+                shimmer(600, 750)
+              )}`}
+              className="h-[32rem] w-full border-2 border-gray-200 object-fit object-center shadow-sm  sm:rounded-lg"
+            />
+          </div>
+
+          <div className="mx-auto mt-6 w-full max-w-2xl px-3.5 lg:max-w-none">
+            <ul className="grid grid-cols-3 gap-2 sm:gap-6 h-[10rem]">
+              {product.coverIMG.map((image, imageIndex) => (
+                <div
+                  key={imageIndex}
+                  onClick={() => setSelectedImage(imageIndex)}
+                  className="relative flex h-full cursor-pointer items-center justify-center rounded-md bg-white text-sm font-medium uppercase hover:bg-gray-50"
+                >
+                  <span className="absolute inset-0 overflow-hidden rounded-md">
+                    <Image
+                      placeholder="blur"
+                      blurDataURL={`data:image/svg+xml;base64,${toBase64(
+                        shimmer(200, 200)
+                      )}`}
+                      src={image}
+                      width={200}
+                      height={200}
+                      alt=""
+                      className="h-[10rem] w-full object-fit object-center"
+                    />
+                  </span>
+                  {imageIndex === selectedImage && (
+                    <span
+                      className="pointer-events-none absolute inset-0 rounded-md ring-2 ring-udua-orange-primary ring-offset-2"
+                      aria-hidden="true"
+                    />
+                  )}
+                </div>
+              ))}
+            </ul>
+          </div>
+        </>
+      )}
     </div>
   );
 }

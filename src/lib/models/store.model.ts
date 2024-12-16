@@ -72,7 +72,8 @@ const StoreSchema = new mongoose.Schema(
       required: true,
     },
     storeEmail: { type: String, required: true, unique: true }, // use to contact this store
-    products: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }], // Array of Products
+    products: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }], // Array of Products for stores that deals with physical products
+    ebooks: [{ type: mongoose.Schema.Types.ObjectId, ref: "Ebook" }], // Array of E-books for stores that deals with digital products like e-books
     uniqueId: { type: String, unique: true, required: true }, // Unique store link ID
     description: { type: String },
     forgotpasswordToken: String,

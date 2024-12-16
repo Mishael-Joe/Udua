@@ -45,6 +45,7 @@ export default function EditProduct({ params }: { params: { slug: string } }) {
     productSpecification: "",
     productCategory: "",
     productSubCategory: "",
+    productType: "Physical Product"
   });
 
   const [imagePreviews, setImagePreviews] = useState<string[]>([]); // This will store the image URLs

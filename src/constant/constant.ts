@@ -1,3 +1,8 @@
+export const productTypeArr = [
+  "Physical Product",
+  "Digital Product",
+];
+
 export const productCategories = [
   "Electronics",
   "Clothing",
@@ -104,6 +109,140 @@ export const subCategories: { [key: string]: string[] } = {
     "Meat and Seafood",
   ],
 };
+
+export const bookCategories = [
+  {
+    category: "Fiction",
+    subCategories: [
+      "Fantasy",
+      "Science Fiction",
+      "Mystery",
+      "Thriller",
+      "Romance",
+      "Historical Fiction",
+      "Horror",
+      "Literary Fiction"
+    ]
+  },
+  {
+    category: "Non-Fiction",
+    subCategories: [
+      "Biography",
+      "Memoir",
+      "Self-Help",
+      "Cookbooks",
+      "True Crime",
+      "History",
+      "Science",
+      "Philosophy"
+    ]
+  },
+  {
+    category: "Children's Books",
+    subCategories: [
+      "Picture Books",
+      "Early Readers",
+      "Chapter Books",
+      "Middle Grade",
+      "Young Adult"
+    ]
+  },
+  {
+    category: "Education & Reference",
+    subCategories: [
+      "Textbooks",
+      "Dictionaries",
+      "Study Guides",
+      "Language Learning",
+      "Test Preparation"
+    ]
+  },
+  {
+    category: "Business & Economics",
+    subCategories: [
+      "Entrepreneurship",
+      "Finance",
+      "Marketing",
+      "Leadership",
+      "Economics",
+      "Investing"
+    ]
+  },
+  {
+    category: "Health & Fitness",
+    subCategories: [
+      "Nutrition",
+      "Exercise",
+      "Mental Health",
+      "Wellness",
+      "Diets",
+      "Yoga"
+    ]
+  },
+  {
+    category: "Technology & Engineering",
+    subCategories: [
+      "Programming",
+      "Artificial Intelligence",
+      "Networking",
+      "Software Development",
+      "Electrical Engineering",
+      "Mechanical Engineering"
+    ]
+  },
+  {
+    category: "Art & Photography",
+    subCategories: [
+      "Art History",
+      "Drawing",
+      "Painting",
+      "Photography",
+      "Graphic Design"
+    ]
+  },
+  {
+    category: "Religion & Spirituality",
+    subCategories: [
+      "Christianity",
+      "Islam",
+      "Judaism",
+      "Buddhism",
+      "Spiritual Growth",
+      "Mythology"
+    ]
+  },
+  {
+    category: "Comics & Graphic Novels",
+    subCategories: [
+      "Superheroes",
+      "Manga",
+      "Fantasy",
+      "Science Fiction",
+      "Horror",
+      "Humor"
+    ]
+  },
+  {
+    category: "Travel",
+    subCategories: [
+      "Adventure Travel",
+      "Cultural Travel",
+      "Travel Guides",
+      "Maps",
+      "Nature Travel"
+    ]
+  },
+  {
+    category: "Poetry",
+    subCategories: [
+      "Contemporary Poetry",
+      "Classical Poetry",
+      "Narrative Poetry",
+      "Haiku",
+      "Anthologies"
+    ]
+  }
+];
 
 export const possibleSizes = [
   "X-Small",

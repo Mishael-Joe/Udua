@@ -23,6 +23,7 @@ export type User = {
 
 export type Product = {
   _id?: string;
+  productType: "Physical Product" | "Digital Product" | string;
   productName: string;
   productPrice: number;
   productSizes?: string[];
@@ -41,6 +42,64 @@ export type Product = {
   isVisible?: boolean;
 };
 
+export type DigitalProduct = {
+  storeID: string;
+  title: string;
+  author: string;
+  description: string;
+  category: string;
+  subcategory?: string;
+  price: number;
+  fileType: string;
+  fileSize: number;
+  s3Key: string;
+  language: string;
+  coverIMG: string[]; // the book's cover img
+  productType: "Physical Product" | "Digital Product" | string;
+  isbn?: string;
+  publisher?: string;
+  rating?: number;
+  downloads?: number;
+  isVisible?: boolean;
+};
+
+export type CombinedProduct = {
+  _id: string;
+  storeID: string;
+  productType: "Physical Product" | "Digital Product" | string;
+  productName: string; // Only for Physical Product
+  productPrice: number; // Only for Physical Product
+  productSizes?: string[]; // Only for Physical Product
+  productQuantity: string; // Only for Physical Product
+  productImage: string[]; // Only for Physical Product
+  productDescription: string;
+  productSpecification: string;
+  productCategory: string;
+  productSubCategory: string;
+  path: string;
+  quantity?: number; // Could be used for both
+  colors?: string[]; // Only for Physical Product
+  size?: string; // Only for Physical Product
+  isVerifiedProduct?: boolean; // Only for Physical Product
+  isVisible?: boolean;
+
+  // Fields for Digital Product
+  title: string; // Only for Digital Product
+  author?: string; // Only for Digital Product
+  fileType?: string; // Only for Digital Product
+  fileSize?: number; // Only for Digital Product
+  s3Key?: string; // Only for Digital Product
+  language?: string; // Only for Digital Product
+  coverIMG: string[]; // Only for Digital Product
+  isbn?: string; // Only for Digital Product
+  publisher?: string; // Only for Digital Product
+  rating?: number; // Only for Digital Product
+  downloads?: number; // Only for Digital Product
+  price: number
+  type: string;
+  description: string;
+};
+
 export type Store = {
   name: string;
   password: string;
@@ -49,7 +108,7 @@ export type Store = {
   uniqueId: string;
   description: string;
   createdAt: Date;
-  products: Product[];
+  products: CombinedProduct[];
   availableBalance: number;
   pendingBalance: number;
   platformFee: number;
@@ -147,12 +206,11 @@ export type Order = {
   paymentStatus: string;
   deliveryStatus: string;
   createdAt: Date;
-
 };
 
-export type CartItems = Partial<Product>;
+export type CartItems = Partial<CombinedProduct>;
 
-export type ProductFromLocalStorage = Partial<Product>;
+export type ProductFromLocalStorage = Partial<CombinedProduct>;
 
 // Define types for the context
 export type ContextType = {
@@ -185,20 +243,19 @@ export type StateContextProps = {
 };
 
 export type ForProductGrid = {
-  products: Product[];
+  products: CombinedProduct[];
 };
 
 export type ForProductInfo = {
-  product: Product;
+  product: CombinedProduct;
 };
 
 export type ForProductGallery = {
-  product: Product;
+  product: CombinedProduct;
   isLikedProduct: boolean;
 };
 
 // type ProductPrice = Exclude<Product, null>["productPrice"];
-
 
 // Define a single Bank type
 export type Bank = {
