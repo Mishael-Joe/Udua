@@ -5,8 +5,32 @@ import "@splidejs/react-splide/css";
 
 import Image from "next/image";
 import FirstTimeVisitor from "@/utils/FirstTimeVisitor/page";
+import { useEffect } from "react";
 
 const HeroBanners = () => {
+  const clearLocalStorageOnce = () => {
+    if (typeof window !== "undefined") {
+      const storageCleared = localStorage.getItem("storageCleared");
+
+      // Check if local storage has already been cleared
+      if (!storageCleared) {
+        // Clear local storage
+        localStorage.clear();
+
+        // Set the flag to indicate that local storage has been cleared
+        localStorage.setItem("storageCleared", "true");
+
+        console.log("Local storage cleared for the first time.");
+      } else {
+        console.log("Local storage has already been cleared previously.");
+      }
+    }
+  };
+
+  useEffect(() => {
+    clearLocalStorageOnce();
+  }, []);
+
   return (
     <section className="mx-aut py-0 h-fit pb-3">
       <Splide

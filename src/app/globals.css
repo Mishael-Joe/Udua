@@ -123,3 +123,8 @@
   height: 141%;
   min-width: 250%;
 }
+
+.splide__arrows .splide-next {
+  background: transparent;
+  color: red !important;
+}

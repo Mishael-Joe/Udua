@@ -16,7 +16,7 @@ export default async function Page({ params }: Props) {
   // console.log("Product", product);
 
   return (
-    <main className="mx-auto max-w-6xl sm:px-6 lg:px-8">
+    <main className="mx-auto max-w-7xl sm:px-6 lg:px-8">
       {product.productData.productType === "Physical Product" ? (
         <div className="mx-auto max-w-3xl lg:max-w-none">
           {/* Product */}

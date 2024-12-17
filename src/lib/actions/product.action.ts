@@ -227,11 +227,11 @@ export async function fetchProductsAndEBooks(
     // Fetch both products and eBooks in parallel
     const [products, eBooks] = await Promise.all([
       Product.find(productQuery)
-        .select("_id productName productPrice productImage productCategory")
+        .select("_id productName productPrice productImage productCategory productType")
         .sort(sortOptions)
         .limit(totalLimit),
       EBook.find(query)
-        .select("_id title price coverIMG category") // Adjust fields for display
+        .select("_id title price coverIMG category productType") // Adjust fields for display
         .sort(sortOptions)
         .limit(totalLimit),
     ]);
@@ -240,13 +240,15 @@ export async function fetchProductsAndEBooks(
     const combinedResults = [
       ...products.map((product) => ({
         ...product._doc, // Extract the Mongoose document data
-        type: "Physical Product",
+        // type: "Physical Product",
       })),
       ...eBooks.map((eBook) => ({
         ...eBook._doc, // Extract the Mongoose document data
-        type: "Digital Product",
+        // type: "Digital Product",
       })),
     ];
+
+    // console.log("combinedResults", combinedResults)
 
     return combinedResults;
   } catch (error: any) {
@@ -260,6 +262,7 @@ export async function fetchProductData(id: string) {
 
   try {
     await connectToDB();
+    const ebook = await EBook.findOne().select("title");
 
     // Declare productData with CombinedProduct | null
     let productData: CombinedProduct | null = null;
@@ -276,7 +279,7 @@ export async function fetchProductData(id: string) {
     // If no product is found, attempt to find it in the EBook schema
     if (!productData) {
       const foundEBook = await EBook.findById(id).select(
-        "_id title author description price fileType fileSize s3Key coverIMG storeID productType"
+        "_id title author description price fileType fileSize publisher coverIMG language productType"
       );
 
       if (foundEBook) {

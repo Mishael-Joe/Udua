@@ -37,7 +37,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${montserrat.className} scroll-smooth`}>
         <StateContext>
-          <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           <UserHeader />
             <SiteBlob />
             <Toaster />

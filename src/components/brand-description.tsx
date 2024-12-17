@@ -11,12 +11,19 @@ import {
 
 import { Info, Share2Icon } from "lucide-react";
 import { Store } from "@/types";
+import ShareButton from "@/utils/shareBTN";
+import { usePathname } from "next/navigation";
 
 type store = {
   store: Store | null;
 };
 
 function BrandDescription({ store }: store) {
+  const pathname = usePathname();
+  const baseUrl = `${window.location.protocol}//${window.location.host}`;
+  const currentUrl = `${baseUrl}/${pathname}`;
+
+  // console.log('currentUrl', currentUrl)
   return (
     <Card className="relative">
       <CardHeader>
@@ -38,13 +45,14 @@ function BrandDescription({ store }: store) {
         </span>
 
         <div className="flex flex-col gap-3">
-          <p className="flex gap-2">
-            <span className="font-semibold">Store ID:</span>{" "}
+          <div className="flex gap-2 items-center">
+            <p className="font-semibold">Store ID:</p>{" "}
             <span className="flex gap-3 font-semibold items-center cursor-pointer">
               {" "}
-              {store?.uniqueId} <Share2Icon height={17} width={17} />
+              {store?.uniqueId} <ShareButton slug={currentUrl} />
             </span>
-          </p>
+          </div>
+
           {/* <p>Location: </p> */}
           <p>
             <span className="font-semibold">Joined date: </span>

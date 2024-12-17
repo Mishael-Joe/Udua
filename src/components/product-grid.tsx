@@ -29,7 +29,7 @@ export function ProductGrid({ products }: ForProductGrid) {
           href={`/products/${product._id}`}
           className="group text-sm"
         >
-          {product.type === "Physical Product" ? (
+          {product.productType === "Physical Product" ? (
             <>
               <div className="aspect-square w-full overflow-hidden rounded-lg border-2 border-gray-200 bg-gray-100 group-hover:opacity-75 dark:border-gray-800">
                 <Image

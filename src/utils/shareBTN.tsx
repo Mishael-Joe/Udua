@@ -24,8 +24,18 @@ import Image from "next/image";
 export default function ShareButton({ slug }: any) {
   const { toast } = useToast();
 
-  const productTitle = "Check out this amazing product!";
+  let title: string;
   const productUrl = slug;
+
+  if (slug.includes("brand")) {
+    title = "Check out this brand on Udua";
+  } else if (slug.includes("store")) {
+    title = "Check out my brand on Udua";
+  } else {
+    title = "Check out this amazing product!";
+  }
+  // console.log('slug', slug)
+  // console.log('title', title)
 
   async function copyToClipboardAsync(text: string) {
     try {
@@ -53,23 +63,32 @@ export default function ShareButton({ slug }: any) {
       <PopoverContent>
         <p className=" text-center font-semibold">Share to</p>
         <div className=" flex gap-2 justify-evenly w-full pt-4 items-center">
-          <EmailShareButton url={productUrl} title={productTitle}>
+          <EmailShareButton url={productUrl} title={title}>
             <EmailIcon size={32} round />
           </EmailShareButton>
 
-          <FacebookShareButton url={productUrl} title={productTitle}>
+          <FacebookShareButton url={productUrl} title={title}>
             <FacebookIcon size={32} round />
           </FacebookShareButton>
 
-          <TwitterShareButton url={productUrl} title={productTitle}>
-            <Image src={"/twitter-x.svg"} height={50} width={50} alt={"twitter icon"}/>
+          <TwitterShareButton url={productUrl} title={title}>
+            <Image
+              src={"/twitter-x.svg"}
+              height={50}
+              width={50}
+              alt={"twitter icon"}
+            />
           </TwitterShareButton>
 
-          <WhatsappShareButton url={productUrl} title={productTitle}>
+          <WhatsappShareButton url={productUrl} title={title}>
             <WhatsappIcon size={32} round />
           </WhatsappShareButton>
 
-          <Link size={32} onClick={() => copyToClipboardAsync(slug)} className=" rounded-full border p-1"/>
+          <Link
+            size={32}
+            onClick={() => copyToClipboardAsync(slug)}
+            className=" rounded-full border p-1"
+          />
         </div>
       </PopoverContent>
     </Popover>

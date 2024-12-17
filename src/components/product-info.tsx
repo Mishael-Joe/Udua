@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Plus, Minus } from "lucide-react";
+import { ArrowRight, Plus, Minus, ShoppingBagIcon } from "lucide-react";
 
 import { addCommasToNumber } from "@/lib/utils";
 import { useStateContext } from "@/context/stateContext";
@@ -58,7 +58,7 @@ export function ProductInfo({ product }: ForProductInfo) {
     };
 
     return (
-      <div className="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0 md:sticky md:top-0">
+      <div className="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0 md:sticky md:top-20">
         <h1 className="text-2xl font-bold tracking-tight">
           {product.productName}
         </h1>
@@ -74,12 +74,13 @@ export function ProductInfo({ product }: ForProductInfo) {
           <div className="mt-4 flex">
             <Button
               type="button"
-              className="w-full bg-udua-orange-primary/80 py-6 text-base font-medium text-white hover:bg-udua-orange-primary focus:outline-none focus:ring-2 focus:ring-violet-500"
+              className="w-full flex gap-4 justify-center items-center bg-udua-orange-primary/80 py-6 text-base font-medium text-white hover:bg-udua-orange-primary focus:outline-none focus:ring-2 focus:ring-violet-500"
               onClick={() => {
                 notify(product);
                 addToCart(product, quantity, selectedSize, selectedColor);
               }}
             >
+              <ShoppingBagIcon className="h-5 w-5" />
               Add to cart
             </Button>
           </div>
@@ -186,7 +187,7 @@ export function ProductInfo({ product }: ForProductInfo) {
     };
 
     return (
-      <div className="mt-10 px-4 sm:mt-6 sm:px-0 lg:mt-6 md:sticky md:top-0">
+      <div className="mt-10 px-4 sm:mt-6 sm:px-0 lg:mt-6 md:sticky md:top-20">
         <h1 className="text-xl font-bold tracking-tight">{product.title}</h1>
 
         <div className="mt-3">

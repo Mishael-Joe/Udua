@@ -14,6 +14,8 @@ type user = USER & {
 
 const Profile = () => {
   const [user, setUser] = useState<user | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -21,13 +23,47 @@ const Profile = () => {
         const response = await axios.post<{ data: user }>("/api/user/userData");
         // console.log("userdata", response);
         setUser(response.data.data);
+        setLoading(false); // Stop loading when data is fetched
       } catch (error: any) {
         console.error("Failed to fetch user data", error.message);
+        setError(true);
+        setLoading(false); // Stop loading when data is fetched
       }
     };
 
     fetchUserData();
-  }, []);
+
+    // Set a timeout to show error message if data isn't fetched within 10 seconds
+    const timeoutId = setTimeout(() => {
+      if (loading) {
+        setError(true);
+        setLoading(false);
+      }
+    }, 10000); // 10 seconds timeout
+
+    // Cleanup the timeout when the component unmounts or fetch is successful
+    return () => clearTimeout(timeoutId);
+  }, [loading]);
+
+  if (loading && !error) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center">
+        <p className="w-full h-full flex items-center justify-center">
+          <Loader className="animate-spin" /> Loading...
+        </p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center">
+        <p className="text-center text-red-600">
+          An error occurred. Please check your internet connection.
+        </p>
+      </div>
+    );
+  }
 
   if (user === null) {
     return (

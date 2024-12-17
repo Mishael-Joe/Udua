@@ -40,18 +40,18 @@ function Aside1() {
 
   if (!isDesktop) {
     return (
-      <section className="rounded-md min-h-screen">
+      <section className="h-full py-5">
         <h1 className="text-center pb-3.5 px-3 border-b font-bold text-black dark:text-slate-200">
           My Account
         </h1>
-        <div className="flex w-full flex-1 flex-col justify-between gap-3 px-3 relative text-black dark:text-white">
+        <div className="flex h-full w-full flex-col justify-between gap-3 px-3 text-black dark:text-white">
           <ul className="flex flex-col gap-1 text-black dark:text-white">
             <Link
               href={"/profile"}
               className={`show-dropdown-menu1 cursor-pointer ${
                 pathname.includes("profile")
-                  ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
-                  : "text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white"
+                  ? "bg-udua-orange-primary/20 text-udua-orange-primary dark:text-slate-200 font-semibold"
+                  : "text-black/70 dark:text-slate-200/70 hover:text-udua-orange-primary/95 dark:hover:text-white"
               } rounded py-2 px-3 mt-5`}
             >
               <p className="flex items-center gap-2">
@@ -63,8 +63,8 @@ function Aside1() {
               href={`/wishlist`}
               className={`show-dropdown-menu1 cursor-pointer ${
                 pathname.includes("wishlist")
-                  ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
-                  : "text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white"
+                  ? "bg-udua-orange-primary/20 text-udua-orange-primary dark:text-slate-200 font-semibold"
+                  : "text-black/70 dark:text-slate-200/70 hover:text-udua-orange-primary/95 dark:hover:text-white"
               } rounded py-2 px-3`}
             >
               <p className="flex items-center gap-2">
@@ -76,8 +76,8 @@ function Aside1() {
               href={`/order-history`}
               className={`show-dropdown-menu1 cursor-pointer ${
                 pathname.includes("order-history") || pathname.includes("order")
-                  ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
-                  : "text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white"
+                  ? "bg-udua-orange-primary/20 text-udua-orange-primary dark:text-slate-200 font-semibold"
+                  : "text-black/70 dark:text-slate-200/70 hover:text-udua-orange-primary/95 dark:hover:text-white"
               } rounded py-2 px-3`}
             >
               <p className="flex items-center gap-2">
@@ -89,8 +89,8 @@ function Aside1() {
               href={`/account-settings`}
               className={`show-dropdown-menu1 cursor-pointer ${
                 pathname.includes("account-settings")
-                  ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
-                  : "text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white"
+                  ? "bg-udua-orange-primary/20 text-udua-orange-primary dark:text-slate-200 font-semibold"
+                  : "text-black/70 dark:text-slate-200/70 hover:text-udua-orange-primary/95 dark:hover:text-white"
               } rounded py-2 px-3`}
             >
               <p className="flex items-center gap-2">
@@ -102,8 +102,8 @@ function Aside1() {
               href={`/support`}
               className={`show-dropdown-menu1 cursor-pointer ${
                 pathname.includes("support")
-                  ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
-                  : "text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white"
+                  ? "bg-udua-orange-primary/20 text-udua-orange-primary dark:text-slate-200 font-semibold"
+                  : "text-black/70 dark:text-slate-200/70 hover:text-udua-orange-primary/95 dark:hover:text-white"
               } rounded py-2 px-3`}
             >
               <p className="flex items-center gap-2">
@@ -112,8 +112,8 @@ function Aside1() {
             </Link>
           </ul>
 
-          <div className="flex flex-col gap-4 justify-between items-center">
-            <div className="mt-auto">
+          <div className="flex flex-col gap-4 justify-between items-center h-full">
+            <div className="">
               <Card>
                 <CardHeader>
                   <CardTitle>Create a store</CardTitle>
@@ -125,7 +125,7 @@ function Aside1() {
                 </CardHeader>
                 <CardContent>
                   <Link href={"/seller-hub"}>
-                    <Button size="sm" className="w-full">
+                    <Button size="sm" className="w-full bg-udua-orange-primary/30 text-udua-orange-primary hover:bg-udua-orange-primary/40 font-semibold">
                       Create Store
                     </Button>
                   </Link>
@@ -135,7 +135,7 @@ function Aside1() {
 
             <Button
               onClick={signOut}
-              className="hover:bg-slate-600/30 flex text-lg font-semibold justify-between items-center w-full p-2 rounded"
+              className="hover:bg-udua-orange-primary/30 bg-udua-orange-primary/20 text-udua-orange-primary flex text-lg font-semibold justify-between items-center w-full p-2 rounded px-4"
             >
               <span>Sign out</span> <LogOut />
             </Button>
@@ -156,8 +156,8 @@ function Aside1() {
             href={"/profile"}
             className={`show-dropdown-menu1 cursor-pointer ${
               pathname.includes("profile")
-                ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
-                : "text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white"
+                ? "bg-udua-orange-primary/20 text-udua-orange-primary dark:text-slate-200 font-semibold"
+                : "text-black/70 dark:text-slate-200/70 hover:text-udua-orange-primary/95 dark:hover:text-white"
             } rounded py-2 px-3 mt-5`}
           >
             <p className="flex items-center gap-2">
@@ -169,8 +169,8 @@ function Aside1() {
             href={`/wishlist`}
             className={`show-dropdown-menu1 cursor-pointer ${
               pathname.includes("wishlist")
-                ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
-                : "text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white"
+                ? "bg-udua-orange-primary/20 text-udua-orange-primary dark:text-slate-200 font-semibold"
+                : "text-black/70 dark:text-slate-200/70 hover:text-udua-orange-primary/95 dark:hover:text-white"
             } rounded py-2 px-3`}
           >
             <p className="flex items-center gap-2">
@@ -182,8 +182,8 @@ function Aside1() {
             href={`/order-history`}
             className={`show-dropdown-menu1 cursor-pointer ${
               pathname.includes("order-history") || pathname.includes("order")
-                ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
-                : "text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white"
+                ? "bg-udua-orange-primary/20 text-udua-orange-primary dark:text-slate-200 font-semibold"
+                : "text-black/70 dark:text-slate-200/70 hover:text-udua-orange-primary/95 dark:hover:text-white"
             } rounded py-2 px-3`}
           >
             <p className="flex items-center gap-2">
@@ -195,8 +195,8 @@ function Aside1() {
             href={`/account-settings`}
             className={`show-dropdown-menu1 cursor-pointer ${
               pathname.includes("account-settings")
-                ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
-                : "text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white"
+                ? "bg-udua-orange-primary/20 text-udua-orange-primary dark:text-slate-200 font-semibold"
+                : "text-black/70 dark:text-slate-200/70 hover:text-udua-orange-primary/95 dark:hover:text-white"
             } rounded py-2 px-3`}
           >
             <p className="flex items-center gap-2">
@@ -208,8 +208,8 @@ function Aside1() {
             href={`/support`}
             className={`show-dropdown-menu1 cursor-pointer ${
               pathname.includes("support")
-                ? "bg-slate-600/30 text-black dark:text-slate-200 font-semibold"
-                : "text-black/70 dark:text-slate-200/70 hover:text-black/95 dark:hover:text-white"
+                ? "bg-udua-orange-primary/20 text-udua-orange-primary dark:text-slate-200 font-semibold"
+                : "text-black/70 dark:text-slate-200/70 hover:text-udua-orange-primary/95 dark:hover:text-white"
             } rounded py-2 px-3`}
           >
             <p className="flex items-center gap-2">
@@ -231,7 +231,7 @@ function Aside1() {
               </CardHeader>
               <CardContent>
                 <Link href={"/seller-hub"}>
-                  <Button size="sm" className="w-full">
+                  <Button size="sm" className="w-full bg-udua-orange-primary/30 text-udua-orange-primary hover:bg-udua-orange-primary/40 font-semibold">
                     Create Store
                   </Button>
                 </Link>
@@ -241,7 +241,7 @@ function Aside1() {
 
           <Button
             onClick={signOut}
-            className="hover:bg-slate-600/30 flex text-lg font-semibold justify-between items-center w-full p-2 rounded"
+            className="hover:bg-udua-orange-primary/30 bg-udua-orange-primary/20 text-udua-orange-primary flex text-lg font-semibold justify-between items-center w-full p-2 rounded px-4"
           >
             <span>Sign out</span> <LogOut />
           </Button>

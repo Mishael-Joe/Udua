@@ -31,7 +31,7 @@ function SearchBar() {
               type="search"
               autoComplete="off"
               placeholder="Search products..."
-              className="h-9 lg:w-[450px] hover:border-udua-orange-primary delay-75 transition-all ease-in-out  focus:!ring-udua-orange-primary focus:!outline-none focus:!ring-1 focus:!ring-opacity-90"
+              className="h-9 lg:w-[450px] hover:border-udua-orange-primary delay-75 transition-all ease-in-out  focus:!ring-white focus:border-udua-orange-primary focus:!outline-none focus:!ring-1 focus:!ring-opacity-90"
               defaultValue={defaultSearchQuery}
             />
           </form>

@@ -57,7 +57,7 @@ export default async function Home({ searchParams }: Props) {
     // dateTo
   );
 
-  console.log("combinedResults", products)
+  // console.log("combinedResults", products)
 
   return (
     <main className="grid min-h-screen mx-auto md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr] px-5 md:px-4 gap-4 max-w-7xl">

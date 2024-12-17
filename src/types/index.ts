@@ -98,6 +98,8 @@ export type CombinedProduct = {
   price: number
   type: string;
   description: string;
+  category: string;
+  subcategory: string;
 };
 
 export type Store = {

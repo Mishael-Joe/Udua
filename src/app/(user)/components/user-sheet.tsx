@@ -14,8 +14,8 @@ function UserSheets() {
             <span className="sr-only">Toggle navigation menu</span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="right" className="flex flex-col">
-          <nav className="grid gap-2 text-lg font-medium">
+        <SheetContent side="right" className="p-0 overflow-auto">
+          <nav className="text-lg font-medium">
             <Aside1 />
           </nav>
         </SheetContent>

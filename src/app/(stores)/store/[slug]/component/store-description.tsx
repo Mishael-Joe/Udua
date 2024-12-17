@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { toast } from "@/components/ui/use-toast";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -26,6 +26,7 @@ import { Label } from "@/components/ui/label";
 import axios from "axios";
 import { Textarea } from "@/components/ui/textarea";
 import { Store } from "@/types";
+import ShareButton from "@/utils/shareBTN";
 
 type store = {
   store: Store | null;
@@ -33,6 +34,9 @@ type store = {
 
 function StoreDescription({ store }: store) {
   const router = useRouter();
+  const pathname = usePathname();
+  const baseUrl = `${window.location.protocol}//${window.location.host}`;
+  const currentUrl = `${baseUrl}/${pathname}`;
   const [open, setOpen] = useState(false); // State to manage the description Dialog box visibility
   const [storeDescription, setStoreDescription] = useState({
     updatedDescription: store?.description,
@@ -89,7 +93,7 @@ function StoreDescription({ store }: store) {
         <div className="absolute right-3 top-3">
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-              <Button size="icon" className="bg-purple-500 hover:bg-purple-600">
+              <Button size="icon" className="bg-udua-orange-primary/80 hover:bg-udua-orange-primary">
                 <EditIcon className="w-5 h-5" />
               </Button>
             </DialogTrigger>
@@ -133,13 +137,14 @@ function StoreDescription({ store }: store) {
         </span>
 
         <div className="flex flex-col gap-3">
-          <p className="flex gap-2">
-            <span className="font-semibold">Store ID:</span>{" "}
+          <div className="flex gap-2 items-center">
+            <p className="font-semibold">Store ID:</p>{" "}
             <span className="flex gap-3 font-semibold items-center cursor-pointer">
               {" "}
-              {store?.uniqueId} <Share2Icon height={17} width={17} />
+              {store?.uniqueId} 
+              {/* <ShareButton slug={currentUrl} /> */}
             </span>
-          </p>
+          </div>
           {/* <p>Location: </p> */}
           <p>
             <span className="font-semibold">Joined date: </span>
