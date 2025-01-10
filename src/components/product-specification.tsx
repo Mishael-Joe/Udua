@@ -1,6 +1,10 @@
 import { ForProductInfo } from "@/types";
+import { formatText } from "@/utils/formatText";
 
 export function ProductSpecification({ product }: ForProductInfo) {
+  // const inputText =
+  //   "This is *bold*, this is _italic_, this is ~underline~, this is -strikethrough-, and this is `code`. * First item ";
+  // const formattedText = formatText(inputText);
   // console.log("product.specifications.length", product);
   if (product.productSpecification === "") return;
 
@@ -12,9 +16,9 @@ export function ProductSpecification({ product }: ForProductInfo) {
         <ul className="py-3 list-inside">
           <li className="list-disc">{product.productSpecification}</li>
 
-          {/* {product.specifications.map((specification: any, i: number) => (
-                        <li className="list-disc" key={i}>{specification}</li>
-                    ))} */}
+          {/* <h1>Formatted Text Example</h1> */}
+          {/* Render formatted text using dangerouslySetInnerHTML */}
+          {/* <div dangerouslySetInnerHTML={{ __html: formattedText }} /> */}
         </ul>
       </div>
     </div>

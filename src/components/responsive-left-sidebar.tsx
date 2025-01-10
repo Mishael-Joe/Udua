@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "./ui/button";
-import { MainNav } from "./main-nav";
-import { siteConfig } from "@/config/site"
+import { siteConfig } from "@/config/site";
+import { HeartPulseIcon } from "lucide-react";
 
 function ResponsiveLeftSidebar() {
   const searchParams = useSearchParams();
@@ -23,13 +23,27 @@ function ResponsiveLeftSidebar() {
   };
 
   return (
-    <section className="custom-scrollbar flex h-96 w-full flex-col justify-between pb-5">
-      <MainNav />
-      <div className="flex w-full flex-1 flex-col gap-2 px-0 relative pt-4">
-        <h1>Categories</h1>
-        <ul className="flex flex-col gap-1">
-          <li className="show-dropdown-menu cursor-pointer">
-            <a onClick={() => handleChange("Perfume")}>Health & Beauty</a>
+    <section className="custom-scrollbar flex w-full flex-col justify-between pb-5">
+      <div className="h-36 w-full bg-udua-deep-gray-primary flex items-end">
+        <p className="p-4 text-slate-100">
+          <span className=" text-sm">Browse</span> <br />{" "}
+          <span className=" font-semibold text-3xl">{siteConfig.name}</span>
+        </p>
+      </div>
+
+      <div className="flex w-full flex-1 flex-col gap-2 relative">
+        <h1 className=" font-semibold border-b border-udua-deep-gray-primary py-4">
+          <span className="px-4">Top Categories</span>
+        </h1>
+
+        <ul className="flex flex-col gap-3 px-4 pb-6 pt-3 border-b border-udua-deep-gray-primary">
+          <li className="show-dropdown-menu cursor-pointer dark:hover:bg-transparent dark:hover:text-udua-orange-primary hover:bg-transparent hover:text-udua-orange-primary delay-75 transition-all ease-in-out">
+            <a onClick={() => handleChange("Perfume")} className="flex gap-2">
+              <span>
+                <HeartPulseIcon width={20} height={20}/>
+              </span>
+              Health & Beauty
+            </a>
 
             <div className="dropdown-menu1 bg-black border rounded">
               <ul>
@@ -45,9 +59,14 @@ function ResponsiveLeftSidebar() {
 
           <li
             onClick={() => handleChange("home-office")}
-            className="show-dropdown-menu cursor-pointer"
+            className="show-dropdown-menu cursor-pointer dark:hover:bg-transparent dark:hover:text-udua-orange-primary hover:bg-transparent hover:text-udua-orange-primary delay-75 transition-all ease-in-out"
           >
-            <a>Home & Office</a>
+            <a onClick={() => handleChange("Perfume")} className="flex gap-2">
+              <span>
+                <HeartPulseIcon width={20} height={20}/>
+              </span>
+              Home & Office
+            </a>
 
             <div className="dropdown-menu1 bg-black border rounded">
               <ul>
@@ -63,9 +82,14 @@ function ResponsiveLeftSidebar() {
 
           <li
             onClick={() => handleChange("appliances")}
-            className="show-dropdown-menu cursor-pointer"
+            className="show-dropdown-menu cursor-pointer dark:hover:bg-transparent dark:hover:text-udua-orange-primary hover:bg-transparent hover:text-udua-orange-primary delay-75 transition-all ease-in-out"
           >
-            <a>Appliances</a>
+            <a onClick={() => handleChange("Perfume")} className="flex gap-2">
+              <span>
+                <HeartPulseIcon width={20} height={20}/>
+              </span>
+              Appliances
+            </a>
 
             <div className="dropdown-menu1 bg-black border rounded">
               <ul>
@@ -81,9 +105,14 @@ function ResponsiveLeftSidebar() {
 
           <li
             onClick={() => handleChange("phones-tablets")}
-            className="show-dropdown-menu cursor-pointer"
+            className="show-dropdown-menu cursor-pointer dark:hover:bg-transparent dark:hover:text-udua-orange-primary hover:bg-transparent hover:text-udua-orange-primary delay-75 transition-all ease-in-out"
           >
-            <a>Phones & Tablets</a>
+            <a onClick={() => handleChange("Perfume")} className="flex gap-2">
+              <span>
+                <HeartPulseIcon width={20} height={20}/>
+              </span>
+              Phones & Tablets
+            </a>
 
             <div className="dropdown-menu1 bg-black border rounded">
               <ul>
@@ -99,9 +128,14 @@ function ResponsiveLeftSidebar() {
 
           <li
             onClick={() => handleChange("computing")}
-            className="show-dropdown-menu cursor-pointer"
+            className="show-dropdown-menu cursor-pointer dark:hover:bg-transparent dark:hover:text-udua-orange-primary hover:bg-transparent hover:text-udua-orange-primary delay-75 transition-all ease-in-out"
           >
-            <a>Computing</a>
+            <a onClick={() => handleChange("Perfume")} className="flex gap-2">
+              <span>
+                <HeartPulseIcon width={20} height={20}/>
+              </span>
+              Computing
+            </a>
 
             <div className="dropdown-menu1 bg-black border rounded">
               <ul>
@@ -117,9 +151,14 @@ function ResponsiveLeftSidebar() {
 
           <li
             onClick={() => handleChange("electronics")}
-            className="show-dropdown-menu cursor-pointer"
+            className="show-dropdown-menu cursor-pointer dark:hover:bg-transparent dark:hover:text-udua-orange-primary hover:bg-transparent hover:text-udua-orange-primary delay-75 transition-all ease-in-out"
           >
-            <a>Electronics</a>
+            <a onClick={() => handleChange("Perfume")} className="flex gap-2">
+              <span>
+                <HeartPulseIcon width={20} height={20}/>
+              </span>
+              Electronics
+            </a>
 
             <div className="dropdown-menu1 bg-black border rounded">
               <ul>
@@ -135,9 +174,14 @@ function ResponsiveLeftSidebar() {
 
           <li
             onClick={() => handleChange("fashion")}
-            className="show-dropdown-menu cursor-pointer"
+            className="show-dropdown-menu cursor-pointer dark:hover:bg-transparent dark:hover:text-udua-orange-primary hover:bg-transparent hover:text-udua-orange-primary delay-75 transition-all ease-in-out"
           >
-            <a>Fashion</a>
+            <a onClick={() => handleChange("Perfume")} className="flex gap-2">
+              <span>
+                <HeartPulseIcon width={20} height={20}/>
+              </span>
+              Fashion
+            </a>
 
             <div className="dropdown-menu1 bg-black border rounded">
               <ul>
@@ -153,9 +197,14 @@ function ResponsiveLeftSidebar() {
 
           <li
             onClick={() => handleChange("gaming")}
-            className="show-dropdown-menu cursor-pointer"
+            className="show-dropdown-menu cursor-pointer dark:hover:bg-transparent dark:hover:text-udua-orange-primary hover:bg-transparent hover:text-udua-orange-primary delay-75 transition-all ease-in-out"
           >
-            <a>Gaming</a>
+            <a onClick={() => handleChange("Perfume")} className="flex gap-2">
+              <span>
+                <HeartPulseIcon width={20} height={20}/>
+              </span>
+              Gaming
+            </a>
 
             <div className="dropdown-menu1 bg-black border rounded">
               <ul>
@@ -171,11 +220,15 @@ function ResponsiveLeftSidebar() {
         </ul>
       </div>
 
-      <Link href={"/seller-hub"} className="px-0">
+      <div className="px-4 py-2">
+        <h1><span className=" text-sm">Useful Links</span></h1>
+      </div>
+
+      {/* <Link href={"/seller-hub"} className="px-0">
         <Button className="mt-8 w-full bg-violet-600 py-5 text-base font-medium text-white hover:bg-violet-700">
           Sell on {siteConfig.name}
         </Button>
-      </Link>
+      </Link> */}
     </section>
   );
 }

@@ -66,7 +66,7 @@ function SignUp() {
     };
 
     try {
-      const response = await axios.post(`/api/users/signUp`, user);
+      const response = await axios.post(`/api/auth/signUp`, user);
 
       if (response.status === 200 || response.data.success === true) {
         toast({
@@ -95,32 +95,25 @@ function SignUp() {
   };
 
   return (
-    <main className=" min-h-screen flex flex-row justify-center items-center">
-      <section className="w-full">
-        <div className="w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800">
-          <div className="px-6 py-4">
-            <div className="flex justify-center mx-auto">
-              {/* <Image
-                className="w-auto h-7 sm:h-8"
-                src="https://merakiui.com/images/logo.svg"
-                width={`60`}
-                height={`60`}
-                alt=""
-              /> */}
-            </div>
+    <main className=" min-h-screen bg-udua-blue-primary/20">
+      <section className="flex justify-center">
+        <div className="hidden bg-cover lg:block lg:w-2/5 bg-[url('https://images.unsplash.com/photo-1494621930069-4fd4b2e24a11?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=715&q=80')]"></div>
 
-            <h3 className="mt-3 text-xl font-medium text-center text-gray-600 dark:text-gray-200">
-              Create an Account
-            </h3>
+        <div className="w-full max-w-3xl mx-auto px-4 lg:px-6 lg:w-3/5 overflow-hidden py-4">
+          <Link href={`/`} className=" w-full flex justify-center">
+            <Image src="/udua-blue.svg" width={`100`} height={`100`} alt="" />
+          </Link>
 
-            {/* <p className="mt-1 text-center text-gray-500 dark:text-gray-400">
-              Login or create account
-            </p> */}
+          <p className="mt-4 text-center text-gray-500 dark:text-gray-400">
+            Let&#x27;s get you all set up so you can verify your personal
+            account.
+          </p>
 
+          <div className="">
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-8"
+                className="grid grid-cols-1 gap-6 mt-8 md:grid-cols-2"
               >
                 <FormField
                   // className="w-full mt-4"
@@ -128,10 +121,10 @@ function SignUp() {
                   name="firstName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>First Name</FormLabel>
+                      {/* <FormLabel>First Name</FormLabel> */}
                       <FormControl>
                         <Input
-                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black"
+                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:!ring-udua-blue-primary focus:!outline-none focus:!ring-1 focus:!ring-opacity-90 border-udua-blue-primary focus:border-transparent"
                           type="text"
                           placeholder="Your First Name"
                           aria-label="name"
@@ -149,10 +142,10 @@ function SignUp() {
                   name="lastName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Last Name</FormLabel>
+                      {/* <FormLabel>Last Name</FormLabel> */}
                       <FormControl>
                         <Input
-                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black"
+                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:!ring-udua-blue-primary focus:!outline-none focus:!ring-1 focus:!ring-opacity-90 border-udua-blue-primary focus:border-transparent"
                           type="text"
                           placeholder="Your Last Name"
                           aria-label="name"
@@ -170,10 +163,10 @@ function SignUp() {
                   name="otherNames"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Other Names</FormLabel>
+                      {/* <FormLabel>Other Names</FormLabel> */}
                       <FormControl>
                         <Input
-                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black"
+                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:!ring-udua-blue-primary focus:!outline-none focus:!ring-1 focus:!ring-opacity-90 border-udua-blue-primary focus:border-transparent"
                           type="text"
                           placeholder="Other Names"
                           aria-label="name"
@@ -191,10 +184,10 @@ function SignUp() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      {/* <FormLabel>Email</FormLabel> */}
                       <FormControl>
                         <Input
-                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black"
+                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:!ring-udua-blue-primary focus:!outline-none focus:!ring-1 focus:!ring-opacity-90 border-udua-blue-primary focus:border-transparent"
                           type="email"
                           placeholder="Your Email"
                           aria-label="Your Email"
@@ -212,10 +205,10 @@ function SignUp() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      {/* <FormLabel>Password</FormLabel> */}
                       <FormControl>
                         <Input
-                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black"
+                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:!ring-udua-blue-primary focus:!outline-none focus:!ring-1 focus:!ring-opacity-90 border-udua-blue-primary focus:border-transparent"
                           type="password"
                           placeholder="Enter your password"
                           aria-label="password"
@@ -233,10 +226,10 @@ function SignUp() {
                   name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Confirm Password</FormLabel>
+                      {/* <FormLabel>Confirm Password</FormLabel> */}
                       <FormControl>
                         <Input
-                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black"
+                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:!ring-udua-blue-primary focus:!outline-none focus:!ring-1 focus:!ring-opacity-90 border-udua-blue-primary focus:border-transparent"
                           type="password"
                           placeholder="confirm your password"
                           aria-label="confirm your password"
@@ -254,10 +247,10 @@ function SignUp() {
                   name="address"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Your Address</FormLabel>
+                      {/* <FormLabel>Your Address</FormLabel> */}
                       <FormControl>
                         <Input
-                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black"
+                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:!ring-udua-blue-primary focus:!outline-none focus:!ring-1 focus:!ring-opacity-90 border-udua-blue-primary focus:border-transparent"
                           type="text"
                           placeholder="Enter your Address"
                           aria-label="Enter your Address"
@@ -275,10 +268,10 @@ function SignUp() {
                   name="phoneNumber"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Phone Number</FormLabel>
+                      {/* <FormLabel>Phone Number</FormLabel> */}
                       <FormControl>
                         <Input
-                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black"
+                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:!ring-udua-blue-primary focus:!outline-none focus:!ring-1 focus:!ring-opacity-90 border-udua-blue-primary focus:border-transparent"
                           type="text"
                           placeholder="090******35"
                           aria-label="Enter your phone number"
@@ -296,10 +289,10 @@ function SignUp() {
                   name="cityOfResidence"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>City Of Residence</FormLabel>
+                      {/* <FormLabel>City Of Residence</FormLabel> */}
                       <FormControl>
                         <Input
-                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black"
+                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:!ring-udua-blue-primary focus:!outline-none focus:!ring-1 focus:!ring-opacity-90 border-udua-blue-primary focus:border-transparent"
                           type="text"
                           placeholder="Enter your city of Residence"
                           aria-label="Enter your city of Residence"
@@ -317,10 +310,10 @@ function SignUp() {
                   name="stateOfResidence"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>State of Residence</FormLabel>
+                      {/* <FormLabel>State of Residence</FormLabel> */}
                       <FormControl>
                         <Input
-                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black"
+                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:!ring-udua-blue-primary focus:!outline-none focus:!ring-1 focus:!ring-opacity-90 border-udua-blue-primary focus:border-transparent"
                           type="text"
                           placeholder="Enter your state of Residence"
                           aria-label="Enter your state of Residence"
@@ -338,10 +331,10 @@ function SignUp() {
                   name="postalCode"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>postalCode</FormLabel>
+                      {/* <FormLabel>postalCode</FormLabel> */}
                       <FormControl>
                         <Input
-                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black"
+                          className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:!ring-udua-blue-primary focus:!outline-none focus:!ring-1 focus:!ring-opacity-90 border-udua-blue-primary focus:border-transparent"
                           type="text"
                           placeholder="Enter your postal Code"
                           aria-label="Enter your postal Code"
@@ -353,7 +346,7 @@ function SignUp() {
                   )}
                 />
 
-                <Button className="px-6 py-2 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50 w-full">
+                <Button className="px-6 py-2 mt-2 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50 w-full">
                   Sign Up
                 </Button>
 
@@ -362,7 +355,7 @@ function SignUp() {
             </Form>
           </div>
 
-          <div className="flex items-center justify-center py-4 text-center bg-gray-50 dark:bg-gray-700">
+          <div className="flex items-center justify-center py-4 text-center">
             <span className="text-sm text-gray-600 dark:text-gray-200">
               Already have an account?{" "}
             </span>

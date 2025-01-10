@@ -37,7 +37,7 @@ export default function Page() {
   }, [isButtonDisabled]);
 
   const requestOTP = () => {
-    axios.post("/api/users/verify/sendToken");
+    axios.post("/api/auth/verify/sendToken");
     setIsButtonDisabled(true);
     setCounter(60); // 1 minute
   };
@@ -53,7 +53,7 @@ export default function Page() {
     }
 
     try {
-      const response = await axios.post("/api/users/verify/verifyToken", {
+      const response = await axios.post("/api/auth/verify/verifyToken", {
         token: value,
       });
       if (response.status === 200) {

@@ -2,25 +2,42 @@ import mongoose, { Schema, Document } from "mongoose";
 
 interface IOrderProduct {
   product: mongoose.Schema.Types.ObjectId;
+  store: mongoose.Schema.Types.ObjectId;
   quantity: number;
   price: number;
 }
 
 interface IOrder extends Document {
   user: mongoose.Schema.Types.ObjectId;
-  sellers: mongoose.Schema.Types.ObjectId[];
+  stores: mongoose.Schema.Types.ObjectId[];
   products: IOrderProduct[];
   totalAmount: number;
   status: string;
   createdAt: Date;
   updatedAt: Date;
+  shippingAddress?: string;
+  shippingMethod?: string;
+  trackingNumber?: string;
+  deliveryDate?: Date;
+  paymentMethod?: string;
+  paymentStatus?: string;
+  deliveryStatus?: string;
+  notes?: string;
+  discount?: number;
+  taxAmount?: number;
 }
+
+// TODO: Add delivery status
 
 const OrderProductSchema = new Schema<IOrderProduct>({
   product: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Product",
     required: true,
+  },
+  store: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Store",
   },
   quantity: { type: Number, required: true },
   price: { type: Number, required: true },
@@ -29,16 +46,40 @@ const OrderProductSchema = new Schema<IOrderProduct>({
 const OrderSchema = new Schema<IOrder>(
   {
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    sellers: [
+    stores: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: "Store",
         required: true,
       },
     ],
     products: [OrderProductSchema],
     totalAmount: { type: Number, required: true },
     status: { type: String, required: true },
+    shippingAddress: { type: String },
+    shippingMethod: { type: String },
+    trackingNumber: { type: String },
+    deliveryDate: { type: Date },
+    paymentMethod: { type: String },
+    paymentStatus: { type: String },
+    deliveryStatus: {
+      type: String,
+      enum: [
+        "Order Placed",
+        "Processing",
+        "Shipped",
+        "Out for Delivery",
+        "Delivered",
+        "Canceled",
+        "Returned",
+        "Failed Delivery",
+        "Refunded",
+      ],
+      default: "Order Placed",
+    },
+    // notes: { type: String },
+    // discount: { type: Number },
+    // taxAmount: { type: Number },
   },
   { timestamps: true }
 );
@@ -57,7 +98,7 @@ export default Order;
 // Components:
 
 // OrderProductSchema: Contains fields specific to an individual product (product ID, quantity, price).
-// OrderSchema: Contains fields specific to an order (user ID, seller ID, total amount, status) and an array of products that follows OrderProductSchema.
+// OrderSchema: Contains fields specific to an order (user ID, store ID, total amount, status) and an array of products that follows OrderProductSchema.
 
 // Usage:
 

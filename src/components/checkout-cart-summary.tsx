@@ -66,7 +66,7 @@ export function CheckoutSummary({ userData }: userData) {
         // console.log(data.data.link);
         window.location.href = data.data.authorization_url; // Redirect to the payment link
       } else {
-        console.log(data.message);
+        // console.log(data.message);
       }
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -109,7 +109,11 @@ export function CheckoutSummary({ userData }: userData) {
       </dl>
 
       <div className="mt-6">
-        <Button className="w-full" onClick={(event) => handleSubmit(event)}>
+        <Button
+          className="w-full"
+          onClick={(event) => handleSubmit(event)}
+          disabled={!userData.isVerified}
+        >
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {isLoading ? "Loading..." : "Pay Now"}
         </Button>

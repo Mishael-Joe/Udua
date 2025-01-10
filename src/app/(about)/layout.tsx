@@ -9,6 +9,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { StateContext } from "@/context/stateContext";
 import { AuthHeader } from "../(auth)/component/authHeader";
 
+import { Montserrat } from 'next/font/google'
+ 
+const montserrat = Montserrat({
+  weight: ['400', '600', '700'],
+  subsets: ['latin'],
+})
+
 export const metadata: Metadata = {
   title: siteConfig.siteName,
   description: siteConfig.description,
@@ -25,9 +32,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`scroll-smooth`}>
+      <body className={`${montserrat.className} scroll-smooth`}>
         <StateContext>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
             <AuthHeader />
             <SiteBlob />
             <Toaster />

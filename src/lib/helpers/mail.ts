@@ -1,5 +1,5 @@
-import nodemailer from "nodemailer";
 import User from "../models/user.model";
+import nodemailer from "nodemailer";
 
 type SendMail = {
   email: string;
@@ -8,6 +8,16 @@ type SendMail = {
 };
 
 export const sendMail = async ({ email, emailType, userId }: SendMail) => {
+  const transporter = nodemailer.createTransport({
+    host: "smtp.zoho.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: "mishaeljoe55@zohomail.com",
+      pass: process.env.NEXT_SECRET_APP_SPECIFIED_KEY,
+    },
+  });
+
   try {
     // create a hased token
     const token = Math.floor(100000 + Math.random() * 900000);
@@ -18,16 +28,6 @@ export const sendMail = async ({ email, emailType, userId }: SendMail) => {
         verifyTokenExpiry: Date.now() + 1000 * 60 * 15, // 15 minutes expiry
       });
     }
-
-    const transporter = nodemailer.createTransport({
-      host: "smtp.zoho.com",
-      port: 465,
-      secure: true,
-      auth: {
-        user: "mishaeljoe55@zohomail.com",
-        pass: process.env.NEXT_SECRET_APP_SPECIFIED_KEY,
-      },
-    });
 
     const mailOptions = {
       from: "mishaeljoe55@zohomail.com", // sender address

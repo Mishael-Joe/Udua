@@ -12,6 +12,13 @@ import { ThemeProvider } from "@/components/theme-provider";
 
 import { StateContext } from "@/context/stateContext";
 
+import { Montserrat } from 'next/font/google'
+ 
+const montserrat = Montserrat({
+  weight: ['400', '600', '700'],
+  subsets: ['latin'],
+})
+
 export const metadata: Metadata = {
   title: siteConfig.siteName,
   description: siteConfig.description,
@@ -28,9 +35,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`scroll-smooth`}>
+      <body className={`${montserrat.className} scroll-smooth`}>
         <StateContext>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          {/* <ThemeProvider attribute="class" defaultTheme="system" enableSystem> */}
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
             <SiteHeader />
             <SiteBlob />
             <Toaster />

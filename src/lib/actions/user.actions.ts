@@ -1,6 +1,5 @@
 "use server";
 
-import axios from "axios";
 import Order from "@/lib/models/order.model";
 import { connectToDB } from "@/lib/mongoose";
 import { cookies } from "next/headers";

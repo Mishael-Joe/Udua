@@ -19,6 +19,9 @@ const config = {
     },
     extend: {
       colors: {
+        'udua-blue-primary': "#2476cf",
+        'udua-orange-primary': "#ff7701",
+        'udua-deep-gray-primary': "#484848",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

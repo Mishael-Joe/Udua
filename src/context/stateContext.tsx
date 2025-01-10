@@ -78,7 +78,12 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
     setGrandTotalPriceFromStorage(0);
   };
 
-  const addToCart = (product: ProductFromLocalStorage, quantity: number) => {
+  const addToCart = (
+    product: ProductFromLocalStorage,
+    quantity: number,
+    selectedSize: string | null,
+    selectedColor: string | null
+  ) => {
     const existingProductIndex = cartItems.findIndex(
       (item) => item._id!.toString() === product._id!.toString()
     );
@@ -86,89 +91,124 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
       /*This ensures that you are comparing the string representations of the _id properties, which is necessary because ObjectId instances need to be converted to strings to be compared correctly.*/
     }
 
-    setTotalPriceFromStorage(totalPrice + product.productPrice! * quantity);
-    setTotalQuantityFromStorage(totalQuantity + quantity);
+    if (product.productType === "Physical Product") {
+      setTotalPriceFromStorage(totalPrice + product.productPrice! * quantity);
+      setTotalQuantityFromStorage(totalQuantity + quantity);
 
-    // if the product is not in the cart, then run this function
-    if (existingProductIndex !== -1) {
-      const updatedCartItems = [...cartItems];
-      updatedCartItems[existingProductIndex].quantity! += quantity;
-      setCartItems(updatedCartItems);
-      setCartItemsFromStorage(updatedCartItems);
-    } else {
-      product.quantity = quantity;
-      setCartItems([...cartItems, { ...product }]);
-      setCartItemsFromStorage([...cartItemsFromStorage, { ...product }]);
+      // if the product is in the cart, then run this function
+      if (existingProductIndex !== -1) {
+        const updatedCartItems = [...cartItems];
+        updatedCartItems[existingProductIndex].quantity! += quantity;
+        if (selectedSize) {
+          updatedCartItems[existingProductIndex].size! = selectedSize;
+        }
+        if (selectedColor) {
+          updatedCartItems[existingProductIndex].colors! = [selectedColor];
+        }
+        setCartItems(updatedCartItems);
+        setCartItemsFromStorage(updatedCartItems);
+      } else {
+        const {
+          productDescription,
+          productSizes,
+          productSpecification,
+          ...newProduct
+        } = product; // I am removing productDescription, productSizes, productSpecification so as not to send this unnecessary info to paystack DB
+
+        newProduct.quantity = quantity;
+        setCartItems([...cartItems, { ...newProduct }]);
+        setCartItemsFromStorage([...cartItemsFromStorage, { ...newProduct }]);
+      }
+
+      setTotalPrice(
+        (prevTotalPrice) => prevTotalPrice + product.productPrice! * quantity
+      );
+      setTotalQuantity((prevTotalQuantity) => prevTotalQuantity + quantity);
     }
 
-    setTotalPrice(
-      (prevTotalPrice) => prevTotalPrice + product.productPrice! * quantity
-    );
-    setTotalQuantity((prevTotalQuantity) => prevTotalQuantity + quantity);
+    if (product.productType === "Digital Product") {
+      setTotalPriceFromStorage(totalPrice + product.price! * quantity);
+      setTotalQuantityFromStorage(totalQuantity + quantity);
+
+      // if the product is in the cart, then run this function
+      if (existingProductIndex !== -1) {
+        const updatedCartItems = [...cartItems];
+        updatedCartItems[existingProductIndex].quantity! += quantity;
+
+        setCartItems(updatedCartItems);
+        setCartItemsFromStorage(updatedCartItems);
+      } else {
+        const { description, fileType, fileSize, ...newProduct } = product; // I am removing fileType, description, fileSize so as not to send this unnecessary info to paystack DB
+
+        newProduct.quantity = quantity;
+        setCartItems([...cartItems, { ...newProduct }]);
+        setCartItemsFromStorage([...cartItemsFromStorage, { ...newProduct }]);
+      }
+
+      setTotalPrice(
+        (prevTotalPrice) => prevTotalPrice + product.price! * quantity
+      );
+      setTotalQuantity((prevTotalQuantity) => prevTotalQuantity + quantity);
+    }
   };
 
   const onRemove = (product: CartItems) => {
     const foundProduct = cartItems.find((item) => item._id === product._id);
     if (!foundProduct) return;
-
+  
     const updatedCartItems = cartItems.filter(
       (item) => item._id !== product._id
     );
-
+  
+    // Determine the price based on the product type
+    const productPrice = foundProduct.productType === "Physical Product"
+      ? foundProduct.productPrice!
+      : foundProduct.price!;
+  
+    // Update the state
     setCartItems(updatedCartItems);
-    setTotalPrice(
-      totalPrice - foundProduct.productPrice! * foundProduct.quantity!
-    );
+    setTotalPrice(totalPrice - productPrice * foundProduct.quantity!);
     setTotalQuantity(totalQuantity - foundProduct.quantity!);
     setTotalQuantityFromStorage(totalQuantity - foundProduct.quantity!);
-    setTotalPriceFromStorage(
-      totalPrice - foundProduct.productPrice! * foundProduct.quantity!
-    );
+    setTotalPriceFromStorage(totalPrice - productPrice * foundProduct.quantity!);
     setCartItemsFromStorage(updatedCartItems);
-  };
+  };  
 
   const toggleCartItemQuantity = (
     itemId: string,
     value: "increase" | "decrease"
   ) => {
-    const foundProductIndex = cartItems.findIndex(
-      (item) => item._id === itemId
-    );
+    const foundProductIndex = cartItems.findIndex((item) => item._id === itemId);
     if (foundProductIndex === -1) return;
+    
     const foundProduct = cartItems[foundProductIndex];
     const updatedCartItems = [...cartItems];
-
-    if (value === "increase") {
-      updatedCartItems[foundProductIndex] = {
-        ...foundProduct,
-        quantity: foundProduct.quantity! + 1,
-      };
-      setCartItems(updatedCartItems);
-      setTotalPrice(
-        (prevTotalPrice) => prevTotalPrice + foundProduct.productPrice!
-      );
-      setTotalQuantity((prevTotalQuantity) => prevTotalQuantity + 1);
-      setTotalQuantityFromStorage(totalQuantity + 1);
-      setTotalPriceFromStorage(totalPrice + foundProduct.productPrice!);
-      setCartItemsFromStorage(updatedCartItems);
-    }
-
-    if (value === "decrease") {
-      if (updatedCartItems[foundProductIndex].quantity === 1) return;
-      updatedCartItems[foundProductIndex] = {
-        ...foundProduct,
-        quantity: foundProduct.quantity! - 1,
-      };
-      setCartItems(updatedCartItems);
-      setTotalPrice(
-        (prevTotalPrice) => prevTotalPrice - foundProduct.productPrice!
-      );
-      setTotalQuantity((prevTotalQuantity) => prevTotalQuantity - 1);
-      setTotalQuantityFromStorage(totalQuantity - 1);
-      setTotalPriceFromStorage(totalPrice - foundProduct.productPrice!);
-      setCartItemsFromStorage(updatedCartItems);
-    }
-  };
+    
+    // Determine the price based on product type
+    const productPrice = foundProduct.productType === "Physical Product" 
+      ? foundProduct.productPrice! 
+      : foundProduct.price!;
+    
+    // Determine the quantity adjustment
+    const quantityChange = value === "increase" ? 1 : -1;
+  
+    // Prevent decreasing if quantity is 1
+    if (value === "decrease" && foundProduct.quantity === 1) return;
+  
+    // Update product quantity
+    updatedCartItems[foundProductIndex] = {
+      ...foundProduct,
+      quantity: foundProduct.quantity! + quantityChange,
+    };
+  
+    // Update the state
+    setCartItems(updatedCartItems);
+    setTotalPrice((prevTotalPrice) => prevTotalPrice + quantityChange * productPrice);
+    setTotalQuantity((prevTotalQuantity) => prevTotalQuantity + quantityChange);
+    setTotalQuantityFromStorage(totalQuantity + quantityChange);
+    setTotalPriceFromStorage(totalPrice + quantityChange * productPrice);
+    setCartItemsFromStorage(updatedCartItems);
+  };  
 
   const incrementQuantity = () => {
     setQuantity((prevQuantity) => prevQuantity + 1);

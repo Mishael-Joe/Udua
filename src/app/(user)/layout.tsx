@@ -10,6 +10,14 @@ import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { ThemeProvider } from "@/components/theme-provider";
 
 import { StateContext } from "@/context/stateContext";
+import { UserHeader } from "./components/user-header";
+
+import { Montserrat } from 'next/font/google'
+ 
+const montserrat = Montserrat({
+  weight: ['400', '600', '700'],
+  subsets: ['latin'],
+})
 
 export const metadata: Metadata = {
   title: siteConfig.siteName,
@@ -27,9 +35,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`scroll-smooth`}>
+      <body className={`${montserrat.className} scroll-smooth`}>
         <StateContext>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+          <UserHeader />
             <SiteBlob />
             <Toaster />
             <div>{children}</div>
