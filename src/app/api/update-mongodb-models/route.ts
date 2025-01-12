@@ -33,36 +33,43 @@ export async function POST() {
     // );
 
     // Rename productPrice to price in all documents
-    const resultss = await Product.updateMany(
-      {},
-      { $rename: { productPrice: "price" } }
-    );
-
     const result = await Product.updateMany(
       {},
       {
-        $set: {
-          productType: "Physical Product", // Add or update the 'isVisible' field for all products
+        $rename: {
+          productName: "name",
+          productPrice: "price",
+          productSizes: "sizes",
+          productImage: "images",
+          productDescription: "description",
+          productSpecification: "specifications",
+          productCategory: "category",
+          productSubCategory: "subCategory",
         },
       }
     );
 
-    const results = await Store.updateMany(
-      {}, // Apply to all stores
-      {
-        $set: {
-          ebooks: [],
-        },
-      },
-      { multi: true } // Update all documents
-    );
+    // const result = await Product.updateMany(
+    //   {},
+    //   {
+    //     $set: {
+    //       productType: "Physical Product", // Add or update the 'isVisible' field for all products
+    //     },
+    //   }
+    // );
 
-    const body = {
-      result,
-      results,
-    };
+    // const results = await Store.updateMany(
+    //   {}, // Apply to all stores
+    //   {
+    //     $set: {
+    //       ebooks: [],
+    //     },
+    //   },
+    //   { multi: true } // Update all documents
+    // );
+
     return NextResponse.json(
-      { message: "Store model updated successfully", body },
+      { message: "Product model updated successfully", result },
       { status: 200 }
     );
   } catch (error) {

@@ -16,6 +16,7 @@ import GLightbox from "glightbox"; // Import GLightbox
 import "glightbox/dist/css/glightbox.min.css"; // Import GLightbox CSS
 import { Splide, SplideSlide } from "react-splide-ts";
 import "@splidejs/react-splide/css";
+import { addProductToRecentlyViewed } from "@/lib/helpers/recently-viewed";
 
 type Response = {
   status: number;
@@ -28,7 +29,7 @@ export function ProductGallery({ product, isLikedProduct }: ForProductGallery) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isVisible, setIsVisible] = useState(false);
-
+  addProductToRecentlyViewed(product._id);
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
   };
@@ -127,11 +128,11 @@ export function ProductGallery({ product, isLikedProduct }: ForProductGallery) {
             </Link>
 
             {/* GLightbox trigger for main image */}
-            <a href={product.productImage[selectedImage]} className="glightbox">
+            <a href={product.images[selectedImage]} className="glightbox">
               <Image
                 priority
-                src={product.productImage[selectedImage]}
-                alt={`Main ${product.productName} image`}
+                src={product.images[selectedImage]}
+                alt={`Main ${product.name} image`}
                 width={600}
                 height={750}
                 placeholder="blur"
@@ -146,7 +147,7 @@ export function ProductGallery({ product, isLikedProduct }: ForProductGallery) {
           {/* Thumbnail images */}
           <div className="mx-auto mt-6 w-full max-w-2xl px-3.5 lg:max-w-none">
             <ul className="grid grid-cols-3 gap-2 sm:gap-6">
-              {product.productImage.map((image, imageIndex) => (
+              {product.images.map((image, imageIndex) => (
                 <div
                   key={imageIndex}
                   onClick={() => setSelectedImage(imageIndex)}
@@ -201,7 +202,7 @@ export function ProductGallery({ product, isLikedProduct }: ForProductGallery) {
               <Image
                 priority
                 src={product.coverIMG[selectedImage]}
-                alt={`Main ${product.productName} image`}
+                alt={`Main ${product.name} image`}
                 width={500}
                 height={650}
                 placeholder="blur"

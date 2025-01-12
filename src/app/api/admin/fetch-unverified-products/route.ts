@@ -7,12 +7,17 @@ export async function POST(request: NextRequest) {
     await connectToDB();
 
     const UnverifiedProducts = await Product.find({
-        isVerifiedProduct: false,
-    }).select("_id productName productImage productPrice").exec();
+      isVerifiedProduct: false,
+    })
+      .select("_id name images price")
+      .exec();
     // console.log(`UnverifiedProducts`, UnverifiedProducts)
 
     return NextResponse.json(
-      { message: "Unverified Products found", UnverifiedProducts: UnverifiedProducts },
+      {
+        message: "Unverified Products found",
+        UnverifiedProducts: UnverifiedProducts,
+      },
       { status: 200 }
     );
   } catch (error: any) {

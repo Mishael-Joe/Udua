@@ -134,7 +134,7 @@ export default function SellerDashboard() {
                               }
                             >
                               {productOrder.product !== null
-                                ? productOrder.product.productName
+                                ? productOrder.product.name
                                 : "You've deleted this product."}
                             </div>
                           ))}

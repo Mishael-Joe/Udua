@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { cookies } from "next/headers";
 import UserAvatar from "../app/(user)/components/userAvater";
 import Sheets from "./sheet";
+import Categories from "./left-sidebar";
 
 export function SiteHeader() {
   const cookieStore = cookies();
@@ -33,6 +34,9 @@ export function SiteHeader() {
         </Suspense>
 
         <div className="flex items-center space-x-1">
+          <div className="hidden md:inline-flex">
+            <Categories />
+          </div>
           <CartCount />
 
           {/* <ThemeToggle /> */}

@@ -89,7 +89,11 @@ export default function Payout({ params }: { params: { slug: string } }) {
           {security.map((item, i) => {
             if (item.link) {
               return (
-                <Link href={`/store/${params.slug}/payout-history`} key={i} className="h-full">
+                <Link
+                  href={`/store/${params.slug}/payout-history`}
+                  key={i}
+                  className="h-full"
+                >
                   <Card key={i} className="h-full">
                     <CardHeader>
                       <div className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -179,7 +183,7 @@ export default function Payout({ params }: { params: { slug: string } }) {
                             }
                           >
                             {productOrder.product !== null
-                              ? productOrder.product.productName
+                              ? productOrder.product.name
                               : "You've deleted this product."}
                           </div>
                         ))}

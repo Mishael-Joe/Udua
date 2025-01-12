@@ -27,10 +27,10 @@ export function ProductInfo({ product }: ForProductInfo) {
   // console.log(product);
   const [selectedSize, setSelectedSize] = useState(() => {
     if (product.productType !== "Physical Product") return null;
-    if (product.productSizes === undefined || product.productSizes === null) {
+    if (product.sizes === undefined || product.sizes === null) {
       return null;
     }
-    return product.productSizes[0];
+    return product.sizes[0];
   });
 
   const [selectedColor, setSelectedColor] = useState(() => {
@@ -44,7 +44,7 @@ export function ProductInfo({ product }: ForProductInfo) {
   if (product.productType === "Physical Product") {
     const notify = (product: Product) => {
       toast({
-        title: `${product.productName}. Quantity: ${quantity}`,
+        title: `${product.name}. Quantity: ${quantity}`,
         description: `Product added to cart`,
         action: (
           <Link href={`/cart`}>
@@ -59,14 +59,12 @@ export function ProductInfo({ product }: ForProductInfo) {
 
     return (
       <div className="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0 md:sticky md:top-20">
-        <h1 className="text-2xl font-bold tracking-tight">
-          {product.productName}
-        </h1>
+        <h1 className="text-2xl font-bold tracking-tight">{product.name}</h1>
 
         <div className="mt-3">
           <h2 className="sr-only">Product information</h2>
           <p className="text-2xl tracking-tight font-semibold">
-            &#8358; {addCommasToNumber(product.productPrice as number)}
+            &#8358; {addCommasToNumber(product.price as number)}
           </p>
         </div>
 
@@ -127,8 +125,8 @@ export function ProductInfo({ product }: ForProductInfo) {
               Size: <strong>{selectedSize && selectedSize}</strong>
             </p>
           )}
-          {product.productSizes &&
-            product.productSizes.map((size: any) => (
+          {product.sizes &&
+            product.sizes.map((size: any) => (
               <Button
                 onClick={() => setSelectedSize(size)}
                 key={size}
@@ -163,9 +161,7 @@ export function ProductInfo({ product }: ForProductInfo) {
 
         <div className="mt-6">
           <h3 className="sr-only">Description</h3>
-          <div className="space-y-6 text-base">
-            {product.productDescription}
-          </div>
+          <div className="space-y-6 text-base">{product.description}</div>
         </div>
       </div>
     );

@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       .populate({
         path: "products",
         match: { isVerifiedProduct: true },
-        select: "_id productName productImage productPrice productType", // Replace with the fields you want to include
+        select: "_id name images price productType", // Replace with the fields you want to include
       })
       .populate({
         path: "ebooks",

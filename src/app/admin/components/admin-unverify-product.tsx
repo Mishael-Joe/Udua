@@ -15,14 +15,14 @@ function AdminUnVerifyProduct() {
   const [productID, setProductID] = useState("");
   const [product, setProduct] = useState<Partial<Product>>({
     _id: "",
-    productName: "",
-    productPrice: 0,
-    productSizes: [],
+    name: "",
+    price: 0,
+    sizes: [],
     productQuantity: "",
-    productImage: [],
-    productDescription: "",
-    productSpecification: "",
-    productSubCategory: "",
+    images: [],
+    description: "",
+    specifications: "",
+    subCategory: "",
     storeID: "",
     isVerifiedProduct: false,
   });
@@ -157,8 +157,8 @@ function AdminUnVerifyProduct() {
         <div className="grid grid-cols-1 flex-row gap-6 flex-wrap lg:justify-between">
           <div className="mx-auto w-full max-w-5xl sm:block lg:max-w-none">
             <ul className="grid sm:grid-cols-3 gap-6">
-              {product.productImage !== undefined &&
-                product.productImage.map((image, imageIndex: number) => (
+              {product.images !== undefined &&
+                product.images.map((image, imageIndex: number) => (
                   <div
                     key={imageIndex}
                     className="relative flex h-52 cursor-pointer items-center justify-center rounded-md bg-white text-sm font-medium uppercase hover:bg-gray-50"
@@ -192,35 +192,35 @@ function AdminUnVerifyProduct() {
                     <span className=" text-base font-semibold">
                       Product Name:
                     </span>{" "}
-                    <span>{`${product.productName}`}</span>
+                    <span>{`${product.name}`}</span>
                   </p>
 
                   <p>
                     <span className=" text-base font-semibold">
                       Product Description:{" "}
                     </span>{" "}
-                    <span>{product.productDescription}</span>
+                    <span>{product.description}</span>
                   </p>
 
                   <p>
                     <span className=" text-base font-semibold">
                       Product Specification:{" "}
                     </span>{" "}
-                    <span>{product.productSpecification}</span>
+                    <span>{product.specifications}</span>
                   </p>
 
                   <p>
                     <span className=" text-base font-semibold">
                       Product SubCategory:
                     </span>{" "}
-                    <span>{product.productSubCategory}</span>
+                    <span>{product.subCategory}</span>
                   </p>
 
                   <p>
                     <span className=" text-base font-semibold">
                       Product Category:
                     </span>{" "}
-                    <span>{product.productCategory}</span>
+                    <span>{product.category}</span>
                   </p>
                 </div>
               </CardContent>
@@ -236,7 +236,9 @@ function AdminUnVerifyProduct() {
                     <span className=" text-base font-semibold">
                       Product Price:
                     </span>{" "}
-                    <span>&#8358;{addCommasToNumber(product.productPrice as number)}</span>
+                    <span>
+                      &#8358;{addCommasToNumber(product.price as number)}
+                    </span>
                   </p>
 
                   <p>
@@ -250,9 +252,11 @@ function AdminUnVerifyProduct() {
                     <span className=" text-base font-semibold">
                       Product Sizes:
                     </span>{" "}
-                    {product.productSizes !== undefined &&
-                      product.productSizes.map((size, i: number) => (
-                        <Button disabled key={i}>{size}</Button>
+                    {product.sizes !== undefined &&
+                      product.sizes.map((size, i: number) => (
+                        <Button disabled key={i}>
+                          {size}
+                        </Button>
                       ))}
                   </p>
                 </div>

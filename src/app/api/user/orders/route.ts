@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const product = await Product.findOne({}).select("_id productName").exec();
+    const product = await Product.findOne({}).select("_id name").exec();
 
     const userOrders = await Order.find({ user: userId.toString() })
       .populate({

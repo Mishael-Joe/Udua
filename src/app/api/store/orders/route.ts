@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const product = await Product.findOne({}).select("_id productName").exec();
+    const product = await Product.findOne({}).select("_id name").exec();
     //TODO: REVIEW THIS CODE DONW
     const orders = await Order.find({
       stores: { $in: [storeID.toString()] },
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
       .select("-totalAmount -updatedAt")
       .exec();
 
-      // console.log(`orders`, orders)
+    // console.log(`orders`, orders)
 
     return NextResponse.json(
       { message: "Orders found", orders },
