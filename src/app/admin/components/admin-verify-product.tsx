@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Product as  Products } from "@/types";
+import { Product as Products } from "@/types";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import {
@@ -28,18 +28,20 @@ import Link from "next/link";
 import Image from "next/image";
 
 type UnverifiedProducts = Products & {
-    createdAt: Date
-}
+  createdAt: Date;
+};
 
 export default function AllUnverifiedProduct() {
-  const [allUnverifiedProduct, setAllUnverifiedProduct] = useState<UnverifiedProducts[] | null>(null);
+  const [allUnverifiedProduct, setAllUnverifiedProduct] = useState<
+    UnverifiedProducts[] | null
+  >(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.post<{ UnverifiedProducts: UnverifiedProducts[] }>(
-          "/api/admin/fetch-unverified-products"
-        );
+        const response = await axios.post<{
+          UnverifiedProducts: UnverifiedProducts[];
+        }>("/api/admin/fetch-unverified-products");
         // console.log("sellerdata", response);
         // console.log("response.data.UnverifiedProducts", response.data.UnverifiedProducts);
         setAllUnverifiedProduct(response.data.UnverifiedProducts);
@@ -65,7 +67,9 @@ export default function AllUnverifiedProduct() {
   if (allUnverifiedProduct !== null) {
     return (
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-        <h1 className="text-2xl font-semibold ">Products submitted for verification</h1>
+        <h1 className="text-2xl font-semibold ">
+          Products submitted for verification
+        </h1>
         <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-2">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -75,7 +79,9 @@ export default function AllUnverifiedProduct() {
               <CreditCard className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">+ {allUnverifiedProduct.length}</div>
+              <div className="text-2xl font-bold">
+                + {allUnverifiedProduct.length}
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -105,19 +111,25 @@ export default function AllUnverifiedProduct() {
                   {allUnverifiedProduct!.map((product) => (
                     <TableRow key={product._id}>
                       <TableCell className="font-medium">
-                        <Image src={product.productImage[0]} className=" rounded-md object-fill h-20 w-20" width={100} height={100} alt={product.productName} />
+                        <Image
+                          src={product.images[0]}
+                          className=" rounded-md object-fill h-20 w-20"
+                          width={100}
+                          height={100}
+                          alt={product.name}
+                        />
                       </TableCell>
-                      
+
                       <TableCell className="font-medium">
-                        {product.productName}
+                        {product.name}
                       </TableCell>
-                      
+
                       <TableCell className="font-medium">
                         {product._id}
                       </TableCell>
-                      
+
                       <TableCell className="font-medium">
-                        {product.productPrice}
+                        {product.price}
                       </TableCell>
 
                       {/* <TableCell>
@@ -142,9 +154,7 @@ export default function AllUnverifiedProduct() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <Link
-                              href={`/admin/pro/${product._id}`}
-                            >
+                            <Link href={`/admin/pro/${product._id}`}>
                               <DropdownMenuItem>More</DropdownMenuItem>
                             </Link>
                           </DropdownMenuContent>

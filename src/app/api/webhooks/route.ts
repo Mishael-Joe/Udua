@@ -109,10 +109,12 @@ export async function POST(request: Request) {
             await product.save({ session });
 
             // store operation begins
-            // calculate pending balance of the store. This is done by multiplying the 
+            // calculate pending balance of the store. This is done by multiplying the
             // product price and the bought qty then taking away our commission or charges
-            const totalProductPurchasedAmount = product.productPrice * quantity;
-            const pendingBalance = calculateCommission(totalProductPurchasedAmount).settleAmount
+            const totalProductPurchasedAmount = product.price * quantity;
+            const pendingBalance = calculateCommission(
+              totalProductPurchasedAmount
+            ).settleAmount;
 
             // console.log('pendingBalance', pendingBalance)
             const store: APIStore = await Store.findById(
@@ -124,7 +126,7 @@ export async function POST(request: Request) {
             if (store) {
               notifications.push({
                 storeEmail: store.storeEmail,
-                productName: product.productName,
+                productName: product.name,
                 quantity,
               });
 
@@ -138,7 +140,7 @@ export async function POST(request: Request) {
               product: product._id,
               store: product.storeID,
               quantity,
-              price: product.productPrice * quantity,
+              price: product.price * quantity,
             });
           }
           // product operation ends
@@ -156,7 +158,7 @@ export async function POST(request: Request) {
                   from: '"Your E-commerce Site" <mishaeljoe55@zohomail.com>',
                   to: store.storeEmail,
                   subject: "Stock Alert Notification",
-                  text: `Your product ${product.productName} is low on stock. Ordered quantity: ${quantity}, Available quantity: ${product.productQuantity}. Please restock.`,
+                  text: `Your product ${product.name} is low on stock. Ordered quantity: ${quantity}, Available quantity: ${product.productQuantity}. Please restock.`,
                 };
 
                 transporter.sendMail(mailOptions, (error, info) => {

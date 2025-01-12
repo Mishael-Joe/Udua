@@ -23,12 +23,9 @@ import { productCategories, subCategories } from "@/constant/constant";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 
-type Products = Omit<
-  Product,
-  "storeID" | "productImage" | "path" | "productPrice"
-> & {
-  productPrice: string;
-  productImage: ""[];
+type Products = Omit<Product, "storeID" | "images" | "path" | "price"> & {
+  price: string;
+  images: ""[];
 };
 
 export default function EditProduct({ params }: { params: { slug: string } }) {
@@ -36,16 +33,16 @@ export default function EditProduct({ params }: { params: { slug: string } }) {
   const { toast } = useToast();
   //   console.log('params', params)
   const [product, setProduct] = useState<Products>({
-    productName: "",
-    productPrice: "",
-    productSizes: [],
+    name: "",
+    price: "",
+    sizes: [],
     productQuantity: "",
-    productImage: [""],
-    productDescription: "",
-    productSpecification: "",
-    productCategory: "",
-    productSubCategory: "",
-    productType: "Physical Product"
+    images: [""],
+    description: "",
+    specifications: "",
+    category: "",
+    subCategory: "",
+    productType: "Physical Product",
   });
 
   const [imagePreviews, setImagePreviews] = useState<string[]>([]); // This will store the image URLs
@@ -78,7 +75,7 @@ export default function EditProduct({ params }: { params: { slug: string } }) {
           title: `Error`,
           description: `Product verified.`,
         });
-        router.refresh()
+        router.refresh();
       }
     } catch (error: any) {
       console.error("Failed to fetch seller Products", error.message);
@@ -96,7 +93,7 @@ export default function EditProduct({ params }: { params: { slug: string } }) {
         <div className="mx-auto grid max-w-[59rem] flex-1 auto-rows-max gap-4">
           <div className="flex items-center gap-4 text-ellipsis">
             <h1 className=" shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0 text-ellipsis">
-              {product.productName}
+              {product.name}
             </h1>
             <div className="hidden items-center gap-2 md:ml-auto md:flex">
               <Button size="sm" onClick={handleSubmit}>
@@ -118,7 +115,7 @@ export default function EditProduct({ params }: { params: { slug: string } }) {
                         id="name"
                         type="text"
                         className="w-full"
-                        value={product.productName}
+                        value={product.name}
                         disabled
                       />
                     </div>
@@ -127,7 +124,7 @@ export default function EditProduct({ params }: { params: { slug: string } }) {
                       <Textarea
                         id="description"
                         disabled
-                        value={product.productDescription}
+                        value={product.description}
                         className="min-h-32"
                       />
                     </div>
@@ -136,7 +133,7 @@ export default function EditProduct({ params }: { params: { slug: string } }) {
                       <Textarea
                         id="description"
                         disabled
-                        value={product.productSpecification}
+                        value={product.specifications}
                         className="min-h-32"
                       />
                     </div>
@@ -157,7 +154,7 @@ export default function EditProduct({ params }: { params: { slug: string } }) {
                         type="text"
                         className="w-full"
                         disabled
-                        value={product.productPrice}
+                        value={product.price}
                       />
                     </div>
                     <div className="grid gap-3">
@@ -185,7 +182,7 @@ export default function EditProduct({ params }: { params: { slug: string } }) {
                         <select
                           aria-label="Select category"
                           name="productCategory"
-                          value={product.productCategory}
+                          value={product.category}
                           className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:text-slate-200 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
                           disabled
                         >
@@ -203,7 +200,7 @@ export default function EditProduct({ params }: { params: { slug: string } }) {
                   </CardContent>
                 </Card>
 
-                {product.productCategory && (
+                {product.category && (
                   <Card>
                     <CardHeader>
                       <CardTitle>Product Sub-Category</CardTitle>
@@ -214,14 +211,14 @@ export default function EditProduct({ params }: { params: { slug: string } }) {
                           <select
                             aria-label="Select sub-category"
                             name="productSubCategory"
-                            value={product.productSubCategory}
+                            value={product.subCategory}
                             className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:text-slate-200 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
                             disabled
                           >
                             <option value="" disabled>
                               Select a Sub-Category
                             </option>
-                            {subCategories[product.productCategory]?.map(
+                            {subCategories[product.category]?.map(
                               (subCategory) => (
                                 <option key={subCategory} value={subCategory}>
                                   {subCategory}
@@ -272,7 +269,7 @@ export default function EditProduct({ params }: { params: { slug: string } }) {
                 <CardContent>
                   <div className="grid gap-2">
                     <div className="grid grid-cols-1 gap-2">
-                      {product.productImage.map((img, i) => (
+                      {product.images.map((img, i) => (
                         <button key={i}>
                           <Image
                             alt="Product image"

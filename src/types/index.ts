@@ -24,15 +24,15 @@ export type User = {
 export type Product = {
   _id?: string;
   productType: "Physical Product" | "Digital Product" | string;
-  productName: string;
-  productPrice: number;
-  productSizes?: string[];
+  name: string;
+  price: number;
+  sizes?: string[];
   productQuantity: string;
-  productImage: string[];
-  productDescription: string;
-  productSpecification: string;
-  productCategory: string;
-  productSubCategory: string;
+  images: string[];
+  description: string;
+  specifications: string;
+  category: string;
+  subCategory: string;
   storeID: string;
   path: string;
   quantity?: number;
@@ -67,15 +67,14 @@ export type CombinedProduct = {
   _id: string;
   storeID: string;
   productType: "Physical Product" | "Digital Product" | string;
-  productName: string; // Only for Physical Product
-  productPrice: number; // Only for Physical Product
-  productSizes?: string[]; // Only for Physical Product
+  name: string; // Only for Physical Product
+  sizes?: string[]; // Only for Physical Product
   productQuantity: string; // Only for Physical Product
-  productImage: string[]; // Only for Physical Product
-  productDescription: string;
-  productSpecification: string;
-  productCategory: string;
-  productSubCategory: string;
+  images: string[]; // Only for Physical Product
+  description: string;
+  specifications: string;
+  category: string;
+  subCategory: string;
   path: string;
   quantity?: number; // Could be used for both
   colors?: string[]; // Only for Physical Product
@@ -95,10 +94,8 @@ export type CombinedProduct = {
   publisher?: string; // Only for Digital Product
   rating?: number; // Only for Digital Product
   downloads?: number; // Only for Digital Product
-  price: number
+  price: number;
   type: string;
-  description: string;
-  category: string;
   subcategory: string;
 };
 
@@ -171,6 +168,7 @@ export type ResultDataMetadataItemsInCart = {
   itemsInCart: Product[];
   deliveryMethod: string;
 };
+
 export type IOrderProduct = {
   product: {
     _id: string;
@@ -238,6 +236,7 @@ export type ContextType = {
     itemId: string,
     value: "increase" | "decrease"
   ) => void;
+  setCartItemsFromStorage: (items: CartItems[]) => void;
 };
 
 export type StateContextProps = {

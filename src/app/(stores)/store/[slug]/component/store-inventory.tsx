@@ -178,24 +178,25 @@ export default function StoreInventory({
                           alt="Product image"
                           className="aspect-square rounded-md object-cover"
                           height="64"
-                          src={product.productImage[0]}
+                          src={product.images[0]}
                           loading="lazy"
                           width="64"
                         />
                       </TableCell>
-                      <TableCell className="font-medium"
-                      style={{
-                        marginTop: "1.5em",
-                        display: "-webkit-box",
-                        WebkitBoxOrient: "vertical",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        WebkitLineClamp: 2, // Limits the text to 3 lines
-                        maxHeight: "2.5em", // Adjust this based on the number of lines and line height
-                        lineHeight: "1.5em", // Adjust based on font size for accurate height control
-                      }}
+                      <TableCell
+                        className="font-medium"
+                        style={{
+                          marginTop: "1.5em",
+                          display: "-webkit-box",
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          WebkitLineClamp: 2, // Limits the text to 3 lines
+                          maxHeight: "2.5em", // Adjust this based on the number of lines and line height
+                          lineHeight: "1.5em", // Adjust based on font size for accurate height control
+                        }}
                       >
-                        {product.productName}
+                        {product.name}
                       </TableCell>
                       <TableCell>
                         {product.isVerifiedProduct === true ? (
@@ -232,7 +233,7 @@ export default function StoreInventory({
                         )}
                       </TableCell>
                       <TableCell className="hidden lg:table-cell">
-                        {product.productPrice}
+                        {product.price}
                       </TableCell>
                       <TableCell className="hidden lg:table-cell">
                         {product.productQuantity}

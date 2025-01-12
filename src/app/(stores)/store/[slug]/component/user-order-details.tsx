@@ -328,13 +328,13 @@ export default function OrderDetails({
             {orderDetails.products.map((product) => (
               <div
                 className="grid sm:grid-cols-2 gap-4 text-sm w-full relative"
-                key={product.product.productName}
+                key={product.product.name}
               >
                 <div className="aspect-square w-full overflow-hidden rounded-lg border-2 border-gray-200 bg-gray-100 group-hover:opacity-75 dark:border-gray-800">
                   {product.product !== null && product.product !== null && (
                     <Image
-                      src={product.product.productImage[0]}
-                      alt={product.product.productName}
+                      src={product.product.images[0]}
+                      alt={product.product.name}
                       width={300}
                       height={150}
                       className="h-full w-full object-cover object-center"
@@ -346,7 +346,7 @@ export default function OrderDetails({
                 <div className="">
                   <h3 className="mt-4 font-medium">
                     Product Name:
-                    {product.product && product.product.productName}
+                    {product.product && product.product.name}
                   </h3>
                   <p className="mt-2 font-medium">
                     Quantity Bought: {product.quantity && product.quantity}

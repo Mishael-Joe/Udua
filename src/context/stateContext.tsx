@@ -13,19 +13,15 @@ export const Context = createContext<ContextType | null>(null);
 
 export const StateContext: React.FC<StateContextProps> = ({ children }) => {
   const [cartItems, setCartItems] = useState<ProductFromLocalStorage[]>([]);
-  const [totalPrice, setTotalPrice] = useState<number>(0);
-  const [totalQuantity, setTotalQuantity] = useState<number>(0);
   const [quantity, setQuantity] = useState<number>(1);
 
   const [shippingFee, setShippingFee] = useState<number>(0);
   const [grandTotalPrice, setGrandTotalPrice] = useState<number>(0);
-  const [deliveryMethod, setDeliveryMethod] = useState<string>("Door Delivery");
+  const [deliveryMethod, setDeliveryMethod] = useState<string>("Free Shipping");
 
   const [cartItemsFromStorage, setCartItemsFromStorage] = useLocalStorage<
     ProductFromLocalStorage[]
   >("cartItems", []);
-  const [totalPriceFromStorage, setTotalPriceFromStorage] =
-    useLocalStorage<number>("totalPrice", 0);
   const [totalQuantityFromStorage, setTotalQuantityFromStorage] =
     useLocalStorage<number>("totalQuantity", 0);
   const [quantityFromStorage, setQuantityFromStorage] = useLocalStorage<number>(
@@ -37,20 +33,39 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
   const [grandTotalPriceFromStorage, setGrandTotalPriceFromStorage] =
     useLocalStorage<number>("grandTotalPrice", 0);
 
+  function calculateCartTotals(cartItems: CartItems[]) {
+    const totalPrice = cartItems.reduce(
+      (acc, item) => acc + item.price! * item.quantity!,
+      0
+    );
+
+    const totalQuantity = cartItems.reduce(
+      (acc, item) => acc + item.quantity!,
+      0
+    );
+
+    return {
+      totalPrice,
+      totalQuantity,
+    };
+  }
+
+  let { totalPrice, totalQuantity } = calculateCartTotals(cartItems);
+
   useEffect(() => {
+    totalPrice = calculateCartTotals(cartItemsFromStorage).totalPrice;
+    totalQuantity = calculateCartTotals(cartItemsFromStorage).totalQuantity;
     setCartItems(cartItemsFromStorage);
-    setTotalPrice(totalPriceFromStorage);
-    setTotalQuantity(totalQuantityFromStorage);
     setQuantity(quantityFromStorage);
     setShippingFee(shippingFeeFromStorage);
     setGrandTotalPrice(grandTotalPriceFromStorage);
   }, [
     cartItemsFromStorage,
-    totalPriceFromStorage,
     totalQuantityFromStorage,
     grandTotalPriceFromStorage,
     deliveryMethod,
     shippingFeeFromStorage,
+    cartItems,
   ]);
 
   useEffect(() => {
@@ -68,11 +83,10 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
     } else {
       setGrandTotalPriceFromStorage(shippingFeeFromStorage + totalPrice);
     }
-  }, [cartItems, totalPrice, deliveryMethod, shippingFeeFromStorage]);
+  }, [cartItems, deliveryMethod, shippingFeeFromStorage]);
 
   const clearItemsInCart = () => {
     setCartItemsFromStorage([]);
-    setTotalPriceFromStorage(0);
     setTotalQuantityFromStorage(0);
     setShippingFeeFromStorage(0);
     setGrandTotalPriceFromStorage(0);
@@ -92,7 +106,7 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
     }
 
     if (product.productType === "Physical Product") {
-      setTotalPriceFromStorage(totalPrice + product.productPrice! * quantity);
+      // setTotalPriceFromStorage(totalPrice + product.price! * quantity);
       setTotalQuantityFromStorage(totalQuantity + quantity);
 
       // if the product is in the cart, then run this function
@@ -108,26 +122,15 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
         setCartItems(updatedCartItems);
         setCartItemsFromStorage(updatedCartItems);
       } else {
-        const {
-          productDescription,
-          productSizes,
-          productSpecification,
-          ...newProduct
-        } = product; // I am removing productDescription, productSizes, productSpecification so as not to send this unnecessary info to paystack DB
+        const { description, sizes, specifications, ...newProduct } = product; // I am removing productDescription, productSizes, productSpecification so as not to send this unnecessary info to paystack DB
 
         newProduct.quantity = quantity;
         setCartItems([...cartItems, { ...newProduct }]);
         setCartItemsFromStorage([...cartItemsFromStorage, { ...newProduct }]);
       }
-
-      setTotalPrice(
-        (prevTotalPrice) => prevTotalPrice + product.productPrice! * quantity
-      );
-      setTotalQuantity((prevTotalQuantity) => prevTotalQuantity + quantity);
     }
 
     if (product.productType === "Digital Product") {
-      setTotalPriceFromStorage(totalPrice + product.price! * quantity);
       setTotalQuantityFromStorage(totalQuantity + quantity);
 
       // if the product is in the cart, then run this function
@@ -144,71 +147,52 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
         setCartItems([...cartItems, { ...newProduct }]);
         setCartItemsFromStorage([...cartItemsFromStorage, { ...newProduct }]);
       }
-
-      setTotalPrice(
-        (prevTotalPrice) => prevTotalPrice + product.price! * quantity
-      );
-      setTotalQuantity((prevTotalQuantity) => prevTotalQuantity + quantity);
     }
   };
 
   const onRemove = (product: CartItems) => {
     const foundProduct = cartItems.find((item) => item._id === product._id);
     if (!foundProduct) return;
-  
+
     const updatedCartItems = cartItems.filter(
       (item) => item._id !== product._id
     );
-  
-    // Determine the price based on the product type
-    const productPrice = foundProduct.productType === "Physical Product"
-      ? foundProduct.productPrice!
-      : foundProduct.price!;
-  
+
     // Update the state
     setCartItems(updatedCartItems);
-    setTotalPrice(totalPrice - productPrice * foundProduct.quantity!);
-    setTotalQuantity(totalQuantity - foundProduct.quantity!);
     setTotalQuantityFromStorage(totalQuantity - foundProduct.quantity!);
-    setTotalPriceFromStorage(totalPrice - productPrice * foundProduct.quantity!);
     setCartItemsFromStorage(updatedCartItems);
-  };  
+  };
 
   const toggleCartItemQuantity = (
     itemId: string,
     value: "increase" | "decrease"
   ) => {
-    const foundProductIndex = cartItems.findIndex((item) => item._id === itemId);
+    const foundProductIndex = cartItems.findIndex(
+      (item) => item._id === itemId
+    );
     if (foundProductIndex === -1) return;
-    
+
     const foundProduct = cartItems[foundProductIndex];
     const updatedCartItems = [...cartItems];
-    
-    // Determine the price based on product type
-    const productPrice = foundProduct.productType === "Physical Product" 
-      ? foundProduct.productPrice! 
-      : foundProduct.price!;
-    
+
     // Determine the quantity adjustment
     const quantityChange = value === "increase" ? 1 : -1;
-  
+
     // Prevent decreasing if quantity is 1
     if (value === "decrease" && foundProduct.quantity === 1) return;
-  
+
     // Update product quantity
     updatedCartItems[foundProductIndex] = {
       ...foundProduct,
       quantity: foundProduct.quantity! + quantityChange,
     };
-  
+
     // Update the state
     setCartItems(updatedCartItems);
-    setTotalPrice((prevTotalPrice) => prevTotalPrice + quantityChange * productPrice);
-    setTotalQuantity((prevTotalQuantity) => prevTotalQuantity + quantityChange);
     setTotalQuantityFromStorage(totalQuantity + quantityChange);
-    setTotalPriceFromStorage(totalPrice + quantityChange * productPrice);
     setCartItemsFromStorage(updatedCartItems);
-  };  
+  };
 
   const incrementQuantity = () => {
     setQuantity((prevQuantity) => prevQuantity + 1);
@@ -239,6 +223,7 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
         decrementQuantity,
         handleOptionChange,
         toggleCartItemQuantity,
+        setCartItemsFromStorage,
       }}
     >
       {children}

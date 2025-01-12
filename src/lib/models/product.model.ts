@@ -3,15 +3,15 @@ import mongoose, { Schema, Document } from "mongoose";
 interface IProduct extends Document {
   storeID: string;
   productType: "Physical Product" | "Digital Product";
-  productName: string;
-  productPrice: number;
-  productSizes?: string[];
+  name: string;
+  price: number;
+  sizes?: string[];
   productQuantity: number;
-  productImage: string[];
-  productDescription: string;
-  productSpecification: string[];
-  productCategory: string[];
-  productSubCategory: string[];
+  images: string[];
+  description: string;
+  specifications: string[];
+  category: string[];
+  subCategory: string[];
   isVerifiedProduct: boolean;
   isVisible: boolean;
 } // NOTE: storeID serves as the store the product belongs to.
@@ -24,15 +24,15 @@ const productSchema = new Schema<IProduct>({
     default: "Physical Product",
     required: true,
   },
-  productName: { type: String, required: true },
-  productPrice: { type: Number, required: true },
-  productSizes: { type: [String] },
+  name: { type: String, required: true },
+  price: { type: Number, required: true },
+  sizes: { type: [String] },
   productQuantity: { type: Number, required: true, default: 0 },
-  productImage: { type: [String], default: [] },
-  productDescription: { type: String, required: true },
-  productSpecification: { type: [String], required: true },
-  productCategory: { type: [String], required: true },
-  productSubCategory: { type: [String], required: true },
+  images: { type: [String], default: [] },
+  description: { type: String, required: true },
+  specifications: { type: [String], required: true },
+  category: { type: [String], required: true },
+  subCategory: { type: [String], required: true },
   isVerifiedProduct: { type: Boolean, default: false },
   isVisible: { type: Boolean, default: true },
 });

@@ -78,14 +78,14 @@ export function Wishlist() {
           <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:col-span-3 lg:gap-x-8">
             {wishlist.map((product: any) => (
               <div className=" relative" key={product._id}>
-                {!isLoading && (
+                {/* {!isLoading && (
                   <button onClick={() => handleWishlist(product._id)}>
                     <Heart className=" text-white rounded p-1 top-12 left-6 md:top-10 md:left-3 bg-red-500 w-10 h-10 z-10 absolute" />
                   </button>
-                )}
+                )} */}
                 <Link
                   key={product._id}
-                  href={`/products/${product._id}`}
+                  href={`/product/${product._id}`}
                   className="group relative text-sm"
                 >
                   <div className="aspect-square w-full overflow-hidden rounded-lg border-2 border-gray-200 bg-gray-100 group-hover:opacity-75 dark:border-gray-800">
@@ -94,8 +94,8 @@ export function Wishlist() {
                       blurDataURL={`data:image/svg+xml;base64,${toBase64(
                         shimmer(300, 150)
                       )}`}
-                      src={product.productImage[0]}
-                      alt={product.productName}
+                      src={product.images[0]}
+                      alt={product.name}
                       width={300}
                       height={150}
                       className="h-full w-full object-cover object-center"
@@ -103,9 +103,9 @@ export function Wishlist() {
                     />
                   </div>
 
-                  <h3 className="mt-4 font-medium">{product.productName}</h3>
+                  <h3 className="mt-4 font-medium">{product.name}</h3>
                   <p className="mt-2 font-medium">
-                    &#8358; {addCommasToNumber(product.productPrice as number)}{" "}
+                    &#8358; {addCommasToNumber(product.price as number)}{" "}
                   </p>
                 </Link>
               </div>

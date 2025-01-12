@@ -38,11 +38,10 @@ import axios from "axios";
 
 const QuillEditor = dynamic(() => import("react-quill"), { ssr: false });
 
-type Products = Omit<Product, "productImage" | "path" | "productPrice"> & {
-  productPrice: string;
-  productImage: File[];
+type Products = Omit<Product, "images" | "path" | "price"> & {
+  price: string;
+  images: File[];
   path?: string;
-  productSubCategory: string;
   storePassword: string;
   // userID: string | undefined;
 };
@@ -82,15 +81,15 @@ function CreateProduct({ id }: storeID) {
   // }, [userID]);
 
   const [physicalProduct, setPhysicalProduct] = useState<Products>({
-    productName: "",
-    productPrice: "",
-    productSizes: [],
+    name: "",
+    price: "",
+    sizes: [],
     productQuantity: "",
-    productImage: [],
-    productDescription: "",
-    productSpecification: "",
-    productCategory: "",
-    productSubCategory: "",
+    images: [],
+    description: "",
+    specifications: "",
+    category: "",
+    subCategory: "",
     storeID: id,
     storePassword: "",
     productType: "Physical Product",
@@ -250,7 +249,7 @@ function CreateProduct({ id }: storeID) {
   const handleSizeChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = e.target;
     setPhysicalProduct((prev) => {
-      const sizes = prev.productSizes ?? []; // Default to an empty array if undefined
+      const sizes = prev.sizes ?? []; // Default to an empty array if undefined
       const updatedSizes = checked
         ? [...sizes, value] // Add size if checked
         : sizes.filter((size) => size !== value); // Remove size if unchecked
@@ -284,7 +283,7 @@ function CreateProduct({ id }: storeID) {
     setPhysicalProduct((prev) => {
       return {
         ...prev,
-        productDescription: newContent,
+        description: newContent,
       };
     });
     // console.log(physicalProduct.productDescription);
@@ -294,7 +293,7 @@ function CreateProduct({ id }: storeID) {
     setPhysicalProduct((prev) => {
       return {
         ...prev,
-        productSpecification: newContent,
+        specifications: newContent,
       };
     });
     // console.log(physicalProduct.productSpecification);
@@ -318,7 +317,7 @@ function CreateProduct({ id }: storeID) {
     const maxTotalFileSize = 15728640; // 15MB total (3 images * 5MB each)
 
     // Validate product images
-    if (physicalProduct.productImage.length === 0) {
+    if (physicalProduct.images.length === 0) {
       toast({
         variant: "destructive",
         title: `Error`,
@@ -326,7 +325,7 @@ function CreateProduct({ id }: storeID) {
       });
       setIsLoading(false);
       return;
-    } else if (physicalProduct.productImage.length > 3) {
+    } else if (physicalProduct.images.length > 3) {
       toast({
         variant: "destructive",
         title: `Error`,
@@ -337,7 +336,7 @@ function CreateProduct({ id }: storeID) {
     }
 
     let totalSize = 0;
-    for (let image of physicalProduct.productImage) {
+    for (let image of physicalProduct.images) {
       if (
         !allowedFileTypes.includes(image.type) ||
         image.size > maxFileSizePerImage
@@ -364,10 +363,7 @@ function CreateProduct({ id }: storeID) {
     }
 
     // Validate product name
-    if (
-      physicalProduct.productName === "" ||
-      physicalProduct.productName.length < 5
-    ) {
+    if (physicalProduct.name === "" || physicalProduct.name.length < 5) {
       toast({
         variant: "destructive",
         title: `Error`,
@@ -379,9 +375,9 @@ function CreateProduct({ id }: storeID) {
 
     // Validate product price
     if (
-      physicalProduct.productPrice === "" ||
-      isNaN(Number(physicalProduct.productPrice)) ||
-      Number(physicalProduct.productPrice) <= 0
+      physicalProduct.price === "" ||
+      isNaN(Number(physicalProduct.price)) ||
+      Number(physicalProduct.price) <= 0
     ) {
       toast({
         variant: "destructive",
@@ -409,8 +405,8 @@ function CreateProduct({ id }: storeID) {
 
     // Validate product description
     if (
-      physicalProduct.productDescription === "" ||
-      physicalProduct.productDescription.length < 10
+      physicalProduct.description === "" ||
+      physicalProduct.description.length < 10
     ) {
       toast({
         variant: "destructive",
@@ -423,8 +419,8 @@ function CreateProduct({ id }: storeID) {
 
     // Validate product specification
     if (
-      physicalProduct.productSpecification === "" ||
-      physicalProduct.productSpecification.length < 10
+      physicalProduct.specifications === "" ||
+      physicalProduct.specifications.length < 10
     ) {
       toast({
         variant: "destructive",
@@ -436,7 +432,7 @@ function CreateProduct({ id }: storeID) {
     }
 
     // Validate product category
-    if (physicalProduct.productCategory === "") {
+    if (physicalProduct.category === "") {
       toast({
         variant: "destructive",
         title: `Error`,
@@ -460,7 +456,7 @@ function CreateProduct({ id }: storeID) {
     // If all validations pass, proceed with form submission
     try {
       // Upload images to Cloudinary
-      const urls = await uploadImagesToCloudinary(physicalProduct.productImage);
+      const urls = await uploadImagesToCloudinary(physicalProduct.images);
       setImageUrls(urls);
 
       // Add logic to handle form submission, e.g., send product data along with URLs to the server
@@ -472,15 +468,15 @@ function CreateProduct({ id }: storeID) {
       // TODO:
       await createProduct({
         productType: physicalProduct.productType,
-        productName: physicalProduct.productName,
-        productPrice: physicalProduct.productPrice,
-        productSizes: physicalProduct.productSizes,
+        name: physicalProduct.name,
+        price: physicalProduct.price,
+        sizes: physicalProduct.sizes,
         productQuantity: physicalProduct.productQuantity,
-        productImage: urls,
-        productDescription: physicalProduct.productDescription,
-        productSpecification: physicalProduct.productSpecification,
-        productCategory: physicalProduct.productCategory,
-        productSubCategory: physicalProduct.productSubCategory,
+        images: urls,
+        description: physicalProduct.description,
+        specifications: physicalProduct.specifications,
+        category: physicalProduct.category,
+        subCategory: physicalProduct.subCategory,
         path: pathname,
         storeID: physicalProduct.storeID,
         storePassword: physicalProduct.storePassword,
@@ -850,8 +846,8 @@ function CreateProduct({ id }: storeID) {
                             </Label>
 
                             <Input
-                              name="productName"
-                              value={physicalProduct.productName}
+                              name="name"
+                              value={physicalProduct.name}
                               onChange={(e) => handleChange(e)}
                               className="block w-full px-4 py-2 mt-2 text-gray-700 dark:text-white placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
                               type="text"
@@ -865,7 +861,7 @@ function CreateProduct({ id }: storeID) {
                             </Label>
 
                             <QuillEditor
-                              value={physicalProduct.productDescription}
+                              value={physicalProduct.description}
                               onChange={handleProductDescriptionChange}
                               modules={quillModules}
                               formats={quillFormats}
@@ -885,7 +881,7 @@ function CreateProduct({ id }: storeID) {
                             </Label>
 
                             <QuillEditor
-                              value={physicalProduct.productSpecification}
+                              value={physicalProduct.specifications}
                               onChange={handleProductSpecificationChange}
                               modules={quillModules}
                               formats={quillFormats}
@@ -914,8 +910,8 @@ function CreateProduct({ id }: storeID) {
                             </Label>
 
                             <Input
-                              name="productPrice"
-                              value={physicalProduct.productPrice}
+                              name="price"
+                              value={physicalProduct.price}
                               onChange={(e) => handleChange(e)}
                               className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 dark:text-white bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
                               type="text"
@@ -952,8 +948,8 @@ function CreateProduct({ id }: storeID) {
                             <div className="grid gap-3">
                               <select
                                 aria-label="Select category"
-                                name="productCategory"
-                                value={physicalProduct.productCategory}
+                                name="category"
+                                value={physicalProduct.category}
                                 onChange={handleChange}
                                 className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:text-slate-200 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
                               >
@@ -971,7 +967,7 @@ function CreateProduct({ id }: storeID) {
                         </CardContent>
                       </Card>
 
-                      {physicalProduct.productCategory && (
+                      {physicalProduct.category && (
                         <Card>
                           <CardHeader>
                             <CardTitle>Product Sub-Category</CardTitle>
@@ -981,24 +977,24 @@ function CreateProduct({ id }: storeID) {
                               <div className="grid gap-3">
                                 <select
                                   aria-label="Select sub-category"
-                                  name="productSubCategory"
-                                  value={physicalProduct.productSubCategory}
+                                  name="subCategory"
+                                  value={physicalProduct.subCategory}
                                   onChange={handleChange}
                                   className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:text-slate-200 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
                                 >
                                   <option value="" disabled>
                                     Select a Sub-Category
                                   </option>
-                                  {subCategories[
-                                    physicalProduct.productCategory
-                                  ]?.map((subCategory) => (
-                                    <option
-                                      key={subCategory}
-                                      value={subCategory}
-                                    >
-                                      {subCategory}
-                                    </option>
-                                  ))}
+                                  {subCategories[physicalProduct.category]?.map(
+                                    (subCategory) => (
+                                      <option
+                                        key={subCategory}
+                                        value={subCategory}
+                                      >
+                                        {subCategory}
+                                      </option>
+                                    )
+                                  )}
                                 </select>
                               </div>
                             </div>
@@ -1038,9 +1034,7 @@ function CreateProduct({ id }: storeID) {
                                 type="checkbox"
                                 value={size}
                                 checked={
-                                  physicalProduct.productSizes?.includes(
-                                    size
-                                  ) || false
+                                  physicalProduct.sizes?.includes(size) || false
                                 } // Handle undefined productSizes
                                 onChange={handleSizeChange}
                                 className="mr-2 text-slate-100"
@@ -1070,7 +1064,7 @@ function CreateProduct({ id }: storeID) {
                             <Upload className="h-10 z-10 w-10 text-muted-foreground" />
                             <span className="sr-only">Upload</span>
                             <Input
-                              name="productImage"
+                              name="images"
                               onChange={(e) => handleChange(e)}
                               className="block absolute h-full w-full border-dashed px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
                               type="file"

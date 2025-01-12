@@ -84,13 +84,12 @@ export function OrderHistory() {
                     <TableRow key={order._id}>
                       <TableCell className="font-medium">
                         {order.products !== null &&
-                          order.products[0].product.productImage[0] !==
-                            undefined && (
+                          order.products[0].product.images[0] !== undefined && (
                             <Image
                               alt="Product image"
                               className="aspect-square rounded-md object-cover"
                               height="64"
-                              src={order.products[0].product.productImage[0]}
+                              src={order.products[0].product.images[0]}
                               loading="lazy"
                               width="64"
                             />
@@ -99,12 +98,8 @@ export function OrderHistory() {
                       <TableCell>
                         {new Date(order.createdAt).toLocaleDateString()}
                       </TableCell>
-                      <TableCell>
-                        {order.status}
-                      </TableCell>
-                      <TableCell>
-                        {order.deliveryStatus}
-                      </TableCell>
+                      <TableCell>{order.status}</TableCell>
+                      <TableCell>{order.deliveryStatus}</TableCell>
                       <TableCell>
                         &#8358;{addCommasToNumber(order.totalAmount)}
                       </TableCell>

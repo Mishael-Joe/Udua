@@ -4,6 +4,7 @@ import { ProductGrid } from "@/components/product-grid";
 import { fetchProductsAndEBooks } from "@/lib/actions/product.action";
 import SkeletonLoader from "@/lib/loaders/skeletonLoader";
 import { CombinedProduct, Product } from "@/types";
+import Image from "next/image";
 import { Suspense } from "react";
 
 type Props = {
@@ -60,16 +61,48 @@ export default async function Home({ searchParams }: Props) {
   // console.log("combinedResults", products)
 
   return (
-    <main className="grid min-h-screen mx-auto md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr] px-5 md:px-4 gap-4 max-w-7xl">
-      <div className="hidden border-r bg-muted/10 md:block">
-        <div className="flex h-full max-h-screen flex-col gap-2">
-          <LeftSidebar />
+    // grid gap-4 md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]
+    <main className="min-h-screen mx-auto max-w-[78rem] px-5 md:px-4 pt-4">
+      <div className="">
+        {/* <HeroBanners /> */}
+        <div className="">
+          <video
+            autoPlay
+            loop
+            muted
+            width="800"
+            height="300"
+            src="/T&Cs Apply.mp4"
+            className=" aspect-video"
+          ></video>
         </div>
+        {/* <div className=" hidden lg:block basis-1/3">
+          <div className="grid gap-4">
+            <div>
+              <Image
+                src={`/cloths.jpg`}
+                width={270}
+                height={250}
+                alt=""
+                className=" aspect-auto"
+              />
+            </div>
+            <div>
+              <Image
+                src={`/cloths.jpg`}
+                width={270}
+                height={250}
+                alt=""
+                className=" aspect-auto"
+              />
+            </div>
+          </div>
+          <h1 className=" font-semibold text-xl">Shop deals in fashion</h1>
+        </div> */}
       </div>
 
       <div className="py-4">
         <Suspense fallback={<SkeletonLoader />}>
-          <HeroBanners />
           <ProductGrid products={products} />
         </Suspense>
       </div>

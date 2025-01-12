@@ -13,8 +13,8 @@ import Store from "../models/store.model";
 import bcryptjs from "bcryptjs";
 import EBook from "../models/digital-product.model";
 
-type Product = Omit<Products, "productPrice"> & {
-  productPrice: string;
+type Product = Omit<Products, "price"> & {
+  price: string;
   storePassword: string;
 };
 
@@ -24,15 +24,15 @@ type DigitalProducts = Omit<DigitalProduct, "price"> & {
 };
 
 export async function createProduct({
-  productName,
-  productPrice,
-  productSizes,
+  name,
+  price,
+  sizes,
   productQuantity,
-  productImage,
-  productDescription,
-  productSpecification,
-  productCategory,
-  productSubCategory,
+  images,
+  description,
+  specifications,
+  category,
+  subCategory,
   storeID,
   path,
   storePassword,
@@ -63,15 +63,15 @@ export async function createProduct({
     const createdProduct = await Product.create({
       storeID,
       productType,
-      productName,
-      productPrice,
-      productSizes,
+      name,
+      price,
+      sizes,
       productQuantity,
-      productImage,
-      productDescription,
-      productSpecification,
-      productCategory,
-      productSubCategory,
+      images,
+      description,
+      specifications,
+      category,
+      subCategory,
       path,
     });
 
@@ -180,6 +180,7 @@ export async function fetchProductsAndEBooks(
     // Add category filter if provided
     if (categories && categories.length > 0) {
       query.category = { $in: categories };
+      query.productCategory = { $in: categories };
     }
 
     // Add price range filter
@@ -193,12 +194,28 @@ export async function fetchProductsAndEBooks(
     if (search) {
       query.$or = [
         { productName: { $regex: search, $options: "i" } }, // For products
+        { title: { $regex: search, $options: "i" } }, // For eBooks
+      ];
+    }
+
+    const productQuery = { ...query }; // Clone the original query for physical products
+    const eBookQuery = { ...query }; // Clone the original query for eBooks
+
+    if (search) {
+      productQuery.$or = [
+        { productName: { $regex: search, $options: "i" } }, // For physical products
+        { productDescription: { $regex: search, $options: "i" } }, // For physical products
+      ];
+
+      eBookQuery.$or = [
+        { title: { $regex: search, $options: "i" } }, // For eBooks
+        { author: { $regex: search, $options: "i" } }, // For eBooks
         { description: { $regex: search, $options: "i" } }, // For eBooks
       ];
     }
 
+    // console.log("productQuery", productQuery);
     // Add stock filter (only for physical products)
-    const productQuery = { ...query }; // Clone for physical products
     if (inStock !== undefined) {
       productQuery.productQuantity = inStock ? { $gt: 0 } : 0;
     }
@@ -227,10 +244,10 @@ export async function fetchProductsAndEBooks(
     // Fetch both products and eBooks in parallel
     const [products, eBooks] = await Promise.all([
       Product.find(productQuery)
-        .select("_id productName productPrice productImage productCategory productType")
+        .select("_id name price images category productType")
         .sort(sortOptions)
         .limit(totalLimit),
-      EBook.find(query)
+      EBook.find(eBookQuery)
         .select("_id title price coverIMG category productType") // Adjust fields for display
         .sort(sortOptions)
         .limit(totalLimit),
@@ -269,7 +286,7 @@ export async function fetchProductData(id: string) {
 
     // First, attempt to find the product by ID in the Product schema
     const foundProduct = await Product.findById(id).select(
-      "_id productName productPrice productImage productSizes productQuantity productDescription productSpecification storeID productType"
+      "_id name price images sizes productQuantity description specifications storeID productType"
     );
 
     if (foundProduct) {
