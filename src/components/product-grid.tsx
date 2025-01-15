@@ -31,10 +31,12 @@ export function ProductGrid({ products }: ForProductGrid) {
             className=" text-udua-orange-primary"
           />
         </span>{" "}
-        <p className="text-udua-orange-primary">
-          All products on Udua are verified to meet high-quality standards,
-          ensuring reliability and customer satisfaction.
-        </p>
+        <div className="scrolling-container">
+          <p className="scrolling-text text-udua-orange-primary">
+            All products on Udua are verified to meet high-quality standards,
+            ensuring reliability and customer satisfaction.
+          </p>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:col-span-3 md:grid-cols-4 lg:gap-x-8 lg:grid-cols-5 pt-4">
@@ -75,9 +77,15 @@ export function ProductGrid({ products }: ForProductGrid) {
                 >
                   {product.name}
                 </h3>
-                <p className="mt-1 font-medium">
-                  &#8358; {addCommasToNumber(product.price as number)}{" "}
-                </p>
+                {product.price !== null ? (
+                  <p className="mt-1 font-medium">
+                    &#8358; {addCommasToNumber(product.price as number)}{" "}
+                  </p>
+                ) : (
+                  <p className="mt-1 font-medium">
+                    &#8358; {addCommasToNumber(product.sizes![0].price)}{" "}
+                  </p>
+                )}
               </>
             ) : (
               <>

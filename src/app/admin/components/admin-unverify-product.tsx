@@ -252,12 +252,12 @@ function AdminUnVerifyProduct() {
                     <span className=" text-base font-semibold">
                       Product Sizes:
                     </span>{" "}
-                    {product.sizes !== undefined &&
+                    {/* {product.sizes !== undefined &&
                       product.sizes.map((size, i: number) => (
                         <Button disabled key={i}>
                           {size}
                         </Button>
-                      ))}
+                      ))} */}
                   </p>
                 </div>
               </CardContent>

@@ -8,7 +8,7 @@ import Image from "next/image";
 export function SiteFooter() {
   return (
     <footer className="border-t bg-udua-deep-gray-primary text-slate-100">
-      <div className="mx-auto max-w-7xl overflow-hidden px-6 py-12 sm:py-14 lg:px-8 flex flex-col gap-6 items-center">
+      <div className="mx-auto max-w-7xl overflow-hidden px-3 py-12 sm:py-14 lg:px-8 flex flex-col gap-6 items-center">
         <nav
           className="columns-2 sm:flex sm:justify-center sm:space-x-12 text-center"
           aria-label="Footer"

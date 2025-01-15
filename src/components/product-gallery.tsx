@@ -99,7 +99,7 @@ export function ProductGallery({ product, isLikedProduct }: ForProductGallery) {
   };
 
   return (
-    <div className="flex flex-col md:sticky md:top-14">
+    <div className="flex flex-col md:sticky lg:top-14">
       {/* Image Grid */}
       {product.productType === "Physical Product" ? (
         <>
@@ -145,7 +145,7 @@ export function ProductGallery({ product, isLikedProduct }: ForProductGallery) {
           </div>
 
           {/* Thumbnail images */}
-          <div className="mx-auto mt-6 w-full max-w-2xl px-3.5 lg:max-w-none">
+          <div className="mx-auto sm:mt-4 w-full max-w-2xl px-3.5 lg:max-w-none">
             <ul className="grid grid-cols-3 gap-2 sm:gap-6">
               {product.images.map((image, imageIndex) => (
                 <div

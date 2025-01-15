@@ -23,7 +23,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ChevronRight, Loader2, Upload } from "lucide-react";
+import { ChevronRight, Loader2, Upload, XIcon } from "lucide-react";
 import {
   bookCategories,
   possibleSizes,
@@ -114,6 +114,32 @@ function CreateProduct({ id }: storeID) {
     storePassword: "",
     productType: "Digital Product",
   });
+
+  // Define valid size options based on category or subcategory
+  const sizeOptions =
+    physicalProduct.subCategory === "Footwear"
+      ? [
+          "39",
+          "39.5",
+          "40",
+          "40.5",
+          "41",
+          "41.5",
+          "42",
+          "42.5",
+          "43",
+          "43.5",
+          "44",
+          "44.5",
+          "45",
+          "45.5",
+          "46",
+          "46.5",
+          "47",
+          "47.5",
+          "48",
+        ]
+      : ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"];
 
   // Allowed file types
   const allowedFileTypes = [
@@ -230,35 +256,74 @@ function CreateProduct({ id }: storeID) {
     // console.log("digitalProduct", digitalProduct);
   };
 
-  // use this code if product sizes is not optional
-  // const handleSizeChange = (e: ChangeEvent<HTMLInputElement>) => {
-  //   const { value, checked } = e.target;
-  //   setProduct((prev) => {
-  //     const sizes = checked
-  //       ? [...prev.productSizes, value] // Add size if checked
-  //       : prev.productSizes.filter((size) => size !== value); // Remove size if unchecked
+  //   // use this code if product sizes is not optional
+  //   // const handleSizeChange = (e: ChangeEvent<HTMLInputElement>) => {
+  //   //   const { value, checked } = e.target;
+  //   //   setProduct((prev) => {
+  //   //     const sizes = checked
+  //   //       ? [...prev.productSizes, value] // Add size if checked
+  //   //       : prev.productSizes.filter((size) => size !== value); // Remove size if unchecked
 
-  //     return {
-  //       ...prev,
-  //       productSizes: sizes,
-  //     };
-  //   });
-  // };
+  //   //     return {
+  //   //       ...prev,
+  //   //       productSizes: sizes,
+  //   //     };
+  //   //   });
+  //   // };
 
-  // use this code if product sizes is optional
-  const handleSizeChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { value, checked } = e.target;
+  //   // use this code if product sizes is optional
+  //   const handleSizeChange = (e: ChangeEvent<HTMLInputElement>) => {
+  //     const { value, checked } = e.target;
+  //     setPhysicalProduct((prev) => {
+  //       const sizes = prev.sizes ?? []; // Default to an empty array if undefined
+  //       const updatedSizes = checked
+  //         ? [...sizes, value] // Add size if checked
+  //         : sizes.filter((size) => size !== value); // Remove size if unchecked
+
+  //       return {
+  //         ...prev,
+  //         productSizes: updatedSizes,
+  //       };
+  //     });
+  //   };
+
+  // Handle size and size-specific price input
+  const handleSizePriceChange = (
+    index: number,
+    field: "size" | "price" | "quantity",
+    value: string
+  ) => {
     setPhysicalProduct((prev) => {
-      const sizes = prev.sizes ?? []; // Default to an empty array if undefined
-      const updatedSizes = checked
-        ? [...sizes, value] // Add size if checked
-        : sizes.filter((size) => size !== value); // Remove size if unchecked
+      const updatedSizes = [...prev.sizes!];
+      updatedSizes[index] = {
+        ...updatedSizes[index],
+        [field]:
+          field === "price" || field === "quantity" ? Number(value) : value,
+      };
 
       return {
         ...prev,
-        productSizes: updatedSizes,
+        sizes: updatedSizes,
       };
     });
+  };
+
+  // Add a new size input row
+  const addSize = () => {
+    setPhysicalProduct((prev) => ({
+      ...prev,
+      price: "",
+      productQuantity: "",
+      sizes: [...(prev.sizes || []), { size: "", price: 0, quantity: 0 }],
+    }));
+  };
+
+  // Remove a size input row
+  const removeSize = (index: number) => {
+    setPhysicalProduct((prev) => ({
+      ...prev,
+      sizes: prev.sizes!.filter((_, i) => i !== index),
+    }));
   };
 
   const quillModules = {
@@ -312,24 +377,21 @@ function CreateProduct({ id }: storeID) {
   const handlePhysicalProductSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // console.log(product);
 
     const maxTotalFileSize = 15728640; // 15MB total (3 images * 5MB each)
 
     // Validate product images
     if (physicalProduct.images.length === 0) {
       toast({
-        variant: "destructive",
-        title: `Error`,
-        description: `No product images selected.`,
+        title: `Submission Error`,
+        description: `You must select at least one product image.`,
       });
       setIsLoading(false);
       return;
     } else if (physicalProduct.images.length > 3) {
       toast({
-        variant: "destructive",
-        title: `Error`,
-        description: `Product images should be at most 3.`,
+        title: `Submission Error`,
+        description: `You can only upload up to three product images.`,
       });
       setIsLoading(false);
       return;
@@ -342,9 +404,8 @@ function CreateProduct({ id }: storeID) {
         image.size > maxFileSizePerImage
       ) {
         toast({
-          variant: "destructive",
-          title: `Error`,
-          description: `Invalid file type or size. Accepted types are JPEG, PNG, WebP and size up to 5MB.`,
+          title: `Submission Error`,
+          description: `One or more images have an invalid file type or exceed the allowed size. Accepted formats are JPEG, PNG, and WebP with a maximum size of 5MB per image.`,
         });
         setIsLoading(false);
         return;
@@ -354,9 +415,8 @@ function CreateProduct({ id }: storeID) {
 
     if (totalSize > maxTotalFileSize) {
       toast({
-        variant: "destructive",
-        title: `Error`,
-        description: `Total size of all images should not exceed 15MB.`,
+        title: `Submission Error`,
+        description: `The total file size of all images should not exceed 15MB.`,
       });
       setIsLoading(false);
       return;
@@ -365,9 +425,8 @@ function CreateProduct({ id }: storeID) {
     // Validate product name
     if (physicalProduct.name === "" || physicalProduct.name.length < 5) {
       toast({
-        variant: "destructive",
-        title: `Error`,
-        description: `Please name your product (at least 5 characters).`,
+        title: `Submission Error`,
+        description: `Please provide a valid product name with at least 5 characters.`,
       });
       setIsLoading(false);
       return;
@@ -375,29 +434,76 @@ function CreateProduct({ id }: storeID) {
 
     // Validate product price
     if (
-      physicalProduct.price === "" ||
-      isNaN(Number(physicalProduct.price)) ||
-      Number(physicalProduct.price) <= 0
+      (physicalProduct.category !== "Fashion" &&
+        physicalProduct.category !== "Clothing" &&
+        (physicalProduct.price === "" ||
+          isNaN(Number(physicalProduct.price)) ||
+          Number(physicalProduct.price) <= 0)) ||
+      ((physicalProduct.category === "Fashion" ||
+        physicalProduct.category === "Clothing") &&
+        (!physicalProduct.sizes || physicalProduct.sizes.length === 0))
     ) {
       toast({
-        variant: "destructive",
-        title: `Error`,
-        description: `Please enter a valid product price.`,
+        title: `Submission Error`,
+        description: `Please provide a valid product price or specify product sizes with valid prices.`,
       });
       setIsLoading(false);
       return;
     }
 
-    // Validate product quantity
+    // Validate size-based prices, quantities, and selected size for Fashion and Clothing
     if (
-      physicalProduct.productQuantity === "" ||
-      isNaN(Number(physicalProduct.productQuantity)) ||
-      Number(physicalProduct.productQuantity) <= 0
+      (physicalProduct.category === "Fashion" ||
+        physicalProduct.category === "Clothing") &&
+      physicalProduct.sizes
+    ) {
+      for (const sizeObj of physicalProduct.sizes) {
+        // Validate the size selection
+        if (!sizeObj.size || !sizeOptions.includes(sizeObj.size)) {
+          toast({
+            title: `Submission Error`,
+            description: `Please select a valid size for each product variant.`,
+          });
+          setIsLoading(false);
+          return;
+        }
+
+        // Validate the price for each size
+        if (sizeObj.price <= 0) {
+          toast({
+            title: `Submission Error`,
+            description: `Each product size must have a valid price greater than 0.`,
+          });
+          setIsLoading(false);
+          return;
+        }
+
+        // Validate the quantity for each size
+        if (sizeObj.quantity <= 0) {
+          toast({
+            title: `Submission Error`,
+            description: `Each product size must have a valid quantity greater than 0.`,
+          });
+          setIsLoading(false);
+          return;
+        }
+      }
+    }
+
+    // Validate product quantity (fallback quantity)
+    if (
+      (physicalProduct.category !== "Fashion" &&
+        physicalProduct.category !== "Clothing" &&
+        (physicalProduct.productQuantity === "" ||
+          isNaN(Number(physicalProduct.productQuantity)) ||
+          Number(physicalProduct.productQuantity) <= 0)) ||
+      ((physicalProduct.category === "Fashion" ||
+        physicalProduct.category === "Clothing") &&
+        (!physicalProduct.sizes || physicalProduct.sizes.length === 0))
     ) {
       toast({
-        variant: "destructive",
-        title: `Error`,
-        description: `Please enter a valid product quantity.`,
+        title: `Submission Error`,
+        description: `Please provide a valid product quantity or specify product sizes with valid quantities.`,
       });
       setIsLoading(false);
       return;
@@ -409,9 +515,8 @@ function CreateProduct({ id }: storeID) {
       physicalProduct.description.length < 10
     ) {
       toast({
-        variant: "destructive",
-        title: `Error`,
-        description: `Please provide a product description (at least 10 characters).`,
+        title: `Submission Error`,
+        description: `Please provide a detailed product description with at least 10 characters.`,
       });
       setIsLoading(false);
       return;
@@ -423,9 +528,8 @@ function CreateProduct({ id }: storeID) {
       physicalProduct.specifications.length < 10
     ) {
       toast({
-        variant: "destructive",
-        title: `Error`,
-        description: `Please provide a product specification (at least 10 characters).`,
+        title: `Submission Error`,
+        description: `Please provide a product specification with at least 10 characters.`,
       });
       setIsLoading(false);
       return;
@@ -434,8 +538,7 @@ function CreateProduct({ id }: storeID) {
     // Validate product category
     if (physicalProduct.category === "") {
       toast({
-        variant: "destructive",
-        title: `Error`,
+        title: `Submission Error`,
         description: `Please select a product category.`,
       });
       setIsLoading(false);
@@ -445,9 +548,8 @@ function CreateProduct({ id }: storeID) {
     // Validate store password
     if (physicalProduct.storePassword === "") {
       toast({
-        variant: "destructive",
-        title: `Error`,
-        description: `Please input store password.`,
+        title: `Submission Error`,
+        description: `Please enter the store password.`,
       });
       setIsLoading(false);
       return;
@@ -459,13 +561,7 @@ function CreateProduct({ id }: storeID) {
       const urls = await uploadImagesToCloudinary(physicalProduct.images);
       setImageUrls(urls);
 
-      // Add logic to handle form submission, e.g., send product data along with URLs to the server
-      // console.log("Product submitted with URLs:", {
-      //   ...product,
-      //   productImage: urls,
-      // });
-
-      // TODO:
+      // Submit product
       await createProduct({
         productType: physicalProduct.productType,
         name: physicalProduct.name,
@@ -486,9 +582,8 @@ function CreateProduct({ id }: storeID) {
     } catch (error) {
       console.error("Error submitting product:", error);
       toast({
-        variant: "destructive",
-        title: `Error`,
-        description: `An error occurred while submitting the product. Please try again.`,
+        title: `Submission Error`,
+        description: `An unexpected error occurred while submitting the product. Please try again.`,
       });
     } finally {
       setIsLoading(false);
@@ -810,6 +905,7 @@ function CreateProduct({ id }: storeID) {
                     <Button
                       type="submit"
                       onSubmit={handlePhysicalProductSubmit}
+                      className=" hover:bg-udua-orange-primary bg-udua-orange-primary/80"
                     >
                       <span>
                         {isLoading && (
@@ -828,7 +924,8 @@ function CreateProduct({ id }: storeID) {
                     </Button>
                   </div>
                 </div>
-                <div className="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3 lg:gap-8">
+
+                <div className="grid gap-4">
                   <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
                     <Card>
                       <CardHeader>
@@ -855,44 +952,35 @@ function CreateProduct({ id }: storeID) {
                               aria-label="Product Name"
                             />
                           </div>
-                          <div className="grid gap-3">
-                            <Label className="text-base-semibold text-light-2">
-                              Product Description
-                            </Label>
 
-                            <QuillEditor
-                              value={physicalProduct.description}
-                              onChange={handleProductDescriptionChange}
-                              modules={quillModules}
-                              formats={quillFormats}
-                              className=" h-fit bg-inherit overflow-x-auto"
-                            />
-                            {/* <Textarea
-                              rows={5}
-                              name="productDescription"
-                              value={product.productDescription}
-                              onChange={(e) => handleChange(e)}
-                            /> */}
-                          </div>
+                          <div className="grid gap-4 lg:grid-cols-2 items-start">
+                            <div className="grid gap-3">
+                              <Label className="text-base-semibold text-light-2">
+                                Product Description
+                              </Label>
 
-                          <div className="grid gap-3 w-full">
-                            <Label className="text-base-semibold text-light-2">
-                              Product Specification
-                            </Label>
+                              <QuillEditor
+                                value={physicalProduct.description}
+                                onChange={handleProductDescriptionChange}
+                                modules={quillModules}
+                                formats={quillFormats}
+                                className=" h-fit bg-inherit overflow-x-auto"
+                              />
+                            </div>
 
-                            <QuillEditor
-                              value={physicalProduct.specifications}
-                              onChange={handleProductSpecificationChange}
-                              modules={quillModules}
-                              formats={quillFormats}
-                              className=" h-fit bg-inherit overflow-x-auto"
-                            />
-                            {/* <Textarea
-                              rows={5}
-                              name="productSpecification"
-                              value={product.productSpecification}
-                              onChange={(e) => handleChange(e)}
-                            /> */}
+                            <div className="grid gap-3 w-full">
+                              <Label className="text-base-semibold text-light-2">
+                                Product Specification
+                              </Label>
+
+                              <QuillEditor
+                                value={physicalProduct.specifications}
+                                onChange={handleProductSpecificationChange}
+                                modules={quillModules}
+                                formats={quillFormats}
+                                className=" h-fit bg-inherit overflow-x-auto"
+                              />
+                            </div>
                           </div>
                         </div>
                       </CardContent>
@@ -902,38 +990,46 @@ function CreateProduct({ id }: storeID) {
                       <CardHeader>
                         <CardTitle>Stock</CardTitle>
                       </CardHeader>
+
                       <CardContent>
-                        <div className="grid gap-6">
+                        <div className="grid gap-4 md:grid-cols-2">
                           <div className="grid gap-3">
                             <Label className="text-base-semibold text-light-2">
-                              Product Price
+                              Product Price {/*  (Fallback) */}
                             </Label>
-
                             <Input
                               name="price"
                               value={physicalProduct.price}
-                              onChange={(e) => handleChange(e)}
+                              onChange={handleChange}
                               className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 dark:text-white bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
                               type="text"
                               placeholder="Product Price"
                               aria-label="Product Price"
+                              disabled={physicalProduct.sizes!.length > 0} // Disable fallback price input if sizes are defined
                             />
                           </div>
                           <div className="grid gap-3">
                             <Label className="text-base-semibold text-light-2">
-                              product Quantity
+                              Product Quantity
                             </Label>
-
                             <Input
                               name="productQuantity"
                               value={physicalProduct.productQuantity}
-                              onChange={(e) => handleChange(e)}
+                              onChange={handleChange}
                               className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 dark:text-white bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
                               type="text"
                               placeholder="Product Quantity"
                               aria-label="Product Quantity"
+                              disabled={physicalProduct.sizes!.length > 0} // Disable fallback Product Quantity input if sizes are defined
                             />
                           </div>
+                          {(physicalProduct.category === "Clothing" ||
+                            physicalProduct.category === "Fashion") && (
+                            <p className=" text-xs text-udua-orange-primary">
+                              Products under 'Fashion', 'Clothing', and
+                              'Footwear' have size-based Prices & Quantity.
+                            </p>
+                          )}
                         </div>
                       </CardContent>
                     </Card>
@@ -1005,46 +1101,114 @@ function CreateProduct({ id }: storeID) {
                   </div>
 
                   <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>Product Sizes</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        {/* <Label className="text-base-semibold text-light-2">
-                    Product Sizes
-                  </Label> */}
-                        <div className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100">
-                          {/* use this code if product sizes is not optional */}
-                          {/* {possibleSizes.map((size) => (
-                      <label key={size} className="block">
-                        <input
-                          type="checkbox"
-                          value={size}
-                          checked={product.productSizes.includes(size)}
-                          onChange={handleSizeChange}
-                          className="mr-2 text-slate-100"
-                        />
-                        {size}
-                      </label>
-                    ))} */}
-                          {/* use this code if product sizes is optional */}
-                          {possibleSizes.map((size) => (
-                            <label key={size} className="block">
-                              <input
-                                type="checkbox"
-                                value={size}
-                                checked={
-                                  physicalProduct.sizes?.includes(size) || false
-                                } // Handle undefined productSizes
-                                onChange={handleSizeChange}
-                                className="mr-2 text-slate-100"
-                              />
-                              {size}
-                            </label>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
+                    {(physicalProduct.category === "Clothing" ||
+                      physicalProduct.category === "Fashion") && (
+                      <Card>
+                        <CardHeader>
+                          <CardTitle>Product Sizes</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div>
+                            {physicalProduct.sizes?.map((sizeObj, index) => {
+                              // Get already selected sizes to disable them
+                              const selectedSizes = physicalProduct.sizes!.map(
+                                (size) => size.size
+                              );
+
+                              return (
+                                <div
+                                  key={index}
+                                  className="flex gap-2 items-center mt-2"
+                                >
+                                  <div className="w-full">
+                                    <p className=" pl-2 pb-0.5">Size</p>
+                                    <select
+                                      value={sizeObj.size}
+                                      onChange={(e) =>
+                                        handleSizePriceChange(
+                                          index,
+                                          "size",
+                                          e.target.value
+                                        )
+                                      }
+                                      className="w-full border p-2 rounded"
+                                    >
+                                      <option value="" disabled>
+                                        Select Size
+                                      </option>
+                                      {sizeOptions.map((sizeOption) => (
+                                        <option
+                                          key={sizeOption}
+                                          value={sizeOption}
+                                          disabled={selectedSizes.includes(
+                                            sizeOption
+                                          )}
+                                        >
+                                          {sizeOption}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  </div>
+
+                                  <div className="w-full">
+                                    <p className=" pl-2 pb-0.5">Price</p>
+                                    <Input
+                                      value={sizeObj.price}
+                                      type="number"
+                                      min={0}
+                                      onChange={(e) =>
+                                        handleSizePriceChange(
+                                          index,
+                                          "price",
+                                          e.target.value
+                                        )
+                                      }
+                                      placeholder="Price"
+                                      className="w-full"
+                                    />
+                                  </div>
+
+                                  <div className="w-full">
+                                    <p className=" pl-2 pb-0.5">Quantity</p>
+                                    <Input
+                                      value={sizeObj.quantity}
+                                      type="number"
+                                      min={0}
+                                      onChange={(e) =>
+                                        handleSizePriceChange(
+                                          index,
+                                          "quantity",
+                                          e.target.value
+                                        )
+                                      }
+                                      placeholder="Quantity"
+                                      className="w-full"
+                                    />
+                                  </div>
+
+                                  <Button
+                                    type="button"
+                                    onClick={() => removeSize(index)}
+                                    className="bg-transparent hover:bg-transparent hover:text-udua-orange-primary text-udua-orange-primary/80"
+                                  >
+                                    <XIcon width={15} height={15} />
+                                  </Button>
+                                </div>
+                              );
+                            })}
+
+                            <Button
+                              type="button"
+                              onClick={addSize}
+                              className="mt-3 hover:bg-udua-orange-primary bg-udua-orange-primary/80"
+                            >
+                              Add Size
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+
                     <Card className="overflow-hidden">
                       <CardHeader>
                         <CardTitle>Product Images</CardTitle>
@@ -1056,7 +1220,7 @@ function CreateProduct({ id }: storeID) {
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <div className="grid gap-2 pb-6">
+                        <div className="grid gap-2 pb-6 sm:grid-cols-2">
                           <button
                             type="button"
                             className="flex aspect-square relative w-full items-center justify-center rounded-md"
@@ -1075,14 +1239,14 @@ function CreateProduct({ id }: storeID) {
                             />
                           </button>
 
-                          <div className="grid grid-cols-2 gap-2 pt-2">
+                          <div className=" grid grid-cols-2 gap-2 pt-2">
                             {/* Display selected images */}
                             {imagePreviews && (
                               <>
                                 {imagePreviews.map((src, index) => (
-                                  <button key={index}>
+                                  <button key={index} className="">
                                     <Image
-                                      className="aspect-square w-full rounded-md object-cover"
+                                      className="aspect-square rounded-md object-cover"
                                       height="200"
                                       src={src}
                                       alt={`Selected Preview ${index + 1}`}
@@ -1095,7 +1259,6 @@ function CreateProduct({ id }: storeID) {
                             )}
                           </div>
                         </div>
-
                         <div className="grid gap-3 border-t-2 pt-3">
                           <Label className="text-base-semibold text-light-2">
                             Store Password
@@ -1116,7 +1279,7 @@ function CreateProduct({ id }: storeID) {
                     <div className="flex items-center justify-center gap-2 md:hidden w-full">
                       <Button
                         type="submit"
-                        className=" w-full"
+                        className=" w-full hover:bg-udua-orange-primary bg-udua-orange-primary/80"
                         onSubmit={handlePhysicalProductSubmit}
                       >
                         <span>
@@ -1152,7 +1315,11 @@ function CreateProduct({ id }: storeID) {
                     Add Product
                   </h1>
                   <div className="hidden items-center gap-2 md:ml-auto md:flex">
-                    <Button type="submit" onSubmit={handleDigitalProductSubmit}>
+                    <Button
+                      type="submit"
+                      onSubmit={handleDigitalProductSubmit}
+                      className=" hover:bg-udua-orange-primary bg-udua-orange-primary/80"
+                    >
                       <span>
                         {isLoading && (
                           <p className="flex flex-row items-center justify-between w-full">
@@ -1483,7 +1650,7 @@ function CreateProduct({ id }: storeID) {
                     <div className="flex items-center justify-center gap-2 md:hidden w-full">
                       <Button
                         type="submit"
-                        className=" w-full"
+                        className=" w-full hover:bg-udua-orange-primary bg-udua-orange-primary/80"
                         onSubmit={handleDigitalProductSubmit}
                       >
                         <span>

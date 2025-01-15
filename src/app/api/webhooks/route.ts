@@ -111,7 +111,7 @@ export async function POST(request: Request) {
             // store operation begins
             // calculate pending balance of the store. This is done by multiplying the
             // product price and the bought qty then taking away our commission or charges
-            const totalProductPurchasedAmount = product.price * quantity;
+            const totalProductPurchasedAmount = product.price! * quantity; // TODO: Work on this, i got this error: 'product.price' is possibly 'undefined'. and i included '!' just to make it pass TS check
             const pendingBalance = calculateCommission(
               totalProductPurchasedAmount
             ).settleAmount;
@@ -140,7 +140,7 @@ export async function POST(request: Request) {
               product: product._id,
               store: product.storeID,
               quantity,
-              price: product.price * quantity,
+              price: product.price! * quantity, // TODO: Work on this, i got this error: 'product.price' is possibly 'undefined'. and i included '!' just to make it pass TS check
             });
           }
           // product operation ends

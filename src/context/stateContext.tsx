@@ -34,10 +34,13 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
     useLocalStorage<number>("grandTotalPrice", 0);
 
   function calculateCartTotals(cartItems: CartItems[]) {
-    const totalPrice = cartItems.reduce(
-      (acc, item) => acc + item.price! * item.quantity!,
-      0
-    );
+    const totalPrice = cartItems.reduce((acc, item) => {
+      if (item.price !== null) {
+        return acc + item.price! * item.quantity!;
+      } else {
+        return acc + item.size!.price * item.quantity!;
+      }
+    }, 0);
 
     const totalQuantity = cartItems.reduce(
       (acc, item) => acc + item.quantity!,
@@ -50,7 +53,7 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
     };
   }
 
-  let { totalPrice, totalQuantity } = calculateCartTotals(cartItems);
+  let { totalPrice, totalQuantity } = calculateCartTotals(cartItemsFromStorage);
 
   useEffect(() => {
     totalPrice = calculateCartTotals(cartItemsFromStorage).totalPrice;
@@ -95,7 +98,11 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
   const addToCart = (
     product: ProductFromLocalStorage,
     quantity: number,
-    selectedSize: string | null,
+    selectedSize: {
+      size: string;
+      price: number;
+      quantity: number;
+    } | null,
     selectedColor: string | null
   ) => {
     const existingProductIndex = cartItems.findIndex(
@@ -125,6 +132,9 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
         const { description, sizes, specifications, ...newProduct } = product; // I am removing productDescription, productSizes, productSpecification so as not to send this unnecessary info to paystack DB
 
         newProduct.quantity = quantity;
+        if (selectedSize) {
+          newProduct.size = selectedSize;
+        }
         setCartItems([...cartItems, { ...newProduct }]);
         setCartItemsFromStorage([...cartItemsFromStorage, { ...newProduct }]);
       }

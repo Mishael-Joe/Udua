@@ -68,14 +68,37 @@ export default function Page() {
 
         const updatedProducts = response.data.UpdatedProducts;
 
-        const newCartItems = productsInLocalStorage.map(
-          (product: CombinedProduct) => {
+        const newCartItems = productsInLocalStorage
+          .map((product: CombinedProduct) => {
             const foundProduct: CombinedProduct = updatedProducts.find(
               (item: CombinedProduct) => item._id === product._id
             );
+            // console.log("foundProduct", foundProduct);
 
             if (foundProduct) {
-              // Check if the product has a 'productQuantity' field (e.g., for physical products)
+              if (foundProduct.price === null) {
+                // Check if the product is a physical product with sizes
+                const foundSize = foundProduct.sizes?.find(
+                  (size) => size._id === product.size?._id
+                );
+
+                if (!foundSize) {
+                  // If no size is found, return null to filter it out
+                  return null;
+                }
+
+                // Update the product with the found size's price
+                return {
+                  ...product,
+                  size: {
+                    ...product.size,
+                    price: foundSize.price,
+                    quantity: foundSize.quantity,
+                  },
+                };
+              }
+
+              // For products without size-based pricing
               const updatedProduct = {
                 ...product,
                 price: foundProduct.price,
@@ -89,12 +112,14 @@ export default function Page() {
               return updatedProduct;
             }
 
-            return product; // If no match found, return the original product
-          }
-        );
+            // If no product is found, return null to filter it out
+            return null;
+          })
+          // Filter out products where foundProduct or foundSize was not found
+          .filter((item: CombinedProduct) => item !== null);
 
         // Update the localStorage with the fresh product information
-        setCartItemsFromStorage(newCartItems);
+        setCartItemsFromStorage(newCartItems as CombinedProduct[]);
       } catch (error) {
         console.error("Error fetching updated product info:", error);
       }
@@ -130,17 +155,17 @@ export default function Page() {
                 Recently viewed products
               </h1>
 
-              <div className=" flex gap-4 pt-4">
+              <div className=" flex gap-4 pt-4 overflow-auto">
                 {recentlyViewedProducts.map((product) => {
                   return (
                     <Link
                       key={product._id}
-                      href={`/products/${product._id}`}
+                      href={`/product/${product._id}`}
                       className="group text-sm"
                     >
                       {product.productType === "Physical Product" ? (
                         <>
-                          <div className="aspect-square h-60 w-60 overflow-hidden rounded-lg border-2 border-gray-200 bg-gray-100 group-hover:opacity-75 dark:border-gray-800">
+                          <div className="aspect-square w-40 h-40 md:h-52 md:w-52 overflow-hidden rounded-lg border-2 border-gray-200 bg-gray-100 group-hover:opacity-75 dark:border-gray-800">
                             <Image
                               placeholder="blur"
                               blurDataURL={`data:image/svg+xml;base64,${toBase64(
@@ -156,7 +181,7 @@ export default function Page() {
                           </div>
 
                           <h3
-                            className="mt-1 font-medium w-60"
+                            className="mt-1 font-medium w-40 md:w-52"
                             style={{
                               display: "-webkit-box",
                               WebkitBoxOrient: "vertical",
@@ -169,13 +194,21 @@ export default function Page() {
                           >
                             {product.name}
                           </h3>
-                          <p className="mt-1 font-medium">
-                            &#8358; {addCommasToNumber(product.price as number)}{" "}
-                          </p>
+                          {product.price !== null ? (
+                            <p className="mt-1 font-medium">
+                              &#8358;{" "}
+                              {addCommasToNumber(product.price as number)}{" "}
+                            </p>
+                          ) : (
+                            <p className="mt-1 font-medium">
+                              &#8358;{" "}
+                              {addCommasToNumber(product.sizes![0].price)}{" "}
+                            </p>
+                          )}
                         </>
                       ) : (
                         <>
-                          <div className="aspect-square h-60 w-60 overflow-hidden rounded-lg border-2 border-gray-200 bg-gray-100 group-hover:opacity-75 dark:border-gray-800">
+                          <div className="aspect-square w-40 h-40 md:h-52 md:w-52 overflow-hidden rounded-lg border-2 border-gray-200 bg-gray-100 group-hover:opacity-75 dark:border-gray-800">
                             <Image
                               placeholder="blur"
                               blurDataURL={`data:image/svg+xml;base64,${toBase64(
@@ -191,7 +224,7 @@ export default function Page() {
                           </div>
 
                           <h3
-                            className="mt-1 font-medium w-60"
+                            className="mt-1 font-medium w-40 md:w-52"
                             style={{
                               display: "-webkit-box",
                               WebkitBoxOrient: "vertical",

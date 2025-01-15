@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     await connectToDB();
 
     const products = await Product.find({ _id: { $in: productIds } }).select(
-      " price productQuantity"
+      " price productQuantity sizes"
     );
     const eBooks = await EBook.find({ _id: { $in: productIds } }).select(
       "price"

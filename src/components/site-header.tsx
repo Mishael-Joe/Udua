@@ -14,7 +14,7 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between space-x-4 px-6 sm:space-x-0">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between space-x-4 px-2.5 sm:space-x-0">
         <Suspense fallback={`search bar`}>
           <div className="flex items-center justify-center gap-3">
             <div className="md:hidden">
@@ -45,7 +45,7 @@ export function SiteHeader() {
         </div>
       </div>
       <Suspense fallback={`search bar`}>
-        <div className="mx-auto mb-2 max-w-6xl justify-between space-x-4 px-6 items-center md:hidden">
+        <div className="mx-auto mb-2 max-w-6xl justify-between space-x-4 px-2.5 items-center md:hidden">
           <SearchBar />
         </div>
       </Suspense>
