@@ -33,6 +33,7 @@ import { Product } from "@/types";
 import Link from "next/link";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
+import { addCommasToNumber } from "@/lib/utils";
 
 export default function StoreInventory({
   params,
@@ -233,10 +234,22 @@ export default function StoreInventory({
                         )}
                       </TableCell>
                       <TableCell className="hidden lg:table-cell">
-                        {product.price}
+                        {product.price !== null ? (
+                          <p>
+                            &#8358; {addCommasToNumber(product.price as number)}{" "}
+                          </p>
+                        ) : (
+                          <p>
+                            &#8358; {addCommasToNumber(product.sizes![0].price)}{" "}
+                          </p>
+                        )}
                       </TableCell>
                       <TableCell className="hidden lg:table-cell">
-                        {product.productQuantity}
+                        {product.price !== null ? (
+                          <p>{product.productQuantity}</p>
+                        ) : (
+                          <p>{product.sizes![0].quantity}</p>
+                        )}
                       </TableCell>
                       <TableCell className="hidden lg:table-cell">
                         2023-07-12 10:42 AM

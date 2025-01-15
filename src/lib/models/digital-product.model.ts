@@ -1,12 +1,12 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const eBookSchema = new Schema({
   storeID: { type: String, required: true },
-  title: { type: String, required: true },
-  author: { type: String, required: true },
+  title: { type: String, required: true, index: true },
+  author: { type: String, required: true, index: true },
   description: { type: String, required: true },
-  category: { type: String, required: true },
-  subcategory: { type: String, required: false },
+  category: { type: String, required: true, index: true },
+  subcategory: { type: String, required: false, index: true },
   price: { type: Number, required: true },
   fileType: { type: String, required: true },
   fileSize: { type: Number, required: true },
@@ -25,6 +25,27 @@ const eBookSchema = new Schema({
     required: true,
   },
 });
+
+// Define text index for title or other searchable fields with weights
+eBookSchema.index(
+  {
+    title: "text",
+    description: "text",
+    author: "text",
+    category: "text",
+    subcategory: "text",
+  },
+  {
+    weights: {
+      title: 10, // Highest weight for title
+      description: 5, // Medium weight for description
+      author: 8, // High weight for author
+      category: 3, // Low weight for category
+      subcategory: 1, // Lowest weight for subcategory
+    },
+    name: "eBookTextIndex", // Optional custom index name
+  }
+);
 
 const EBook = mongoose.models.EBook || mongoose.model("EBook", eBookSchema);
 

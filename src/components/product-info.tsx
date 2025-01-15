@@ -11,7 +11,7 @@ import { useToast } from "@/components/ui/use-toast";
 
 import ShareButton from "../utils/shareBTN";
 import { useRouter, usePathname } from "next/navigation";
-import { CombinedProduct, ForProductInfo, Product } from "@/types";
+import { ForProductInfo } from "@/types";
 
 import DOMPurify from "dompurify";
 
@@ -40,12 +40,13 @@ export function ProductInfo({ product }: ForProductInfo) {
     }
     return product.colors[0];
   });
+  const sanitizedContent = DOMPurify.sanitize(product.description);
 
   if (product.productType === "Physical Product") {
-    const notify = (product: Product) => {
+    const notify = () => {
       toast({
-        title: `${product.name}. Quantity: ${quantity}`,
-        description: `Product added to cart`,
+        title: `Product added to cart.`,
+        description: `Quantity: ${quantity}.`,
         action: (
           <Link href={`/cart`}>
             <Button variant={`link`} className="gap-x-2 whitespace-nowrap">
@@ -58,23 +59,31 @@ export function ProductInfo({ product }: ForProductInfo) {
     };
 
     return (
-      <div className="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0 md:sticky md:top-20">
-        <h1 className="text-2xl font-bold tracking-tight">{product.name}</h1>
+      <div className="mt-5 px-4 sm:mt-8 sm:px-0 lg:mt-0 lg:sticky md:top-20">
+        <h1 className="text-lg sm:text-2xl font-bold tracking-tight">
+          {product.name}
+        </h1>
 
-        <div className="mt-3">
+        <div className="sm:mt-3">
           <h2 className="sr-only">Product information</h2>
-          <p className="text-2xl tracking-tight font-semibold">
-            &#8358; {addCommasToNumber(product.price as number)}
-          </p>
+          {product.price !== null ? (
+            <p className="text-lg sm:text-2xl tracking-tight font-semibold">
+              &#8358; {addCommasToNumber(product.price as number)}{" "}
+            </p>
+          ) : (
+            <p className="text-lg sm:text-2xl tracking-tight font-semibold">
+              &#8358; {addCommasToNumber(selectedSize!.price)}{" "}
+            </p>
+          )}
         </div>
 
-        <form className="mt-6">
+        <form className="mt-3">
           <div className="mt-4 flex">
             <Button
               type="button"
-              className="w-full flex gap-4 justify-center items-center bg-udua-orange-primary/80 py-6 text-base font-medium text-white hover:bg-udua-orange-primary focus:outline-none focus:ring-2 focus:ring-violet-500"
+              className="w-full flex gap-4 justify-center items-center bg-udua-orange-primary/80 py-6 text-base font-medium text-white hover:bg-udua-orange-primary"
               onClick={() => {
-                notify(product);
+                notify();
                 addToCart(product, quantity, selectedSize, selectedColor);
               }}
             >
@@ -85,7 +94,7 @@ export function ProductInfo({ product }: ForProductInfo) {
         </form>
 
         <div className="mt-4">
-          <div className="flex gap-4 pb-4 w-full justify-between">
+          <div className="flex gap-4 w-full justify-between">
             <div className="flex gap-4 pb-4">
               <Button
                 type="button"
@@ -121,21 +130,32 @@ export function ProductInfo({ product }: ForProductInfo) {
             </div>
           </div>
           {selectedSize && (
-            <p>
-              Size: <strong>{selectedSize && selectedSize}</strong>
-            </p>
+            <div className="flex gap-x-3 items-center">
+              <p>
+                Size: <strong>{selectedSize.size && selectedSize.size}</strong>
+              </p>
+              <p className="text-xs text-udua-orange-primary">
+                ONLY{" "}
+                <span>
+                  <strong>{selectedSize.size && selectedSize.quantity}</strong>
+                </span>{" "}
+                LEFT
+              </p>
+            </div>
           )}
           {product.sizes &&
-            product.sizes.map((size: any) => (
+            product.sizes.map((size) => (
               <Button
                 onClick={() => setSelectedSize(size)}
-                key={size}
-                variant={selectedSize === size ? "default" : `outline`}
+                key={size.quantity}
                 className={`mr-2 mt-4 ${
-                  selectedSize === size ? " bg-purple-700" : ``
+                  selectedSize?.size === size.size
+                    ? " hover:bg-udua-orange-primary bg-udua-orange-primary/90"
+                    : `hover:bg-udua-orange-primary bg-udua-orange-primary/55`
                 }`}
+                disabled={size.quantity === 0}
               >
-                {size && size}
+                {size.size && size.size}
               </Button>
             ))}
 
@@ -159,18 +179,29 @@ export function ProductInfo({ product }: ForProductInfo) {
             ))}
         </div>
 
-        <div className="mt-6">
+        <div className="mt-6 hidden md:block">
           <h3 className="sr-only">Description</h3>
-          <div className="space-y-6 text-base">{product.description}</div>
+          {/* <div className="space-y-6 text-base">{product.description}</div> */}
+          <div
+            dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+            style={{
+              display: "-webkit-box",
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              WebkitLineClamp: 3, // Limits the text to 3 lines
+              maxHeight: "4.5em", // Adjust this based on the number of lines and line height
+              lineHeight: "1.5em", // Adjust based on font size for accurate height control
+            }}
+          ></div>
         </div>
       </div>
     );
   } else {
-    const sanitizedContent = DOMPurify.sanitize(product.description);
-    const notify = (product: CombinedProduct) => {
+    const notify = () => {
       toast({
-        title: `${product.title}. Quantity: ${quantity}`,
-        description: `Product added to cart`,
+        title: `Product added to cart.`,
+        description: `Quantity: ${quantity}.`,
         action: (
           <Link href={`/cart`}>
             <Button variant={`link`} className="gap-x-2 whitespace-nowrap">
@@ -197,9 +228,9 @@ export function ProductInfo({ product }: ForProductInfo) {
           <div className="flex">
             <Button
               type="button"
-              className="w-full bg-udua-orange-primary/80 py-6 text-base font-medium text-white hover:bg-udua-orange-primary focus:outline-none focus:ring-2 focus:ring-violet-500"
+              className="w-full bg-udua-orange-primary/80 py-6 text-base font-medium text-white hover:bg-udua-orange-primary"
               onClick={() => {
-                notify(product);
+                notify();
                 addToCart(product, quantity, null, null);
               }}
             >

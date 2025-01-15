@@ -43,6 +43,7 @@ export default async function Home({ searchParams }: Props) {
   const categoriesArray = categories ? (categories as string).split(" ") : [];
   // console.log(`categoriesArray`, categoriesArray);
 
+  // @ts-ignore
   const products: CombinedProduct[] = await fetchProductsAndEBooks(
     categoriesArray,
     page,
@@ -62,7 +63,7 @@ export default async function Home({ searchParams }: Props) {
 
   return (
     // grid gap-4 md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]
-    <main className="min-h-screen mx-auto max-w-[78rem] px-5 md:px-4 pt-4">
+    <main className="min-h-screen mx-auto max-w-[78rem] px-2.5 md:px-4 pt-4">
       <div className="">
         {/* <HeroBanners /> */}
         <div className="">

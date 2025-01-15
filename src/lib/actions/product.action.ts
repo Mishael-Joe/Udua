@@ -3,8 +3,6 @@
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { connectToDB } from "../mongoose";
-
-import User from "../models/user.model";
 import Product from "../models/product.model";
 
 import { CombinedProduct, DigitalProduct, Product as Products } from "@/types";
@@ -174,62 +172,59 @@ export async function fetchProductsAndEBooks(
   try {
     await connectToDB();
 
-    const query: any = {}; // General visibility filter
-    // const query: any = { isVisible: true };  // General visibility filter
+    // General visibility filter
+    const productQuery: any = { isVisible: true }; // For physical products
+    const eBookQuery: any = { isVisible: false }; // For eBooks
 
-    // Add category filter if provided
+    // Add category filter if provided (handled separately for products and eBooks)
     if (categories && categories.length > 0) {
-      query.category = { $in: categories };
-      query.productCategory = { $in: categories };
+      productQuery.productCategory = { $in: categories };
+      eBookQuery.category = { $in: categories };
     }
 
     // Add price range filter
     if (minPrice !== undefined || maxPrice !== undefined) {
-      query.price = {};
-      if (minPrice !== undefined) query.price.$gte = minPrice;
-      if (maxPrice !== undefined) query.price.$lte = maxPrice;
+      productQuery.price = {};
+      eBookQuery.price = {};
+      if (minPrice !== undefined) {
+        productQuery.price.$gte = minPrice;
+        eBookQuery.price.$gte = minPrice;
+      }
+      if (maxPrice !== undefined) {
+        productQuery.price.$lte = maxPrice;
+        eBookQuery.price.$lte = maxPrice;
+      }
     }
 
-    // Add search filter
+    // Add text search filter for both products and eBooks
     if (search) {
-      query.$or = [
-        { productName: { $regex: search, $options: "i" } }, // For products
-        { title: { $regex: search, $options: "i" } }, // For eBooks
-      ];
+      productQuery.$text = { $search: search }; // Perform text search on products
+      eBookQuery.$text = { $search: search }; // Perform text search on eBooks
     }
 
-    const productQuery = { ...query }; // Clone the original query for physical products
-    const eBookQuery = { ...query }; // Clone the original query for eBooks
-
-    if (search) {
-      productQuery.$or = [
-        { productName: { $regex: search, $options: "i" } }, // For physical products
-        { productDescription: { $regex: search, $options: "i" } }, // For physical products
-      ];
-
-      eBookQuery.$or = [
-        { title: { $regex: search, $options: "i" } }, // For eBooks
-        { author: { $regex: search, $options: "i" } }, // For eBooks
-        { description: { $regex: search, $options: "i" } }, // For eBooks
-      ];
-    }
-
-    // console.log("productQuery", productQuery);
     // Add stock filter (only for physical products)
     if (inStock !== undefined) {
       productQuery.productQuantity = inStock ? { $gt: 0 } : 0;
     }
 
-    // Add rating filter
+    // Add rating filter for both
     if (minRating !== undefined) {
-      query.rating = { $gte: minRating };
+      productQuery.rating = { $gte: minRating };
+      eBookQuery.rating = { $gte: minRating };
     }
 
-    // Add date filter
+    // Add date filter (for both)
     if (dateFrom || dateTo) {
-      query.updatedAt = {};
-      if (dateFrom) query.updatedAt.$gte = dateFrom;
-      if (dateTo) query.updatedAt.$lte = dateTo;
+      productQuery.updatedAt = {};
+      eBookQuery.updatedAt = {};
+      if (dateFrom) {
+        productQuery.updatedAt.$gte = dateFrom;
+        eBookQuery.updatedAt.$gte = dateFrom;
+      }
+      if (dateTo) {
+        productQuery.updatedAt.$lte = dateTo;
+        eBookQuery.updatedAt.$lte = dateTo;
+      }
     }
 
     // Calculate the number of documents to fetch
@@ -241,31 +236,32 @@ export async function fetchProductsAndEBooks(
       sortOptions[sortBy] = sortOrder === "asc" ? 1 : -1;
     }
 
+    // If search is provided, sort by text score to get the most relevant results first
+    if (search) {
+      sortOptions.score = { $meta: "textScore" };
+    }
+
     // Fetch both products and eBooks in parallel
     const [products, eBooks] = await Promise.all([
       Product.find(productQuery)
-        .select("_id name price images category productType")
+        .select("_id productName price images sizes productType")
         .sort(sortOptions)
-        .limit(totalLimit),
+        .limit(totalLimit)
+        .lean()
+        .select(search ? { score: { $meta: "textScore" } } : {}), // Include text score if search is provided
       EBook.find(eBookQuery)
-        .select("_id title price coverIMG category productType") // Adjust fields for display
+        .select("_id title price coverIMG category productType")
         .sort(sortOptions)
-        .limit(totalLimit),
+        .limit(totalLimit)
+        .lean()
+        .select(search ? { score: { $meta: "textScore" } } : {}), // Include text score if search is provided
     ]);
 
     // Combine the results with an identifier to differentiate between products and eBooks
     const combinedResults = [
-      ...products.map((product) => ({
-        ...product._doc, // Extract the Mongoose document data
-        // type: "Physical Product",
-      })),
-      ...eBooks.map((eBook) => ({
-        ...eBook._doc, // Extract the Mongoose document data
-        // type: "Digital Product",
-      })),
+      ...products.map((product) => ({ ...product, type: "Physical Product" })),
+      ...eBooks.map((eBook) => ({ ...eBook, type: "Digital Product" })),
     ];
-
-    // console.log("combinedResults", combinedResults)
 
     return combinedResults;
   } catch (error: any) {

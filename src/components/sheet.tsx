@@ -9,7 +9,11 @@ function Sheets() {
     <Fragment>
       <Sheet>
         <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" className="shrink-0 md:hidden dark:hover:bg-transparent dark:hover:text-udua-orange-primary hover:bg-transparent hover:text-udua-orange-primary delay-75 transition-all ease-in-out">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="shrink-0 md:hidden dark:hover:bg-transparent dark:hover:text-udua-orange-primary hover:bg-transparent hover:text-udua-orange-primary delay-75 transition-all ease-in-out"
+          >
             <MenuIcon className="h-5 w-5" />
             <span className="sr-only">Toggle navigation menu</span>
           </Button>

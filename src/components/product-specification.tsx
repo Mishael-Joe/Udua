@@ -1,25 +1,34 @@
+"use client";
+
 import { ForProductInfo } from "@/types";
-import { formatText } from "@/utils/formatText";
+import DOMPurify from "dompurify";
 
 export function ProductSpecification({ product }: ForProductInfo) {
-  // const inputText =
-  //   "This is *bold*, this is _italic_, this is ~underline~, this is -strikethrough-, and this is `code`. * First item ";
-  // const formattedText = formatText(inputText);
   // console.log("product.specifications.length", product);
+  const sanitizedContentForDescription = DOMPurify.sanitize(
+    product.description
+  );
+  const sanitizedContentForSpecifications = DOMPurify.sanitize(
+    product.specifications
+  );
   if (product.specifications === "") return;
 
   return (
-    <div className="mb-10 rounded-lg border-2 border-gray-200 bg-gray-100 px-4 py-6 shadow dark:border-gray-900 dark:bg-black sm:p-6 lg:p-8">
-      <h2 className="text-lg font-medium pb-3">Specifications:</h2>
+    <div className="mb-10 sm:divide-x-2 divide-udua-orange-primary/40 rounded grid sm:grid-cols-2 gap-3 sm:border-2 border-udua-orange-primary/50 bg-udua-orange-primary/10 px-4 py-6 shadow dark:border-gray-900 dark:bg-black sm:p-6">
+      <div className=" pb-5 sm:pb-0">
+        <h3 className="text-lg pb-3 font-semibold">Description</h3>
+        <div
+          dangerouslySetInnerHTML={{ __html: sanitizedContentForDescription }}
+        ></div>
+      </div>
 
-      <div className=" border p-4 rounded-md shadow-2xl">
-        <ul className="py-3 list-inside">
-          <li className="list-disc">{product.specifications}</li>
-
-          {/* <h1>Formatted Text Example</h1> */}
-          {/* Render formatted text using dangerouslySetInnerHTML */}
-          {/* <div dangerouslySetInnerHTML={{ __html: formattedText }} /> */}
-        </ul>
+      <div className=" sm:pl-4">
+        <h2 className="text-lg font-semibold pb-3">Specifications:</h2>
+        <div
+          dangerouslySetInnerHTML={{
+            __html: sanitizedContentForSpecifications,
+          }}
+        ></div>
       </div>
     </div>
   );

@@ -68,8 +68,8 @@ export function CartItems() {
                               WebkitBoxOrient: "vertical",
                               overflow: "hidden",
                               textOverflow: "ellipsis",
-                              WebkitLineClamp: 2, // Limits the text to 3 lines
-                              maxHeight: "3.5em", // Adjust this based on the number of lines and line height
+                              WebkitLineClamp: 1, // Limits the text to 3 lines
+                              maxHeight: "1.5em", // Adjust this based on the number of lines and line height
                               lineHeight: "1.5em", // Adjust based on font size for accurate height control
                             }}
                           >
@@ -81,9 +81,15 @@ export function CartItems() {
                             </Link>
                           </h3>
                         </div>
-                        <p className="mt-1 text-sm font-medium">
-                          &#8358; {addCommasToNumber(product.price as number)}
-                        </p>
+                        {product.price !== null ? (
+                          <p className="mt-1 font-medium">
+                            &#8358; {addCommasToNumber(product.price as number)}{" "}
+                          </p>
+                        ) : (
+                          <p className="mt-1 font-medium">
+                            &#8358; {addCommasToNumber(product.size!.price)}{" "}
+                          </p>
+                        )}
                       </div>
 
                       <div className="mt-4 sm:mt-0 sm:pr-9">

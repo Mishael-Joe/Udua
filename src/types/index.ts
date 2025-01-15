@@ -25,8 +25,13 @@ export type Product = {
   _id?: string;
   productType: "Physical Product" | "Digital Product" | string;
   name: string;
-  price: number;
-  sizes?: string[];
+  price?: number; // Optional, in case the product has sizes
+  // sizes?: string[];
+  sizes?: {
+    size: string; // E.g., "S", "M", "L" (Optional, in case the product doesn't have sizes)
+    price: number; // Size-specific price (Optional, for size-based products)
+    quantity: number; // Stock for that size
+  }[];
   productQuantity: string;
   images: string[];
   description: string;
@@ -68,7 +73,12 @@ export type CombinedProduct = {
   storeID: string;
   productType: "Physical Product" | "Digital Product" | string;
   name: string; // Only for Physical Product
-  sizes?: string[]; // Only for Physical Product
+  sizes?: {
+    size: string; // E.g., "S", "M", "L" (Optional, in case the product doesn't have sizes)
+    price: number; // Size-specific price (Optional, for size-based products)
+    quantity: number; // Stock for that size
+    _id?: string;
+  }[]; // Only for Physical Product
   productQuantity: string; // Only for Physical Product
   images: string[]; // Only for Physical Product
   description: string;
@@ -78,7 +88,12 @@ export type CombinedProduct = {
   path: string;
   quantity?: number; // Could be used for both
   colors?: string[]; // Only for Physical Product
-  size?: string; // Only for Physical Product
+  size?: {
+    size: string; // E.g., "S", "M", "L" (Optional, in case the product doesn't have sizes)
+    price: number; // Size-specific price (Optional, for size-based products)
+    quantity: number; // Stock for that size
+    _id?: string;
+  }; // Only for Physical Product
   isVerifiedProduct?: boolean; // Only for Physical Product
   isVisible?: boolean;
 
@@ -219,7 +234,11 @@ export type ContextType = {
   addToCart: (
     product: ProductFromLocalStorage,
     quantity: number,
-    selectedSize: string | null,
+    selectedSize: {
+      size: string;
+      price: number;
+      quantity: number;
+    } | null,
     selectedColor: string | null
   ) => void;
   cartItems: CartItems[];

@@ -20,7 +20,7 @@ export default async function Page({ params }: Props) {
       {product.productData.productType === "Physical Product" ? (
         <div className="mx-auto max-w-3xl lg:max-w-none">
           {/* Product */}
-          <div className="pb-20 lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-12">
+          <div className=" pb-5 sm:pb-10 lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-12">
             {/* Product gallery */}
             <ProductGallery
               product={product.productData}
