@@ -20,7 +20,7 @@ export const fetchOrders = async (sellerID: string) => {
 };
 
 export async function storeUserNameInTheCookies(name: string) {
-  cookies().set({
+  (await cookies()).set({
     name: "userName",
     value: name,
     httpOnly: true,
@@ -30,7 +30,7 @@ export async function storeUserNameInTheCookies(name: string) {
 }
 
 export async function storeUserIdInTheCookies(userID: string) {
-  cookies().set({
+  (await cookies()).set({
     name: "userID",
     value: userID,
     httpOnly: true,
@@ -40,9 +40,9 @@ export async function storeUserIdInTheCookies(userID: string) {
 }
 
 export async function removeUserNameFromTheCookies(data: string) {
-  cookies().delete(data);
+  (await cookies()).delete(data);
 }
 
 export async function removeUserIdFromTheCookies(data: string) {
-  cookies().delete(data);
+  (await cookies()).delete(data);
 }

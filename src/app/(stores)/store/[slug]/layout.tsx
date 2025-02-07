@@ -28,15 +28,20 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-  params,
-}: {
-  children: React.ReactNode;
-  params: {
-    slug: string;
-  };
-}) {
+export default async function RootLayout(
+  props: {
+    children: React.ReactNode;
+    params: Promise<{
+      slug: string;
+    }>;
+  }
+) {
+  const params = await props.params;
+
+  const {
+    children
+  } = props;
+
   return (
     <html lang="en">
       <body className={`${montserrat.className} scroll-smooth`}>

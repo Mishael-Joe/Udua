@@ -1,3 +1,310 @@
+// "use client";
+
+// // Core Imports
+// import { useEffect, useMemo, useCallback, useState } from "react";
+// import { usePathname, useRouter } from "next/navigation";
+// import dynamic from "next/dynamic";
+// import Image from "next/image";
+// import axios from "axios";
+
+// // UI Components
+// import { Button } from "@/components/ui/button";
+// import {
+//   Card,
+//   CardContent,
+//   CardDescription,
+//   CardFooter,
+//   CardHeader,
+//   CardTitle,
+// } from "@/components/ui/card";
+// import { Input } from "@/components/ui/input";
+// import { Label } from "@/components/ui/label";
+// import { ChevronRight, Loader2, Upload, XIcon } from "lucide-react";
+
+// // Utilities & Types
+// import { useToast } from "@/components/ui/use-toast";
+// import { uploadImagesToCloudinary } from "@/lib/utils";
+// import { DigitalProduct, Product } from "@/types";
+// import {
+//   createDigitalProduct,
+//   createProduct,
+// } from "@/lib/actions/product.action";
+// import {
+//   productTypeArr,
+//   bookCategories,
+//   productCategories,
+//   subCategories,
+// } from "@/constant/constant";
+
+// // Lazy-loaded Components
+// const QuillEditor = dynamic(() => import("react-quill"), {
+//   ssr: false,
+//   loading: () => (
+//     <div className="h-[200px] bg-gray-100 animate-pulse rounded-md" />
+//   ),
+// });
+
+// // Constants
+// const QUILL_MODULES = {
+//   toolbar: [
+//     ["bold", "italic", "underline", "strike", "blockquote"],
+//     [{ list: "ordered" }, { list: "bullet" }],
+//     ["clean"],
+//   ],
+// };
+
+// const QUILL_FORMATS = [
+//   "bold",
+//   "italic",
+//   "underline",
+//   "strike",
+//   "blockquote",
+//   "list",
+//   "bullet",
+// ];
+
+// type ProductFormProps = {
+//   id: string;
+// };
+
+// export default function CreateProduct({ id }: ProductFormProps) {
+//   const router = useRouter();
+//   const pathname = usePathname();
+//   const { toast } = useToast();
+//   const [productType, setProductType] = useState<
+//     "Physical Product" | "Digital Product"
+//   >("Physical Product");
+//   const [isLoading, setIsLoading] = useState(false);
+//   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+
+//   // Product State Management
+//   const [physicalProduct, setPhysicalProduct] = useState<PhysicalProductState>({
+//     /* Initial state */
+//   });
+//   const [digitalProduct, setDigitalProduct] = useState<DigitalProductState>({
+//     /* Initial state */
+//   });
+
+//   // Memoized values
+//   const sizeOptions = useMemo(
+//     () =>
+//       physicalProduct.subCategory === "Footwear"
+//         ? Array.from({ length: 20 }, (_, i) => (39 + i * 0.5).toFixed(1))
+//         : ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+//     [physicalProduct.subCategory]
+//   );
+
+//   // Cleanup image previews
+//   useEffect(
+//     () => () => {
+//       imagePreviews.forEach(URL.revokeObjectURL);
+//     },
+//     [imagePreviews]
+//   );
+
+//   // Reusable Handlers
+//   const handleFileUpload = useCallback(
+//     async (files: File[], maxSize: number) => {
+//       const validFiles = files.filter(
+//         (file) =>
+//           file.size <= maxSize &&
+//           ["image/jpeg", "image/png", "image/webp"].includes(file.type)
+//       );
+
+//       if (validFiles.length !== files.length) {
+//         throw new Error("Invalid file type or size");
+//       }
+
+//       return uploadImagesToCloudinary(validFiles);
+//     },
+//     []
+//   );
+
+//   // Optimized Validation Logic
+//   const validateForm = useCallback(
+//     (formData: FormDataType, type: ProductType) => {
+//       const errors: string[] = [];
+
+//       // Common validations
+//       if (!formData.name?.trim() || formData.name.length < 5) {
+//         errors.push("Name must be at least 5 characters");
+//       }
+
+//       // Type-specific validations
+//       if (type === "Physical Product") {
+//         if (!formData.images?.length)
+//           errors.push("At least one image required");
+//       }
+
+//       return errors.length ? errors.join(", ") : null;
+//     },
+//     []
+//   );
+
+//   // Unified Submit Handler
+//   const handleSubmit = useCallback(
+//     async (e: React.FormEvent, type: ProductType) => {
+//       e.preventDefault();
+//       setIsLoading(true);
+
+//       try {
+//         const validationError = validateForm(
+//           type === "Physical Product" ? physicalProduct : digitalProduct,
+//           type
+//         );
+//         if (validationError) throw new Error(validationError);
+
+//         // Common processing
+//         const images = await handleFileUpload(
+//           type === "Physical Product"
+//             ? physicalProduct.images
+//             : digitalProduct.coverIMG,
+//           5 * 1024 * 1024
+//         );
+
+//         // Type-specific processing
+//         const productData =
+//           type === "Physical Product"
+//             ? await processPhysicalProduct(images)
+//             : await processDigitalProduct(images);
+
+//         await (type === "Physical Product"
+//           ? createProduct
+//           : createDigitalProduct)(productData);
+//         router.back();
+//       } catch (error) {
+//         toast({
+//           variant: "destructive",
+//           title: "Error",
+//           description: error.message,
+//         });
+//       } finally {
+//         setIsLoading(false);
+//       }
+//     },
+//     [physicalProduct, digitalProduct, validateForm, handleFileUpload]
+//   );
+
+//   // Reusable Components
+//   const FormCard = ({ title, description, children }: FormCardProps) => (
+//     <Card>
+//       <CardHeader>
+//         <CardTitle>{title}</CardTitle>
+//         {description && <CardDescription>{description}</CardDescription>}
+//       </CardHeader>
+//       <CardContent className="grid gap-4">{children}</CardContent>
+//     </Card>
+//   );
+
+//   const FileUploadField = ({
+//     name,
+//     accept,
+//     multiple,
+//     onChange,
+//   }: FileUploadProps) => (
+//     <div className="relative aspect-square group">
+//       <label className="flex items-center justify-center w-full h-full cursor-pointer">
+//         <Upload className="w-10 h-10 text-muted-foreground transition-colors group-hover:text-primary" />
+//         <input
+//           name={name}
+//           type="file"
+//           accept={accept}
+//           multiple={multiple}
+//           onChange={onChange}
+//           className="absolute inset-0 opacity-0 cursor-pointer"
+//           aria-label={`Upload ${name}`}
+//         />
+//       </label>
+//     </div>
+//   );
+
+//   return (
+//     <section className="max-w-5xl mx-auto">
+//       <h1 className="sr-only">Create Product</h1>
+
+//       <div className="space-y-8">
+//         <FormCard
+//           title="Product Type"
+//           description="Select the type of product you're creating"
+//         >
+//           <select
+//             value={productType}
+//             onChange={(e) => setProductType(e.target.value as ProductType)}
+//             className="w-full p-3 border rounded-lg bg-background"
+//             aria-label="Select product type"
+//           >
+//             {productTypeArr.map((type) => (
+//               <option key={type} value={type}>
+//                 {type}
+//               </option>
+//             ))}
+//           </select>
+//         </FormCard>
+
+//         {productType === "Physical Product" && (
+//           <form
+//             onSubmit={(e) => handleSubmit(e, "Physical Product")}
+//             className="space-y-8"
+//           >
+//             {/* Physical Product Form Sections */}
+//             <FormCard
+//               title="Product Details"
+//               description="Vividly describe your product"
+//             >
+//               {/* Form Fields */}
+//             </FormCard>
+
+//             <FormCard title="Product Images">
+//               <FileUploadField
+//                 name="images"
+//                 accept="image/*"
+//                 multiple
+//                 onChange={handlePhysicalChange}
+//               />
+//               {/* Image Previews */}
+//             </FormCard>
+//           </form>
+//         )}
+
+//         {productType === "Digital Product" && (
+//           <form
+//             onSubmit={(e) => handleSubmit(e, "Digital Product")}
+//             className="space-y-8"
+//           >
+//             {/* Digital Product Form Sections */}
+//             <FormCard title="Digital Product Details">
+//               {/* Form Fields */}
+//             </FormCard>
+
+//             <FormCard title="Cover Image">
+//               <FileUploadField
+//                 name="coverIMG"
+//                 accept="image/*"
+//                 onChange={handleDigitalChange}
+//               />
+//             </FormCard>
+//           </form>
+//         )}
+
+//         <div className="flex justify-end gap-4">
+//           <Button
+//             type="submit"
+//             disabled={isLoading}
+//             aria-busy={isLoading}
+//             className="min-w-[120px]"
+//           >
+//             {isLoading ? (
+//               <Loader2 className="animate-spin" />
+//             ) : (
+//               "Create Product"
+//             )}
+//           </Button>
+//         </div>
+//       </div>
+//     </section>
+//   );
+// }
+
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";

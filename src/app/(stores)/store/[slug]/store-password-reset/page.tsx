@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import ResetStorePassword from "../component/reset-store-password";
 
-function Page({ params }: { params: { slug: string } }) {
+function Page() {
   return (
     <Suspense fallback={`Loading...`}>
       <ResetStorePassword />

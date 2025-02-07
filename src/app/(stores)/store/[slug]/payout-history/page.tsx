@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import PayoutHistory from "../component/payout-history";
 
-function Page({ params }: { params: { slug: string } }) {
+function Page() {
   return (
     <Suspense fallback={`Loading...`}>
       <PayoutHistory />

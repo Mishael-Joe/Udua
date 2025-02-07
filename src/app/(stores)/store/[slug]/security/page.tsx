@@ -1,7 +1,8 @@
 import { Suspense } from "react";
 import Security from "../component/security";
 
-function Page({ params }: { params: { slug: string } }) {
+async function Page(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   return (
     <Suspense fallback={`Loading...`}>
       <Security params={params}/>

@@ -11,7 +11,7 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 
 async function UploadProduct({ params }: { params: { slug: string } }) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const userID: string | undefined = cookieStore.get("userID")?.value;
   return (
     <main className="flex flex-col gap-4 p-4 md:gap-0">

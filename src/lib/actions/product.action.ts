@@ -244,7 +244,7 @@ export async function fetchProductsAndEBooks(
     // Fetch both products and eBooks in parallel
     const [products, eBooks] = await Promise.all([
       Product.find(productQuery)
-        .select("_id productName price images sizes productType")
+        .select("_id name price images sizes productType")
         .sort(sortOptions)
         .limit(totalLimit)
         .lean()
@@ -270,7 +270,7 @@ export async function fetchProductsAndEBooks(
 }
 
 export async function fetchProductData(id: string) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const userID = cookieStore.get("userID")?.value;
 
   try {
@@ -321,7 +321,7 @@ export async function fetchProductData(id: string) {
 }
 
 export const addToWishlist = async (productId: string) => {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const userID = cookieStore.get("userID")?.value;
 
   if (!userID) {
@@ -362,7 +362,7 @@ export const addToWishlist = async (productId: string) => {
 };
 
 export const removeFromWishlist = async (productId: string) => {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const userID = cookieStore.get("userID")?.value;
 
   if (!userID) {

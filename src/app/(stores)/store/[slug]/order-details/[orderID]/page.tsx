@@ -2,7 +2,8 @@ import { Suspense } from "react";
 import OrderDetails from "../../component/user-order-details";
 
 
-export default function Page({ params }: { params: { orderID: string } }) {
+export default async function Page(props: { params: Promise<{ orderID: string }> }) {
+  const params = await props.params;
   return (
     <Suspense fallback={`Loading...`}>
       <OrderDetails params={params}/>

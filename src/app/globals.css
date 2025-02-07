@@ -110,6 +110,10 @@
   }
 }
 
+.hover\:text-udua-orange-primary {
+  transition: color 0.2s ease-in-out;
+}
+
 .scrolling-container {
   overflow: hidden;
   white-space: nowrap;
@@ -148,4 +152,36 @@
 .splide__arrows .splide-next {
   background: transparent;
   color: red !important;
+}
+
+/* Add to your global CSS */
+.glightbox-container img {
+  object-fit: contain !important;
+  background: #f8fafc;
+}
+
+[data-splide] {
+  @apply overflow-visible;
+}
+
+.splide__arrow {
+  @apply bg-white shadow-lg hover:bg-gray-100;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 0.8rem;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3f4254;
+  border-radius: 0.2rem;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2e303b;
 }

@@ -76,3 +76,33 @@ export const uploadImagesToCloudinary = async (images: File[]) => {
     throw new Error(`Error uploading images to Cloudinary: ${error.message}`);
   }
 };
+
+/**
+ * Formats a date string or Date object into a human-readable format.
+ * @param date - The date to format (can be a string, number, or Date object).
+ * @param options - Optional formatting options.
+ * @returns A formatted date string.
+ */
+export function formatDate(
+  date: string | number | Date,
+  options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  }
+): string {
+  // Convert the input to a Date object if it isn't already
+  const parsedDate = new Date(date);
+
+  // Check if the date is valid
+  if (isNaN(parsedDate.getTime())) {
+    console.error("Invalid date provided:", date);
+    return "Invalid Date";
+  }
+
+  // Format the date using Intl.DateTimeFormat for localization
+  return new Intl.DateTimeFormat("en-US", options).format(parsedDate);
+}

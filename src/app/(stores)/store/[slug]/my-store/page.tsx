@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 import StoreProfile from "../component/store-profile";
 
-function Page({ params }: { params: { slug: string } }) {
+async function Page() {
   return (
     <Suspense fallback={`My Dashboard`}>
-      <StoreProfile params={params}/>
+      <StoreProfile />
     </Suspense>
   );
 }
