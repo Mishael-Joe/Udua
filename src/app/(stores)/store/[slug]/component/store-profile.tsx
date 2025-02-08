@@ -41,8 +41,8 @@ export default function StoreProfile() {
   const { name, description, products } = store;
 
   return (
-    <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-      <section>
+    <main className="overflow-hidden">
+      <section className="p-4 md:p-8 ">
         {/* Store Header */}
         <div className="p-4 border border-gray-700 h-72 w-full rounded-md bg-muted/50">
           <div className="flex h-2/3 w-full items-center">
