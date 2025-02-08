@@ -12,6 +12,8 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import ShareButton from "../utils/shareBTN";
 import type { ForProductInfo } from "@/types";
+import { ClothingSizeGuide } from "./Clothing-size-guide";
+import { FootWearSizeGuide } from "./shoe-size-guide";
 
 export function ProductInfo({ product }: ForProductInfo) {
   const pathname = usePathname();
@@ -160,13 +162,22 @@ export function ProductInfo({ product }: ForProductInfo) {
         {isPhysicalProduct && (
           <>
             {selectedSize && (
-              <div className="flex gap-x-3 items-center">
-                <p>
-                  Size: <strong>{selectedSize.size}</strong>
-                </p>
-                <p className="text-xs text-udua-orange-primary">
-                  ONLY <strong>{selectedSize.quantity}</strong> LEFT
-                </p>
+              <div className="flex gap-x-3 items-center justify-between text-udua-orange-primary cursor-pointer">
+                <div className="flex gap-x-3 items-center">
+                  <p>
+                    Size: <strong>{selectedSize.size}</strong>
+                  </p>
+                  <p className="text-xs text-udua-orange-primary">
+                    ONLY <strong>{selectedSize.quantity}</strong> LEFT
+                  </p>
+                </div>
+
+                <div>
+                  {Number(selectedSize.size) && <FootWearSizeGuide />}
+                  {/* {typeof selectedSize.size === "string" && (
+                    <ClothingSizeGuide />
+                  )} */}
+                </div>
               </div>
             )}
 

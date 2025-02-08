@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDB } from "@/lib/mongoose";
-import { getStoreIDFromToken } from "@/lib/helpers/getStoreIDFromToken";
 import Store from "@/lib/models/store.model";
 import Product from "@/lib/models/product.model";
+import EBook from "@/lib/models/digital-product.model";
 
 export async function POST(request: NextRequest) {
   const requestBody = await request.json();
@@ -23,6 +23,7 @@ export async function POST(request: NextRequest) {
 
     // Find the store by its ID
     const product = Product.findOne().select(`_id`);
+    const ebook = EBook.findOne().select(`_id`);
 
     const store = await Store.findById(storeID)
       .select("-password -storeOwner -updatedAt -pendingBalance")

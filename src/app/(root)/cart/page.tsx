@@ -29,7 +29,7 @@ const ProductCard = ({ product }: { product: CombinedProduct }) => {
   return (
     <Link
       href={`/product/${product._id}`}
-      className="group text-sm flex flex-col "
+      className="group text-sm flex flex-col w-40 md:w-52"
       aria-label={`View ${title}`}
     >
       <div className="aspect-square w-40 h-40 md:h-52 relative overflow-hidden rounded-lg border-2 border-gray-200 bg-gray-100 group-hover:opacity-75 dark:border-gray-800">
@@ -44,7 +44,7 @@ const ProductCard = ({ product }: { product: CombinedProduct }) => {
         />
       </div>
 
-      <h3 className="mt-1 font-medium line-clamp-1">{title}</h3>
+      <h3 className="mt-1 font-medium line-clamp-1 w-40 md:w-52">{title}</h3>
 
       {price && (
         <p className="mt-1 font-medium">&#8358; {addCommasToNumber(price)}</p>
