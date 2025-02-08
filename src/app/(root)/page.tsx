@@ -1,14 +1,24 @@
-import HeroBanners from "@/components/banners";
-import LeftSidebar from "@/components/left-sidebar";
-import { ProductGrid } from "@/components/product-grid";
+/**
+ * Home Page - E-Commerce Landing Page
+ *
+ * Key Features:
+ * - Full-width product grid layout
+ * - Enhanced visual hierarchy
+ * - Optimized spacing and responsiveness
+ * - SEO-optimized structure
+ */
+
+import { Suspense } from "react";
 import { fetchProductsAndEBooks } from "@/lib/actions/product.action";
 import SkeletonLoader from "@/lib/loaders/skeletonLoader";
-import { CombinedProduct, Product } from "@/types";
-import Image from "next/image";
-import { Suspense } from "react";
+import { ProductGrid } from "@/components/product-grid";
+import type { CombinedProduct } from "@/types";
+
+// Revalidate page every hour for fresh content
+export const revalidate = 3600;
 
 type Props = {
-  searchParams: {
+  searchParams: Promise<{
     categories?: string[] | string;
     page?: number;
     limit?: number;
@@ -21,10 +31,11 @@ type Props = {
     minRating?: number;
     dateFrom?: string | Date;
     dateTo?: string | Date;
-  };
+  }>;
 };
 
-export default async function Home({ searchParams }: Props) {
+export default async function Home(props: Props) {
+  const searchParams = await props.searchParams;
   const {
     categories,
     page,
@@ -58,190 +69,179 @@ export default async function Home({ searchParams }: Props) {
     // dateFrom,
     // dateTo
   );
-
-  // console.log("combinedResults", products)
-
   return (
-    // grid gap-4 md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]
-    <main className="min-h-screen mx-auto max-w-[78rem] px-2.5 md:px-4 pt-4">
-      <div className="">
-        {/* <HeroBanners /> */}
-        <div className="">
+    <main className="min-h-screen mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-6">
+      {/* Structured Data for SEO */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          itemListElement: products.map((product, index) => ({
+            "@type": "ListItem",
+            position: index + 1,
+            url: `${process.env.NEXT_PUBLIC_SITE_URL}/product/${product._id}`,
+            name: product.name || product.title,
+            image: product.images?.[0] || product.coverIMG?.[0],
+          })),
+        })}
+      </script>
+
+      {/* Promotional Video Section */}
+      <section aria-label="Current promotions" className="mb-12">
+        <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg">
           <video
             autoPlay
             loop
             muted
-            width="800"
-            height="300"
-            src="/T&Cs Apply.mp4"
-            className=" aspect-video"
-          ></video>
+            playsInline
+            className="w-full h-full object-cover"
+            aria-label="Quality assurance video"
+            title="Udua Quality Promise"
+            poster="/video-poster.jpg"
+          >
+            <source src="/T&Cs Apply.mp4" type="video/mp4" />
+            <source src="/T&Cs Apply.webm" type="video/webm" />
+            <track
+              kind="captions"
+              srcLang="en"
+              src="/captions.vtt"
+              label="English captions"
+            />
+            <p className="sr-only">
+              All Udua products undergo rigorous quality checks to ensure
+              customer satisfaction.
+            </p>
+          </video>
         </div>
-        {/* <div className=" hidden lg:block basis-1/3">
-          <div className="grid gap-4">
-            <div>
-              <Image
-                src={`/cloths.jpg`}
-                width={270}
-                height={250}
-                alt=""
-                className=" aspect-auto"
-              />
-            </div>
-            <div>
-              <Image
-                src={`/cloths.jpg`}
-                width={270}
-                height={250}
-                alt=""
-                className=" aspect-auto"
-              />
-            </div>
-          </div>
-          <h1 className=" font-semibold text-xl">Shop deals in fashion</h1>
-        </div> */}
-      </div>
+      </section>
 
-      <div className="py-4">
-        <Suspense fallback={<SkeletonLoader />}>
-          <ProductGrid products={products} />
-        </Suspense>
-      </div>
+      {/* Main Product Grid Area */}
+      <section aria-labelledby="products-heading" className="pb-16">
+        <h1 id="products-heading" className="sr-only">
+          Udua Product Collection
+        </h1>
+
+        <div className="border-t border-gray-200 pt-8">
+          <Suspense fallback={<SkeletonLoader />}>
+            <ProductGrid products={products} />
+          </Suspense>
+        </div>
+      </section>
     </main>
   );
 }
 
-// ngrok http 3000
-
-// import { useRouter } from 'next/router';
-// import { useEffect, useState } from 'react';
-// import LeftSidebar from "@/components/LeftSidebar";
+// import HeroBanners from "@/components/banners";
+// import LeftSidebar from "@/components/left-sidebar";
 // import { ProductGrid } from "@/components/product-grid";
-// import { fetchProducts } from "@/lib/actions/product.action";
+// import { fetchProductsAndEBooks } from "@/lib/actions/product.action";
 // import SkeletonLoader from "@/lib/loaders/skeletonLoader";
-// import { Product } from "@/types";
+// import { CombinedProduct, Product } from "@/types";
+// import Image from "next/image";
 // import { Suspense } from "react";
 
-// // Pagination Components
-// import {
-//   Pagination,
-//   PaginationContent,
-//   PaginationItem,
-//   PaginationPrevious,
-//   PaginationLink,
-//   PaginationEllipsis,
-//   PaginationNext,
-// } from '@/components/Pagination'; // Ensure you import your Pagination components correctly
+// type Props = {
+//   searchParams: {
+//     categories?: string[] | string;
+//     page?: number;
+//     limit?: number;
+//     minPrice?: number;
+//     maxPrice?: number;
+//     search?: string;
+//     sortBy?: string;
+//     sortOrder?: "asc" | "desc";
+//     inStock?: boolean;
+//     minRating?: number;
+//     dateFrom?: string | Date;
+//     dateTo?: string | Date;
+//   };
+// };
 
-// export default function Home() {
-//   const router = useRouter();
+// export default async function Home({ searchParams }: Props) {
 //   const {
 //     categories,
-//     page = 1,
-//     limit = 30,
+//     page,
+//     limit,
 //     minPrice,
 //     maxPrice,
 //     search,
 //     sortBy,
-//     sortOrder = 'asc',
+//     sortOrder,
 //     inStock,
 //     minRating,
 //     dateFrom,
 //     dateTo,
-//   } = router.query;
+//   } = searchParams;
+//   // Convert categories string to an array of strings
+//   const categoriesArray = categories ? (categories as string).split(" ") : [];
+//   // console.log(`categoriesArray`, categoriesArray);
 
-//   const [products, setProducts] = useState<Product[]>([]);
-//   const [currentPage, setCurrentPage] = useState<number>(parseInt(page as string) || 1);
-//   const [totalPages, setTotalPages] = useState<number>(0); // You can set this based on your total product count
+//   // @ts-ignore
+// const products: CombinedProduct[] = await fetchProductsAndEBooks(
+//   categoriesArray,
+//   page,
+//   limit,
+//   minPrice,
+//   maxPrice,
+//   search,
+//   sortBy,
+//   sortOrder,
+//   inStock,
+//   minRating
+//   // dateFrom,
+//   // dateTo
+// );
 
-//   useEffect(() => {
-//     const fetchProductData = async () => {
-//       const categoriesArray = categories ? (categories as string).split(' ') : [];
-
-//       const products: Product[] = await fetchProducts(
-//         categoriesArray,
-//         currentPage,
-//         parseInt(limit as string) || 30,
-//         parseFloat(minPrice as string),
-//         parseFloat(maxPrice as string),
-//         search as string,
-//         sortBy as string,
-//         sortOrder as 'asc' | 'desc',
-//         inStock === 'true',
-//         parseFloat(minRating as string),
-//         dateFrom ? new Date(dateFrom as string) : undefined,
-//         dateTo ? new Date(dateTo as string) : undefined
-//       );
-
-//       setProducts(products);
-//       // Set totalPages based on the total product count and limit
-//       const totalProductCount = 100; // Replace with actual count from your data source
-//       setTotalPages(Math.ceil(totalProductCount / (parseInt(limit as string) || 30)));
-//     };
-
-//     fetchProductData();
-//   }, [categories, currentPage, limit, minPrice, maxPrice, search, sortBy, sortOrder, inStock, minRating, dateFrom, dateTo]);
-
-//   const handlePageChange = (newPage: number) => {
-//     setCurrentPage(newPage);
-//     router.push({
-//       pathname: router.pathname,
-//       query: {
-//         ...router.query,
-//         page: newPage,
-//       },
-//     });
-//   };
+//   // console.log("combinedResults", products)
 
 //   return (
-//     <main className="grid min-h-screen mx-auto md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr] ... px-5 md:px-4 flex flex-row gap-4 max-w-[75rem]">
-//       <div className="hidden border-r bg-muted/10 md:block">
-//         <div className="flex h-full max-h-screen flex-col gap-2">
-//           <LeftSidebar />
+//     // grid gap-4 md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]
+//     <main className="min-h-screen mx-auto max-w-[78rem] px-2.5 md:px-4 pt-4">
+//       <div className="">
+//         {/* <HeroBanners /> */}
+//         <div className="">
+//           <video
+//             autoPlay
+//             loop
+//             muted
+//             width="800"
+//             height="300"
+//             src="/T&Cs Apply.mp4"
+//             className=" aspect-video"
+//           ></video>
 //         </div>
+//         {/* <div className=" hidden lg:block basis-1/3">
+//           <div className="grid gap-4">
+//             <div>
+//               <Image
+//                 src={`/cloths.jpg`}
+//                 width={270}
+//                 height={250}
+//                 alt=""
+//                 className=" aspect-auto"
+//               />
+//             </div>
+//             <div>
+//               <Image
+//                 src={`/cloths.jpg`}
+//                 width={270}
+//                 height={250}
+//                 alt=""
+//                 className=" aspect-auto"
+//               />
+//             </div>
+//           </div>
+//           <h1 className=" font-semibold text-xl">Shop deals in fashion</h1>
+//         </div> */}
 //       </div>
 
 //       <div className="py-4">
 //         <Suspense fallback={<SkeletonLoader />}>
 //           <ProductGrid products={products} />
 //         </Suspense>
-//         <Pagination>
-//           <PaginationContent>
-//             <PaginationItem>
-//               <PaginationPrevious
-//                 href="#"
-//                 onClick={(e) => {
-//                   e.preventDefault();
-//                   if (currentPage > 1) handlePageChange(currentPage - 1);
-//                 }}
-//               />
-//             </PaginationItem>
-//             {[...Array(totalPages)].map((_, index) => (
-//               <PaginationItem key={index}>
-//                 <PaginationLink
-//                   href="#"
-//                   onClick={(e) => {
-//                     e.preventDefault();
-//                     handlePageChange(index + 1);
-//                   }}
-//                 >
-//                   {index + 1}
-//                 </PaginationLink>
-//               </PaginationItem>
-//             ))}
-//             {totalPages > 5 && <PaginationEllipsis />}
-//             <PaginationItem>
-//               <PaginationNext
-//                 href="#"
-//                 onClick={(e) => {
-//                   e.preventDefault();
-//                   if (currentPage < totalPages) handlePageChange(currentPage + 1);
-//                 }}
-//               />
-//             </PaginationItem>
-//           </PaginationContent>
-//         </Pagination>
 //       </div>
 //     </main>
 //   );
 // }
+
+// ngrok http 3000

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ChangeEvent } from "react";
+import React, { ChangeEvent, use } from "react";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -28,7 +28,8 @@ type Products = Omit<Product, "storeID" | "images" | "path" | "price"> & {
   images: ""[];
 };
 
-export default function EditProduct({ params }: { params: { slug: string } }) {
+export default function EditProduct(props: { params: Promise<{ slug: string }> }) {
+  const params = use(props.params);
   const router = useRouter();
   const { toast } = useToast();
   //   console.log('params', params)

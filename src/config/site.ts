@@ -14,16 +14,21 @@ export const siteConfig = {
     { name: "Pricing", href: "/pricing" },
     // { name: "Support", href: "/support" },
   ],
-  paymentmethods:[
-    {
-      img: '/mastercard-full-svgrepo-com.svg'
-    },
-    {
-      img: '/visa-svgrepo-com.svg'
-    },
-    {
-      img: '/verve-svgrepo-com.svg'
-    },
-  ]
+  paymentmethods: [
+    { name: "Visa", img: "/visa-svgrepo-com.svg" },
+    { name: "Mastercard", img: "/mastercard-full-svgrepo-com.svg" },
+    { name: "Verve", img: "/verve-svgrepo-com.svg" },
+    // ... other payment methods
+  ],
+  links: {
+    instagram: "#",
+    linkedin: "#",
+  },
+  footerLinks: [
+    { name: "Home", href: "/" },
+    { name: "Elements", href: "#" },
+    { name: "Tags", href: "#" },
+    { name: "Authors", href: "#" },
+    { name: "Membership", href: "#" },
+  ],
 };
-

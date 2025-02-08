@@ -1,9 +1,10 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, use } from "react";
 import StoreDashboard from "../component/store-dash-board";
 
-function Page({ params }: { params: { slug: string } }) {
+function Page(props: { params: Promise<{ slug: string }> }) {
+  const params = use(props.params);
   return (
     <Suspense fallback={`My store Dashboard`}>
       <StoreDashboard params={params}/>

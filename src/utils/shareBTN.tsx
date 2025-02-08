@@ -1,6 +1,5 @@
 import { Link, ShareIcon } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
@@ -14,7 +13,6 @@ import {
   EmailShareButton,
   FacebookIcon,
   FacebookShareButton,
-  TwitterIcon,
   TwitterShareButton,
   WhatsappIcon,
   WhatsappShareButton,
@@ -52,13 +50,19 @@ export default function ShareButton({ slug }: any) {
   return (
     <Popover>
       <PopoverTrigger>
-        <Button
+        {/* <Button
           size={"icon"}
           variant="default"
           className="bg-slate-100 text-udua-orange-primary hover:bg-white"
         >
-          <ShareIcon />
-        </Button>
+          
+        </Button> */}
+        <ShareIcon
+          className="bg-slate-100 text-udua-orange-primary hover:bg-white p-0.5 rounded"
+          size={"icon"}
+          width={25}
+          height={25}
+        />
       </PopoverTrigger>
       <PopoverContent>
         <p className=" text-center font-semibold">Share to</p>
