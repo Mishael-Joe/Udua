@@ -59,7 +59,7 @@ export function CartItems() {
         className="divide-y divide-udua-orang-primary/30 border-y border-udua-orange-primary/30 dark:divide-gray-500 dark:border-gray-500"
       >
         {cartItems.map((product, index) => {
-          console.log("product", product._id);
+          // console.log("product", product._id);
 
           const isPhysical = product.productType === "physicalproducts";
 
