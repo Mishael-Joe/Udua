@@ -34,7 +34,8 @@ export function CartSummary() {
           <div className="flex items-center justify-between border-t border-gray-200 pt-4 dark:border-gray-600">
             <dt className="text-base font-medium">Order Total</dt>
             <dd className="text-base font-medium">
-              &#8358; {addCommasToNumber(0)}
+              {/* &#8358; {addCommasToNumber(subtotal)} */}
+              Calculated at checkout
             </dd>
           </div>
         </dl>
