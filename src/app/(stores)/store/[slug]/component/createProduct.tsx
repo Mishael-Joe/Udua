@@ -372,8 +372,8 @@ function CreateProduct({ id }: storeID) {
   const pathname = usePathname();
   // const [userID, setUserID] = useState<string | undefined>(id);
   const [productType, setProductType] = useState<
-    "Physical Product" | "Digital Product" | string
-  >("Physical Product");
+    "physicalproducts" | "digitalproducts" | string
+  >("physicalproducts");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { toast } = useToast();
@@ -399,7 +399,7 @@ function CreateProduct({ id }: storeID) {
     subCategory: "",
     storeID: id,
     storePassword: "",
-    productType: "Physical Product",
+    productType: "physicalproducts",
   });
 
   const [digitalProduct, setDigitalProduct] = useState<DigitalProducts>({
@@ -419,7 +419,7 @@ function CreateProduct({ id }: storeID) {
     pdfFile: [],
     coverIMG: [],
     storePassword: "",
-    productType: "Digital Product",
+    productType: "digitalproducts",
   });
 
   // Define valid size options based on category or subcategory
@@ -1171,7 +1171,7 @@ function CreateProduct({ id }: storeID) {
                 </select>
               </div>
 
-              {productType === "Physical Product" && (
+              {productType === "physicalproducts" && (
                 <p>
                   A Physical Product refers to any tangible, real-world item
                   that can be physically touched, held, and delivered to
@@ -1184,7 +1184,7 @@ function CreateProduct({ id }: storeID) {
                 </p>
               )}
 
-              {productType === "Digital Product" && (
+              {productType === "digitalproducts" && (
                 <p>
                   A Digital Product refers to any item that is delivered
                   electronically, meaning there is no physical item to ship.
@@ -1198,7 +1198,7 @@ function CreateProduct({ id }: storeID) {
             </div>
           </div>
 
-          {productType === "Physical Product" && (
+          {productType === "physicalproducts" && (
             <>
               <form
                 className="mx-auto grid max-w-[59rem] flex-1 auto-rows-max gap-4 pt-3"
@@ -1611,7 +1611,7 @@ function CreateProduct({ id }: storeID) {
             </>
           )}
 
-          {productType === "Digital Product" && (
+          {productType === "digitalproducts" && (
             <>
               <form
                 className="mx-auto grid max-w-[59rem] flex-1 auto-rows-max gap-4 pt-3"

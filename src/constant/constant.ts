@@ -1,4 +1,4 @@
-export const productTypeArr = ["Physical Product", "Digital Product"];
+export const productTypeArr = ["physicalproducts", "digitalproducts"];
 
 export const productCategories = [
   "Electronics",

@@ -68,7 +68,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 interface IProduct extends Document {
   storeID: string;
-  productType: "Physical Product" | "Digital Product";
+  productType: "physicalproducts" | "digitalproducts";
   name: string;
   price?: number; // Optional if the product has sizes
   sizes?: {
@@ -90,8 +90,8 @@ const productSchema = new Schema<IProduct>({
   storeID: { type: String, required: true },
   productType: {
     type: String,
-    enum: ["Physical Product", "Digital Product"],
-    default: "Physical Product",
+    enum: ["physicalproducts", "digitalproducts"],
+    default: "physicalproducts",
     required: true,
   },
   name: { type: String, required: true, index: true },
@@ -138,6 +138,7 @@ productSchema.index(
 );
 
 const Product =
-  mongoose.models.Product || mongoose.model<IProduct>("Product", productSchema);
+  mongoose.models.physicalproducts ||
+  mongoose.model<IProduct>("physicalproducts", productSchema);
 
 export default Product;

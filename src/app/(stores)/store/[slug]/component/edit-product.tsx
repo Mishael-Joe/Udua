@@ -52,7 +52,7 @@ export default function EditProduct({
     specifications: "",
     category: "",
     subCategory: "",
-    productType: "Physical Product",
+    productType: "physicalproducts",
   });
 
   const possibleSizes = [

@@ -23,7 +23,7 @@ export type User = {
 
 export type Product = {
   _id?: string;
-  productType: "Physical Product" | "Digital Product" | string;
+  productType: "physicalproducts" | "digitalproducts" | string;
   name: string;
   price?: number; // Optional, in case the product has sizes
   // sizes?: string[];
@@ -60,7 +60,7 @@ export type DigitalProduct = {
   s3Key: string;
   language: string;
   coverIMG: string[]; // the book's cover img
-  productType: "Physical Product" | "Digital Product" | string;
+  productType: "physicalproducts" | "digitalproducts" | string;
   isbn?: string;
   publisher?: string;
   rating?: number;
@@ -71,7 +71,7 @@ export type DigitalProduct = {
 export type CombinedProduct = {
   _id: string;
   storeID: string;
-  productType: "Physical Product" | "Digital Product" | string;
+  productType: "physicalproducts" | "digitalproducts" | string;
   name: string; // Only for Physical Product
   sizes?: {
     size: string; // E.g., "S", "M", "L" (Optional, in case the product doesn't have sizes)
@@ -223,16 +223,41 @@ export type Order = {
   createdAt: Date;
 };
 
-export type CartItems = Partial<CombinedProduct>;
+export interface Cart {
+  product: {
+    _id: string;
+    productType: string;
+    category: string;
+    images?: string[];
+    name: string;
+    sizes: [];
+    price: number;
+    coverIMG?: string[];
+    title: string;
+  };
+  _id: string;
+  selectedSize: {
+    price: number;
+    size: string;
+    quantity: number;
+  } | null;
+  productType: string;
+  quantity: number;
+}
+
+export type CartItems = Cart;
 
 export type ProductFromLocalStorage = Partial<CombinedProduct>;
 
 // Define types for the context
 export type ContextType = {
-  onRemove: (product: CartItems) => void;
+  onRemove: (
+    product: CartItems,
+    selectedSize: { size: string; price: number; quantity: number } | null
+  ) => void;
   quantity: number;
   addToCart: (
-    product: ProductFromLocalStorage,
+    product: CombinedProduct,
     quantity: number,
     selectedSize: {
       size: string;
@@ -243,19 +268,20 @@ export type ContextType = {
   ) => void;
   cartItems: CartItems[];
   totalPrice: number;
-  shippingFee: number;
+  // shippingFee: number;
   totalQuantity: number;
-  deliveryMethod: string;
-  grandTotalPrice: number;
-  clearItemsInCart: () => void;
+  // deliveryMethod: string;
+  // grandTotalPrice: number;
+  fetchCartItems: () => void;
+  // clearItemsInCart: () => void;
   incrementQuantity: () => void;
   decrementQuantity: () => void;
-  handleOptionChange: (option: string) => void;
+  // handleOptionChange: (option: string) => void;
   toggleCartItemQuantity: (
-    itemId: string,
+    cartItemID: string,
     value: "increase" | "decrease"
   ) => void;
-  setCartItemsFromStorage: (items: CartItems[]) => void;
+  // setCartItemsFromStorage: (items: CartItems[]) => void;
 };
 
 export type StateContextProps = {
@@ -274,8 +300,6 @@ export type ForProductGallery = {
   product: CombinedProduct;
   isLikedProduct: boolean;
 };
-
-// type ProductPrice = Exclude<Product, null>["productPrice"];
 
 // Define a single Bank type
 export type Bank = {

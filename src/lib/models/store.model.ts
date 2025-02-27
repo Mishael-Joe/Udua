@@ -151,6 +151,6 @@ const StoreSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Store = mongoose.models.Store || mongoose.model("Store", StoreSchema);
+const Store = mongoose.models.stores || mongoose.model("stores", StoreSchema);
 
 export default Store;

@@ -259,8 +259,8 @@ export async function fetchProductsAndEBooks(
 
     // Combine the results with an identifier to differentiate between products and eBooks
     const combinedResults = [
-      ...products.map((product) => ({ ...product, type: "Physical Product" })),
-      ...eBooks.map((eBook) => ({ ...eBook, type: "Digital Product" })),
+      ...products.map((product) => ({ ...product, type: "physicalproducts" })),
+      ...eBooks.map((eBook) => ({ ...eBook, type: "digitalproducts" })),
     ];
 
     return combinedResults;

@@ -13,6 +13,7 @@ import { fetchProductsAndEBooks } from "@/lib/actions/product.action";
 import SkeletonLoader from "@/lib/loaders/skeletonLoader";
 import { ProductGrid } from "@/components/product-grid";
 import type { CombinedProduct } from "@/types";
+import HeadBanner from "@/components/banner";
 
 // Revalidate page every hour for fresh content
 export const revalidate = 3600;
@@ -87,8 +88,9 @@ export default async function Home(props: Props) {
       </script>
 
       {/* Promotional Video Section */}
-      <section aria-label="Current promotions" className="mb-12">
+      <section aria-label="Current promotions" className="mb-6">
         <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg">
+          <HeadBanner />
           <video
             autoPlay
             loop
@@ -121,7 +123,7 @@ export default async function Home(props: Props) {
           Udua Product Collection
         </h1>
 
-        <div className="border-t border-gray-200 pt-8">
+        <div className="border-t border-udua-deep-gray-primary/20 pt-6">
           <Suspense fallback={<SkeletonLoader />}>
             <ProductGrid products={products} />
           </Suspense>
@@ -130,118 +132,5 @@ export default async function Home(props: Props) {
     </main>
   );
 }
-
-// import HeroBanners from "@/components/banners";
-// import LeftSidebar from "@/components/left-sidebar";
-// import { ProductGrid } from "@/components/product-grid";
-// import { fetchProductsAndEBooks } from "@/lib/actions/product.action";
-// import SkeletonLoader from "@/lib/loaders/skeletonLoader";
-// import { CombinedProduct, Product } from "@/types";
-// import Image from "next/image";
-// import { Suspense } from "react";
-
-// type Props = {
-//   searchParams: {
-//     categories?: string[] | string;
-//     page?: number;
-//     limit?: number;
-//     minPrice?: number;
-//     maxPrice?: number;
-//     search?: string;
-//     sortBy?: string;
-//     sortOrder?: "asc" | "desc";
-//     inStock?: boolean;
-//     minRating?: number;
-//     dateFrom?: string | Date;
-//     dateTo?: string | Date;
-//   };
-// };
-
-// export default async function Home({ searchParams }: Props) {
-//   const {
-//     categories,
-//     page,
-//     limit,
-//     minPrice,
-//     maxPrice,
-//     search,
-//     sortBy,
-//     sortOrder,
-//     inStock,
-//     minRating,
-//     dateFrom,
-//     dateTo,
-//   } = searchParams;
-//   // Convert categories string to an array of strings
-//   const categoriesArray = categories ? (categories as string).split(" ") : [];
-//   // console.log(`categoriesArray`, categoriesArray);
-
-//   // @ts-ignore
-// const products: CombinedProduct[] = await fetchProductsAndEBooks(
-//   categoriesArray,
-//   page,
-//   limit,
-//   minPrice,
-//   maxPrice,
-//   search,
-//   sortBy,
-//   sortOrder,
-//   inStock,
-//   minRating
-//   // dateFrom,
-//   // dateTo
-// );
-
-//   // console.log("combinedResults", products)
-
-//   return (
-//     // grid gap-4 md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]
-//     <main className="min-h-screen mx-auto max-w-[78rem] px-2.5 md:px-4 pt-4">
-//       <div className="">
-//         {/* <HeroBanners /> */}
-//         <div className="">
-//           <video
-//             autoPlay
-//             loop
-//             muted
-//             width="800"
-//             height="300"
-//             src="/T&Cs Apply.mp4"
-//             className=" aspect-video"
-//           ></video>
-//         </div>
-//         {/* <div className=" hidden lg:block basis-1/3">
-//           <div className="grid gap-4">
-//             <div>
-//               <Image
-//                 src={`/cloths.jpg`}
-//                 width={270}
-//                 height={250}
-//                 alt=""
-//                 className=" aspect-auto"
-//               />
-//             </div>
-//             <div>
-//               <Image
-//                 src={`/cloths.jpg`}
-//                 width={270}
-//                 height={250}
-//                 alt=""
-//                 className=" aspect-auto"
-//               />
-//             </div>
-//           </div>
-//           <h1 className=" font-semibold text-xl">Shop deals in fashion</h1>
-//         </div> */}
-//       </div>
-
-//       <div className="py-4">
-//         <Suspense fallback={<SkeletonLoader />}>
-//           <ProductGrid products={products} />
-//         </Suspense>
-//       </div>
-//     </main>
-//   );
-// }
 
 // ngrok http 3000

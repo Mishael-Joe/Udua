@@ -20,8 +20,8 @@ const eBookSchema = new Schema({
   isVisible: { type: Boolean, default: false },
   productType: {
     type: String,
-    enum: ["Physical Product", "Digital Product"],
-    default: "Digital Product",
+    enum: ["physicalproducts", "digitalproducts"],
+    default: "digitalproducts",
     required: true,
   },
 });
@@ -47,6 +47,8 @@ eBookSchema.index(
   }
 );
 
-const EBook = mongoose.models.EBook || mongoose.model("EBook", eBookSchema);
+const EBook =
+  mongoose.models.digitalproducts ||
+  mongoose.model("digitalproducts", eBookSchema);
 
 export default EBook;
