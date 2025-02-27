@@ -14,20 +14,13 @@ type userData = {
 };
 
 export function CheckoutSummary({ userData }: userData) {
-  const {
-    cartItems,
-    totalPrice,
-    shippingFee,
-    grandTotalPrice,
-    // formData,
-    deliveryMethod,
-  } = useStateContext();
+  const { cartItems, totalPrice } = useStateContext();
   const { toast } = useToast();
   const disabledIsLoading = false;
   const [isLoading, setIsLoading] = useState(disabledIsLoading);
 
   const config = {
-    amount: grandTotalPrice,
+    amount: 0,
     customer: {
       name: userData.firstName + " " + userData.lastName,
       email: userData.email,
@@ -39,7 +32,7 @@ export function CheckoutSummary({ userData }: userData) {
       state: userData.stateOfResidence,
       address: userData.address,
       itemsInCart: [...cartItems],
-      deliveryMethod: deliveryMethod,
+      deliveryMethod: "Standard Delivery",
       postal_code: userData.postalCode || "",
       userID: userData._id,
       // secondary_phone_number: formData.secondaryPhoneNumber || '',
@@ -95,15 +88,15 @@ export function CheckoutSummary({ userData }: userData) {
           <dt className="flex items-center text-sm">
             <span>Shipping estimate</span>
           </dt>
-          <dd className="text-sm font-medium">
+          {/* <dd className="text-sm font-medium">
             {shippingFee !== 0 && <span>&#8358;</span>}{" "}
             {shippingFee === 0 ? `Free Shipping` : `${Number(shippingFee)}`}
-          </dd>
+          </dd> */}
         </div>
         <div className="flex items-center justify-between border-t border-gray-200 pt-4 dark:border-gray-600">
           <dt className="text-base font-medium">Order total</dt>
           <dd className="text-base font-medium">
-            &#8358; {addCommasToNumber(Number(grandTotalPrice))}
+            &#8358; {addCommasToNumber(Number(0))}
           </dd>
         </div>
       </dl>

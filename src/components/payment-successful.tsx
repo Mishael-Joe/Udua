@@ -7,7 +7,6 @@ import { useSearchParams, usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 export default function PaymentSuccess() {
-  const { clearItemsInCart } = useStateContext();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const startsWithSuccess = pathname.startsWith("/success");
@@ -18,16 +17,6 @@ export default function PaymentSuccess() {
   // console.log(`status`, status);
   // console.log(`transaction_reference`, transaction_reference);
   // console.log(`pathname`, pathname);
-
-  useEffect(() => {
-    const clearStorage = () => {
-      if (startsWithSuccess) {
-        clearItemsInCart();
-      }
-    };
-
-    clearStorage();
-  }, []);
 
   if (status === "cancelled") {
     return (

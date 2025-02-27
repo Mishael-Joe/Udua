@@ -1,207 +1,231 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { useLocalStorage } from "./useLocalStorage";
+import React, { createContext, useContext, useState } from "react";
 import {
-  ProductFromLocalStorage,
   ContextType,
   StateContextProps,
   CartItems,
+  Cart,
+  CombinedProduct,
 } from "@/types";
+import axios from "axios";
+import { usePathname, useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 
 export const Context = createContext<ContextType | null>(null);
 
 export const StateContext: React.FC<StateContextProps> = ({ children }) => {
-  const [cartItems, setCartItems] = useState<ProductFromLocalStorage[]>([]);
+  const { toast } = useToast();
+  const router = useRouter();
+  const pathname = usePathname();
+  const [cartItems, setCartItems] = useState<Cart[]>([]);
   const [quantity, setQuantity] = useState<number>(1);
+  const preventRedirect = pathname.endsWith("/");
 
-  const [shippingFee, setShippingFee] = useState<number>(0);
-  const [grandTotalPrice, setGrandTotalPrice] = useState<number>(0);
-  const [deliveryMethod, setDeliveryMethod] = useState<string>("Free Shipping");
+  let cart = [
+    {
+      product: {
+        _id: "670075f70d87b0b2b62ad1aa",
+        productType: "physicalproducts",
+        category: ["Body Care Products"],
+        images: [
+          "https://res.cloudinary.com/dhngvbjtz/image/upload/v1728083446/qfewevb0j8yfakrjxgsv.jpg",
+        ],
+        name: "Roberto Cavalli Oil Perfume",
+        sizes: [],
+        price: 22000,
+      },
+      productType: "physicalproducts",
+      quantity: 1,
+      _id: "67ac97368f4f5b934f2d60d7",
+    },
+    {
+      product: {
+        _id: "670075f70d87b0b2b62ad1aa",
+        productType: "physicalproducts",
+        category: ["Body Care Products"],
+        images: [
+          "https://res.cloudinary.com/dhngvbjtz/image/upload/v1728083446/qfewevb0j8yfakrjxgsv.jpg",
+        ],
+        name: "Roberto Cavalli Oil Perfume",
+        sizes: [],
+      },
+      sizes: { size: "43", price: 22000, quantity: 4 },
+      productType: "physicalproducts",
+      quantity: 1,
+      _id: "67ac97368f4f5b934f2d60d7",
+    },
+    {
+      product: {
+        category: "Non-Fiction",
+        coverIMG: [
+          "https://res.cloudinary.com/dhngvbjtz/image/upload/v1734244448/gjzx5wxant0aii1hqvhi.png",
+        ],
+        price: 4500,
+        productType: "digitalproducts",
+        title: "Atomic Habits: Tiny Changes, Remarkable Results by James Clear",
+        _id: "675e786172b144a2ec0fce92",
+      },
+      productType: "digitalproducts",
+      quantity: 1,
+      _id: "67ac97368f4f5b934f2d60d7",
+    },
+  ];
 
-  const [cartItemsFromStorage, setCartItemsFromStorage] = useLocalStorage<
-    ProductFromLocalStorage[]
-  >("cartItems", []);
-  const [totalQuantityFromStorage, setTotalQuantityFromStorage] =
-    useLocalStorage<number>("totalQuantity", 0);
-  const [quantityFromStorage, setQuantityFromStorage] = useLocalStorage<number>(
-    "quantity",
-    1
-  );
-  const [shippingFeeFromStorage, setShippingFeeFromStorage] =
-    useLocalStorage<number>("shippingFee", 0);
-  const [grandTotalPriceFromStorage, setGrandTotalPriceFromStorage] =
-    useLocalStorage<number>("grandTotalPrice", 0);
+  const [totalPrice, setTotalPrice] = useState<number>(0);
+  const [totalQuantity, setTotalQuantity] = useState<number>(0);
 
-  function calculateCartTotals(cartItems: CartItems[]) {
-    const totalPrice = cartItems.reduce((acc, item) => {
-      if (item.price !== null) {
-        return acc + item.price! * item.quantity!;
-      } else {
-        return acc + item.size!.price * item.quantity!;
+  const fetchCartItems = async () => {
+    try {
+      // const response = await axios.post("/api/user/cart");
+      const { data } = await axios.post("/api/user/cart");
+
+      console.log("data:", data);
+      setCartItems(data.items || []);
+      setTotalPrice(data.totalPrice || 0);
+      setTotalQuantity(data.totalQuantity || 0);
+    } catch (error: any) {
+      if (
+        error.response.data.error ===
+          "Error getting user data from token: jwt must be provided" &&
+        !preventRedirect
+      ) {
+        router.push("/sign-in");
       }
-    }, 0);
-
-    const totalQuantity = cartItems.reduce(
-      (acc, item) => acc + item.quantity!,
-      0
-    );
-
-    return {
-      totalPrice,
-      totalQuantity,
-    };
-  }
-
-  let { totalPrice, totalQuantity } = calculateCartTotals(cartItemsFromStorage);
-
-  useEffect(() => {
-    totalPrice = calculateCartTotals(cartItemsFromStorage).totalPrice;
-    totalQuantity = calculateCartTotals(cartItemsFromStorage).totalQuantity;
-    setCartItems(cartItemsFromStorage);
-    setQuantity(quantityFromStorage);
-    setShippingFee(shippingFeeFromStorage);
-    setGrandTotalPrice(grandTotalPriceFromStorage);
-  }, [
-    cartItemsFromStorage,
-    totalQuantityFromStorage,
-    grandTotalPriceFromStorage,
-    deliveryMethod,
-    shippingFeeFromStorage,
-    cartItems,
-  ]);
-
-  useEffect(() => {
-    if (cartItems.length === 0) {
-      setShippingFeeFromStorage(0);
-    } else {
-      if (deliveryMethod === "Free Shipping") {
-        setShippingFeeFromStorage(0);
-      } else if (deliveryMethod === "Door Delivery") {
-        setShippingFeeFromStorage(700);
-      }
+      console.error("Error fetching Cart Items:", error);
     }
-    if (cartItems.length === 0) {
-      setGrandTotalPriceFromStorage(0);
-    } else {
-      setGrandTotalPriceFromStorage(shippingFeeFromStorage + totalPrice);
-    }
-  }, [cartItems, deliveryMethod, shippingFeeFromStorage]);
-
-  const clearItemsInCart = () => {
-    setCartItemsFromStorage([]);
-    setTotalQuantityFromStorage(0);
-    setShippingFeeFromStorage(0);
-    setGrandTotalPriceFromStorage(0);
   };
 
-  const addToCart = (
-    product: ProductFromLocalStorage,
+  const addToCart = async (
+    product: CombinedProduct,
     quantity: number,
-    selectedSize: {
-      size: string;
-      price: number;
-      quantity: number;
-    } | null,
+    selectedSize: { size: string; price: number; quantity: number } | null,
     selectedColor: string | null
   ) => {
-    const existingProductIndex = cartItems.findIndex(
-      (item) => item._id!.toString() === product._id!.toString()
-    );
-    {
-      /*This ensures that you are comparing the string representations of the _id properties, which is necessary because ObjectId instances need to be converted to strings to be compared correctly.*/
-    }
+    try {
+      // Build the payload to send to the server.
+      const payload = {
+        productID: product._id, // Assumes your product has an _id property
+        productType: product.productType, // e.g., "Physical Product" or "Digital Product"
+        quantity,
+        selectedSize, // For size-based products; can be null if not applicable
+        selectedColor, // For color-based products; can be null if not applicable
+      };
 
-    if (product.productType === "Physical Product") {
-      // setTotalPriceFromStorage(totalPrice + product.price! * quantity);
-      setTotalQuantityFromStorage(totalQuantity + quantity);
+      // Send a POST request to the API route for adding/updating the cart using Axios.
+      const response = await axios.post("/api/user/cart/add-product", payload, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-      // if the product is in the cart, then run this function
-      if (existingProductIndex !== -1) {
-        const updatedCartItems = [...cartItems];
-        updatedCartItems[existingProductIndex].quantity! += quantity;
-        if (selectedSize) {
-          updatedCartItems[existingProductIndex].size! = selectedSize;
-        }
-        if (selectedColor) {
-          updatedCartItems[existingProductIndex].colors! = [selectedColor];
-        }
-        setCartItems(updatedCartItems);
-        setCartItemsFromStorage(updatedCartItems);
-      } else {
-        const { description, sizes, specifications, ...newProduct } = product; // I am removing productDescription, productSizes, productSpecification so as not to send this unnecessary info to paystack DB
+      if (response.status === 200) {
+        toast({
+          title: `Product added to cart`,
+          description: `Quantity: ${quantity}`,
+          action: (
+            <Link href="/cart">
+              <Button variant="link" className="gap-x-2 whitespace-nowrap">
+                <span>Open cart</span>
+                <ArrowRight className="h-5 w-5" />
+              </Button>
+            </Link>
+          ),
+        });
 
-        newProduct.quantity = quantity;
-        if (selectedSize) {
-          newProduct.size = selectedSize;
-        }
-        setCartItems([...cartItems, { ...newProduct }]);
-        setCartItemsFromStorage([...cartItemsFromStorage, { ...newProduct }]);
+        // Fetch the updated cart items after adding/updating the cart.
+        fetchCartItems();
       }
-    }
 
-    if (product.productType === "Digital Product") {
-      setTotalQuantityFromStorage(totalQuantity + quantity);
-
-      // if the product is in the cart, then run this function
-      if (existingProductIndex !== -1) {
-        const updatedCartItems = [...cartItems];
-        updatedCartItems[existingProductIndex].quantity! += quantity;
-
-        setCartItems(updatedCartItems);
-        setCartItemsFromStorage(updatedCartItems);
+      // Axios returns the data in response.data
+      // console.log("Cart updated:", response.data);
+    } catch (error: any) {
+      // If there's an error response from the server, log the response data.
+      if (error.response) {
+        console.error("Failed to add to cart:", error.response.data);
       } else {
-        const { description, fileType, fileSize, ...newProduct } = product; // I am removing fileType, description, fileSize so as not to send this unnecessary info to paystack DB
-
-        newProduct.quantity = quantity;
-        setCartItems([...cartItems, { ...newProduct }]);
-        setCartItemsFromStorage([...cartItemsFromStorage, { ...newProduct }]);
+        console.error("Error adding to cart:", error.message);
       }
     }
   };
 
-  const onRemove = (product: CartItems) => {
-    const foundProduct = cartItems.find((item) => item._id === product._id);
-    if (!foundProduct) return;
+  const onRemove = async (
+    product: CartItems,
+    selectedSize: { size: string; price: number; quantity: number } | null
+  ) => {
+    try {
+      // Build the URL with query parameters.
+      let url = `/api/user/cart?productID=${
+        product.product._id
+      }&productType=${encodeURIComponent(product.product.productType)}`;
 
-    const updatedCartItems = cartItems.filter(
-      (item) => item._id !== product._id
-    );
+      // If a selected size exists (for size-based products), include it in the query.
+      if (selectedSize) {
+        url += `&size=${encodeURIComponent(selectedSize.size)}`;
+      }
 
-    // Update the state
-    setCartItems(updatedCartItems);
-    setTotalQuantityFromStorage(totalQuantity - foundProduct.quantity!);
-    setCartItemsFromStorage(updatedCartItems);
+      // Send the DELETE request using Axios.
+      const response = await axios.delete(url, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.status === 200) {
+        toast({
+          title: "Product removed from cart",
+          description: `Quantity: ${product.quantity}`,
+        });
+
+        // After successful removal, update the cart items.
+        fetchCartItems();
+      }
+
+      console.log("Item removed from cart:", response.data);
+    } catch (error: any) {
+      if (error.response) {
+        console.error("Failed to remove from cart:", error.response.data);
+      } else {
+        console.error("Error removing from cart:", error.message);
+      }
+    }
   };
 
-  const toggleCartItemQuantity = (
-    itemId: string,
+  const toggleCartItemQuantity = async (
+    cartItemID: string,
     value: "increase" | "decrease"
   ) => {
-    const foundProductIndex = cartItems.findIndex(
-      (item) => item._id === itemId
-    );
-    if (foundProductIndex === -1) return;
-
-    const foundProduct = cartItems[foundProductIndex];
-    const updatedCartItems = [...cartItems];
-
-    // Determine the quantity adjustment
-    const quantityChange = value === "increase" ? 1 : -1;
-
-    // Prevent decreasing if quantity is 1
-    if (value === "decrease" && foundProduct.quantity === 1) return;
-
-    // Update product quantity
-    updatedCartItems[foundProductIndex] = {
-      ...foundProduct,
-      quantity: foundProduct.quantity! + quantityChange,
+    // Build the payload for the PUT request.
+    const payload = {
+      cartItemID, // Ensure your product has an _id property.
+      value,
     };
 
-    // Update the state
-    setCartItems(updatedCartItems);
-    setTotalQuantityFromStorage(totalQuantity + quantityChange);
-    setCartItemsFromStorage(updatedCartItems);
+    try {
+      // Send the PUT request to update the cart item.
+      const response = await axios.put("/api/user/cart", payload, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.status === 200) {
+        // Fetch the updated cart items after updating the cart.
+        fetchCartItems();
+      }
+    } catch (error: any) {
+      if (error.response) {
+        console.error(
+          "Failed to update cart item quantity:",
+          error.response.data
+        );
+      } else {
+        console.error("Error updating cart item quantity:", error.message);
+      }
+    }
   };
 
   const incrementQuantity = () => {
@@ -212,10 +236,6 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
     setQuantity((prevQuantity) => (prevQuantity === 1 ? 1 : prevQuantity - 1));
   };
 
-  const handleOptionChange = (option: string) => {
-    setDeliveryMethod(option);
-  };
-
   return (
     <Context.Provider
       value={{
@@ -224,16 +244,11 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
         addToCart,
         cartItems,
         totalPrice,
-        shippingFee,
         totalQuantity,
-        deliveryMethod,
-        grandTotalPrice,
-        clearItemsInCart,
+        fetchCartItems,
         incrementQuantity,
         decrementQuantity,
-        handleOptionChange,
         toggleCartItemQuantity,
-        setCartItemsFromStorage,
       }}
     >
       {children}

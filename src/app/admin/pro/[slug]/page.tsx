@@ -28,7 +28,9 @@ type Products = Omit<Product, "storeID" | "images" | "path" | "price"> & {
   images: ""[];
 };
 
-export default function EditProduct(props: { params: Promise<{ slug: string }> }) {
+export default function EditProduct(props: {
+  params: Promise<{ slug: string }>;
+}) {
   const params = use(props.params);
   const router = useRouter();
   const { toast } = useToast();
@@ -43,7 +45,7 @@ export default function EditProduct(props: { params: Promise<{ slug: string }> }
     specifications: "",
     category: "",
     subCategory: "",
-    productType: "Physical Product",
+    productType: "physicalproducts",
   });
 
   const [imagePreviews, setImagePreviews] = useState<string[]>([]); // This will store the image URLs

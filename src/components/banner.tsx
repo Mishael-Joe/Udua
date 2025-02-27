@@ -1,38 +1,122 @@
 "use client";
 
+import { Splide, SplideSlide } from "react-splide-ts";
+import "@splidejs/react-splide/css";
+
 import Image from "next/image";
 import FirstTimeVisitor from "@/utils/FirstTimeVisitor/page";
+import { useEffect } from "react";
+import { useStateContext } from "@/context/stateContext";
 
-function HeadBanner({ heroBanner }: any) {
+function HeadBanner() {
+  const { fetchCartItems } = useStateContext();
+  const clearLocalStorageOnce = () => {
+    if (typeof window !== "undefined") {
+      const storageCleared = localStorage.getItem("clearStorage");
+
+      // Check if local storage has already been cleared
+      if (!storageCleared) {
+        // Clear local storage
+        localStorage.clear();
+
+        // Set the flag to indicate that local storage has been cleared
+        // localStorage.setItem("storageCleared", "true");
+        localStorage.setItem("clearStorage", "true");
+
+        console.log("Local storage cleared for the first time.");
+      } else {
+        console.log("Local storage has already been cleared previously.");
+      }
+    }
+  };
+
+  useEffect(() => {
+    clearLocalStorageOnce();
+  }, []);
+
+  useEffect(() => {
+    fetchCartItems();
+  }, []);
   return (
-    <section className="mx-auto max-w-6xl">
+    <section className="hidden">
+      <Splide
+        options={{
+          rewind: true,
+          rewindSpeed: 2000,
+          rewindByDrag: true,
+          focus: "center",
+          arrows: false,
+          type: "loop",
+          autoplay: true,
+          speed: 1000,
+          interval: 5000,
+          width: 1200,
+          gap: "1rem",
+          perPage: 2,
+          perMove: 1,
+          breakpoints: {
+            740: {
+              perPage: 1,
+              // width: `auto`,
+            },
+          },
+          classes: {
+            // Add classes for pagination.
+            pagination: "splide__pagination your-class-pagination", // container
+            page: "splide__pagination__page", // each button
+          },
+        }}
+        aria-label="Reviews from Users"
+      >
+        <SplideSlide>
+          <div className="">
+            <Image
+              src={`/home.jpg`}
+              width={400}
+              height={200}
+              alt="Image 1"
+              className="object-cover w-[100%] h-[100%] rounded"
+            />
+          </div>
+        </SplideSlide>
+
+        <SplideSlide>
+          <div className="">
+            <Image
+              src={`/home.jpg`}
+              width={400}
+              height={200}
+              alt="Image 1"
+              className="object-cover w-[100%] h-[100%] rounded"
+            />
+          </div>
+        </SplideSlide>
+
+        <SplideSlide>
+          <div className="">
+            <Image
+              src={`/unsplash.jpg`}
+              width={400}
+              height={200}
+              alt="Image 1"
+              className="object-cover w-[100%] h-[100%] rounded"
+            />
+          </div>
+        </SplideSlide>
+
+        <SplideSlide>
+          <div className="">
+            <Image
+              src={`/unsplash.jpg`}
+              width={400}
+              height={200}
+              alt="Image 1"
+              className="object-cover w-[100%] h-[100%] rounded"
+            />
+          </div>
+        </SplideSlide>
+      </Splide>
       <FirstTimeVisitor />
-      <div className="relative">
-        <p className=" py-2 left-3 md:text-4xl sm:text-xl absolute text-slate-100">
-          {heroBanner.smallText}
-        </p>
-
-        <div>
-          <Image
-            src={heroBanner.image}
-            width={400}
-            height={200}
-            priority
-            alt=""
-            className="object-cover w-[100%] h-[50%] rounded-lg"
-          />
-        </div>
-
-        <p className=" text-[3rem] sm:text-[6rem] md:text-[10rem] absolute left-3 top-10 text-slate-100">
-          {heroBanner.largeText2}
-        </p>
-        <p className=" md:text-4xl bottom-2 right-4 absolute text-slate-100">
-          {heroBanner.buttonText}
-        </p>
-        <p className=" md:text-4xl sm:top-[10rem] sm:text-2xl absolute top-[7rem] md:top-[15rem] left-3 text-slate-100">
-          {heroBanner.desc}
-        </p>
-      </div>
     </section>
   );
 }
