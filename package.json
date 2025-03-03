@@ -57,6 +57,7 @@
     "react-share": "^5.1.1",
     "react-splide-ts": "^0.7.14",
     "recharts": "^2.15.1",
+    "slugify": "^1.6.6",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^9.0.1",

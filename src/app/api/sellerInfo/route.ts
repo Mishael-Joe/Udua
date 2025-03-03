@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   const requestBody = await request.json();
-  const { seller, email, businessName, userID } = requestBody;
+  const { seller, email, businessName, storeSlug, userID } = requestBody;
   const transporter = nodemailer.createTransport({
     host: "smtp.zoho.com",
     port: 465,
@@ -31,7 +31,8 @@ export async function POST(request: Request) {
         <ul>
           <li> Seller Name:<b> ${seller}. <b><li>
           <li> Seller Email:<b> ${email}. <b><li>
-          <li> Seller Business Name:<b> ${businessName}. <b><li>
+          <li> Seller Business/Store Name:<b> ${businessName}. <b><li>
+          <li> Store Slug:<b> ${storeSlug}. <b><li>
           <li> MongoDB user ID:<b> ${userID}. <b><li>
         </ul>        
         
@@ -46,19 +47,21 @@ export async function POST(request: Request) {
     const furtherInfo = {
       from: "mishaeljoe55@zohomail.com", // sender address
       to: `${email}`, // list of receivers
-      subject: ` Acknowledgment of Your Partnership Inquiry and Request for Product Pictures`, // Subject line
+      subject: `Acknowledgment of Your Partnership Inquiry`, // Subject line
       text: "", // plain text body
       html: `
         <h4>Dear ${seller},</h4>
-
-        <p>I trust this message finds you well. Thank you for expressing interest in partnering with our organization. We have received your partnership inquiry form, and we are currently in the process of reviewing the details provided.</p> </br>
-
-        <p>We appreciate your proactive collaboration in this process and look forward to the possibility of establishing a successful partnership.</p> </br>
-
-        <p>Thank you for considering Udua as your platform of choice.</p> </br>
-
-        <b>Best regards</b>
-        <b>Team Udua</b>
+    
+        <p>I hope this message finds you well. Thank you for expressing your interest in partnering with Udua. We have received your partnership inquiry form. To proceed with the creation of your store, we kindly ask that you provide a detailed description of your store's offerings or the specific products/services you specialize in.</p> </br>
+    
+        <p>NOTE: This information is crucial as it will enable us to assist you in setting up your store on our platform. Please provide these details by replying to this email.</p> </br>
+    
+        <p>We appreciate your cooperation and look forward to the opportunity to work together in building a successful partnership.</p> </br>
+    
+        <p>Thank you for choosing Udua as your platform of choice.</p> </br>
+    
+        <b>Best regards,</b></br>
+        <b>The Udua Team</b>
       `, // html body
     };
 
@@ -70,9 +73,3 @@ export async function POST(request: Request) {
     throw new Error("Error while sending Partnership Inquiry mail", error);
   }
 }
-
-// <p>To proceed with the evaluation process, we kindly request that you provide us with clear visuals of the products you intend to sell on our platform. Including a variety of images from different angles will greatly assist us in understanding the products better.</p> </br>
-
-// <p>Please submit a minimum of eight high-quality pictures for each product, ensuring that all sides of the product are well-captured. These images will significantly contribute to the assessment of your offerings and help us make informed decisions during the partnership evaluation.</p> </br>
-
-// <p>Feel free to attach the images directly to this email or use a file-sharing service for larger files. If you encounter any difficulties or have additional information to share, please don't hesitate to reach out to us.</p> </br>

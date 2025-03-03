@@ -12,7 +12,6 @@ export const siteConfig = {
     { name: "Shipping & Return Policy", href: "/shipping-return-policy" },
     { name: "Privacy Policy", href: "/privacy-policy" },
     { name: "Pricing", href: "/pricing" },
-    // { name: "Support", href: "/support" },
   ],
   paymentmethods: [
     { name: "Visa", img: "/visa-svgrepo-com.svg" },
@@ -26,9 +25,8 @@ export const siteConfig = {
   },
   footerLinks: [
     { name: "Home", href: "/" },
-    { name: "Elements", href: "#" },
-    { name: "Tags", href: "#" },
-    { name: "Authors", href: "#" },
-    { name: "Membership", href: "#" },
+    { name: "Support", href: "/support" },
+    { name: "Code of Conduct", href: "/code-of-conduct" },
+    { name: "Human Rights Policy", href: "/human-rights-policy" },
   ],
 };

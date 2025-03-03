@@ -157,7 +157,7 @@ export default function ResponsiveLeftSidebar() {
 
         <div className="px-4 py-2">
           {/* <h2 className="text-sm">Useful Links</h2> */}
-          <Link href="/seller-hub" className="mt-4 block">
+          <Link href="/partner-with-udua" className="mt-4 block">
             <Button className="w-full bg-udua-orange-primary/90 py-5 text-base font-medium text-white hover:bg-udua-orange-primary">
               Partner with {siteConfig.name}
             </Button>

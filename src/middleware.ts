@@ -15,7 +15,7 @@ export async function middleware(request: NextRequest) {
     "/shipping-return-policy",
     "/terms-conditions",
     "/cart",
-    "/seller-hub",
+    "/partner-with-udua",
     // /^\/products\/.*/, // Regular expression for matching products path
   ]; // Array of public paths
 
@@ -136,8 +136,8 @@ export const config = {
     "/my-products",
     "/orders",
     "/uploadProduct",
-    "/seller-hub",
-    "/seller-hub/join-us",
+    "/partner-with-udua",
+    "/partner-with-udua/create-store",
     // "/api/(.*)",
     "/store/:path*/my-store", // Matching dynamic storeId path
     "/store/:path*/dash-board", // Matching dynamic storeId path

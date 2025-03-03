@@ -60,7 +60,7 @@ const StoreCard = () => (
       </CardDescription>
     </CardHeader>
     <CardContent>
-      <Link href="/seller-hub">
+      <Link href="/partner-with-udua">
         <Button
           size="sm"
           className="w-full bg-blue-600 text-white hover:bg-blue-700 font-semibold" // Blue for primary CTA

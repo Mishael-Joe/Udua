@@ -8,25 +8,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Image from "next/image";
-
-let reasons = [
-  {
-    why: "Reach more buyers",
-    detail: "Sell to a global audience, 24/7, from your comfort zone.",
-  },
-  {
-    why: "Lower costs",
-    detail: "Skip rent and staff for a virtual storefront.",
-  },
-  {
-    why: "Grow faster",
-    detail: "Easily add products and scale your business online.",
-  },
-  {
-    why: "Flexibility",
-    detail: "Manage your store and inventory from anywhere.",
-  },
-];
+import BenefitsSection from "../benefits-section";
+import HeroSection from "../hero-section";
+import FAQSection from "../FAQ-section";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 let HowItWorks = [
   {
@@ -56,23 +42,15 @@ let HowItWorks = [
 function page() {
   return (
     <section className="max-w-6xl mx-auto my-5 px-6 h-full">
-      <div className="px-4 pt-16 text-center">
-        <h1 className="text-4xl font-extrabold tracking-normal">
-          {siteConfig.sellPageName}
-        </h1>
-        <p className="mx-auto mt-4 text-base">
-          Udua is an innovative online marketplace that brings buyers and
-          sellers together.
-        </p>
-      </div>
+      <HeroSection />
 
-      <div className="px-4 text-center">
+      {/* <div className="px-4 text-center">
         <p className="mx-auto mt-4 text-base">
           We empower businesses of all sizes to reach new customers and grow.
         </p>
-      </div>
+      </div> */}
 
-      <div className="px-4 pt-10 text-center">
+      {/* <div className="px-4 pt-10 text-center">
         <p className="mx-auto my-4 text-base md:text-2xl">Our mission</p>
 
         <div className="flex flex-col gap-4 md:flex-row justify-center items-center">
@@ -91,41 +69,26 @@ function page() {
               "Empowering African entrepreneurs to thrive on a global stage."
             </p>{" "}
             <br />
-            {/* <p>...You bring the product, We'll make earning easy.</p> */}
             <p>...Sell smart, sell globally. Udua makes it simple.</p>
           </div>
         </div>
-      </div>
+      </div> */}
+
+      <BenefitsSection />
 
       <div className="px-4 pt-10 text-center">
-        <p className="mx-auto my-4 text-base md:text-2xl">
-          Why sell on {siteConfig.sellPageName}
+        <p className="mx-auto my-4 text-2xl md:text-4xl font-bold">
+          How it works
         </p>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {reasons.map((reason, i) => (
-            <Card key={i}>
-              <CardHeader>
-                <CardTitle>{reason.why}</CardTitle>
-              </CardHeader>
-
-              <CardContent>
-                <p>{reason.detail}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-
-      <div className="px-4 pt-10 text-center">
-        <p className="mx-auto my-4 text-base md:text-2xl">How it works</p>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {HowItWorks.map((item, i) => (
             <Card key={i}>
               <CardHeader>
                 <CardDescription>{item.desc}</CardDescription>
-                <CardTitle>{item.title}</CardTitle>
+                <CardTitle className="text-xl md:text-2xl">
+                  {item.title}
+                </CardTitle>
               </CardHeader>
 
               <CardContent>
@@ -135,6 +98,25 @@ function page() {
           ))}
         </div>
       </div>
+
+      <FAQSection />
+
+      <section className="py-6">
+        <div className="container mx-auto text-center">
+          <h2 className="text-xl md:text-3xl font-bold mb-4">
+            Ready to take your business global?
+          </h2>
+          <p className="text-base md:text-lg mb-8">
+            Join thousands of sellers who are growing their businesses on Udua.
+            Start your store today and reach a new audience!
+          </p>
+          <Link href="/partner-with-udua/create-store">
+            <Button className="text-lg px-6 py-3 bg-blue-600 text-white hover:bg-blue-700">
+              Create Your Store
+            </Button>
+          </Link>
+        </div>
+      </section>
     </section>
   );
 }
