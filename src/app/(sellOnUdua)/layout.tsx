@@ -13,12 +13,12 @@ import { StateContext } from "@/context/stateContext";
 
 import { SiteFooter } from "@/components/site-footer";
 
-import { Rubik } from 'next/font/google'
- 
+import { Rubik } from "next/font/google";
+
 const rubik = Rubik({
-  weight: ['400', '600', '700'],
-  subsets: ['latin'],
-})
+  weight: ["400", "600", "700"],
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: siteConfig.siteName,
@@ -38,7 +38,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${rubik.className} scroll-smooth`}>
         <StateContext>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
             <SellerSiteHeader />
             <SiteBlob />
             <Toaster />
