@@ -10,6 +10,7 @@ import Wishlist from "../models/wishlist.model";
 import Store from "../models/store.model";
 import bcryptjs from "bcryptjs";
 import EBook from "../models/digital-product.model";
+import ProductReview from "../models/product-review.model";
 
 type Product = Omit<Products, "price"> & {
   price: string;
@@ -172,14 +173,26 @@ export async function fetchProductsAndEBooks(
   try {
     await connectToDB();
 
-    // General visibility filter
-    const productQuery: any = { isVisible: true }; // For physical products
-    const eBookQuery: any = { isVisible: false }; // For eBooks
+    // General visibility filter with correct product types
+    const productQuery: any = {
+      isVisible: true,
+      productType: "physicalproducts",
+    };
+    const eBookQuery: any = {
+      isVisible: false,
+      productType: "digitalproducts",
+    };
 
-    // Add category filter if provided (handled separately for products and eBooks)
-    if (categories && categories.length > 0) {
-      productQuery.productCategory = { $in: categories };
-      eBookQuery.category = { $in: categories };
+    // Add category filter if provided (handle both string and array)
+    if (categories) {
+      const categoryArray = Array.isArray(categories)
+        ? categories
+        : [categories];
+      // console.log("categoryArray", categoryArray);
+      if (categoryArray.length > 0) {
+        productQuery.category = { $in: categoryArray };
+        eBookQuery.category = { $in: categoryArray };
+      }
     }
 
     // Add price range filter
@@ -198,37 +211,89 @@ export async function fetchProductsAndEBooks(
 
     // Add text search filter for both products and eBooks
     if (search) {
-      productQuery.$text = { $search: search }; // Perform text search on products
-      eBookQuery.$text = { $search: search }; // Perform text search on eBooks
+      productQuery.$text = { $search: search };
+      eBookQuery.$text = { $search: search };
     }
 
     // Add stock filter (only for physical products)
     if (inStock !== undefined) {
-      productQuery.productQuantity = inStock ? { $gt: 0 } : 0;
+      if (inStock) {
+        productQuery.$or = [
+          { sizes: { $elemMatch: { quantity: { $gt: 0 } } } },
+          { $and: [{ sizes: { $size: 0 } }, { productQuantity: { $gt: 0 } }] },
+          {
+            $and: [
+              { sizes: { $exists: false } },
+              { productQuantity: { $gt: 0 } },
+            ],
+          },
+        ];
+      } else {
+        productQuery.$or = [
+          {
+            $and: [
+              { sizes: { $exists: true, $ne: [] } },
+              { sizes: { $not: { $elemMatch: { quantity: { $gt: 0 } } } } },
+            ],
+          },
+          {
+            $and: [
+              { $or: [{ sizes: { $size: 0 } }, { sizes: { $exists: false } }] },
+              { productQuantity: 0 },
+            ],
+          },
+        ];
+      }
     }
 
-    // Add rating filter for both
+    // Add rating filter
     if (minRating !== undefined) {
-      productQuery.rating = { $gte: minRating };
+      const pipeline = [
+        {
+          $group: {
+            _id: "$product",
+            averageRating: { $avg: "$rating" },
+          },
+        },
+        {
+          $match: {
+            averageRating: { $gte: Number(minRating) },
+          },
+        },
+        { $project: { _id: 1 } },
+      ];
+
+      const productsWithMinRating = await ProductReview.aggregate(pipeline);
+
+      const productIds = productsWithMinRating.map((item) => item._id);
+
+      if (productIds.length > 0) {
+        productQuery._id = { $in: productIds };
+      } else {
+        productQuery._id = { $in: [] };
+      }
+
+      // For eBooks - direct filter
       eBookQuery.rating = { $gte: minRating };
     }
 
     // Add date filter (for both)
     if (dateFrom || dateTo) {
-      productQuery.updatedAt = {};
-      eBookQuery.updatedAt = {};
+      // Use createdAt if updatedAt doesn't exist in both schemas
+      productQuery.createdAt = {};
+      eBookQuery.createdAt = {};
       if (dateFrom) {
-        productQuery.updatedAt.$gte = dateFrom;
-        eBookQuery.updatedAt.$gte = dateFrom;
+        productQuery.createdAt.$gte = dateFrom;
+        eBookQuery.createdAt.$gte = dateFrom;
       }
       if (dateTo) {
-        productQuery.updatedAt.$lte = dateTo;
-        eBookQuery.updatedAt.$lte = dateTo;
+        productQuery.createdAt.$lte = dateTo;
+        eBookQuery.createdAt.$lte = dateTo;
       }
     }
 
-    // Calculate the number of documents to fetch
-    const totalLimit = page * limit;
+    // Calculate skip value for proper pagination
+    const skip = (page - 1) * limit;
 
     // Determine sorting options
     const sortOptions: any = {};
@@ -236,7 +301,7 @@ export async function fetchProductsAndEBooks(
       sortOptions[sortBy] = sortOrder === "asc" ? 1 : -1;
     }
 
-    // If search is provided, sort by text score to get the most relevant results first
+    // If search is provided, sort by text score
     if (search) {
       sortOptions.score = { $meta: "textScore" };
     }
@@ -244,30 +309,221 @@ export async function fetchProductsAndEBooks(
     // Fetch both products and eBooks in parallel
     const [products, eBooks] = await Promise.all([
       Product.find(productQuery)
-        .select("_id name price images sizes productType")
+        .select(
+          "_id name price images sizes productType productCategory description"
+        )
         .sort(sortOptions)
-        .limit(totalLimit)
+        .skip(skip)
+        .limit(limit)
         .lean()
-        .select(search ? { score: { $meta: "textScore" } } : {}), // Include text score if search is provided
+        .select(search ? { score: { $meta: "textScore" } } : {}),
       EBook.find(eBookQuery)
-        .select("_id title price coverIMG category productType")
+        .select("_id title price coverIMG category productType description")
         .sort(sortOptions)
-        .limit(totalLimit)
+        .skip(skip)
+        .limit(limit)
         .lean()
-        .select(search ? { score: { $meta: "textScore" } } : {}), // Include text score if search is provided
+        .select(search ? { score: { $meta: "textScore" } } : {}),
     ]);
 
-    // Combine the results with an identifier to differentiate between products and eBooks
-    const combinedResults = [
-      ...products.map((product) => ({ ...product, type: "physicalproducts" })),
-      ...eBooks.map((eBook) => ({ ...eBook, type: "digitalproducts" })),
-    ];
+    // Combine the results
+    let combinedResults = [...products, ...eBooks];
+
+    // Sort combined results if needed
+    if (sortBy && combinedResults.length > 0) {
+      combinedResults.sort((a, b) => {
+        // Handle different field names between products and eBooks
+        const aValue = a[sortBy] || a[sortBy === "name" ? "title" : sortBy];
+        const bValue = b[sortBy] || b[sortBy === "name" ? "title" : sortBy];
+
+        if (sortOrder === "asc") {
+          return aValue > bValue ? 1 : -1;
+        } else {
+          return aValue < bValue ? 1 : -1;
+        }
+      });
+    }
 
     return combinedResults;
   } catch (error: any) {
     throw new Error(`Failed to fetch products and eBooks: ${error.message}`);
   }
 }
+
+// export async function fetchProductsAndEBooks(
+//   categories?: string[] | string,
+//   page: number = 1,
+//   limit: number = 30,
+//   minPrice?: number,
+//   maxPrice?: number,
+//   search?: string,
+//   sortBy?: string,
+//   sortOrder: "asc" | "desc" = "asc",
+//   inStock?: boolean,
+//   minRating?: number,
+//   dateFrom?: Date,
+//   dateTo?: Date
+// ) {
+//   try {
+//     await connectToDB();
+
+//     // General visibility filter
+//     const productQuery: any = { isVisible: true }; // For physical products
+//     const eBookQuery: any = { isVisible: false }; // For eBooks
+
+//     // Add category filter if provided (handled separately for products and eBooks)
+//     if (categories && categories.length > 0) {
+//       // console.log("categories", categories);
+//       productQuery.productCategory = { $in: categories };
+//       eBookQuery.category = { $in: categories };
+//     }
+
+//     // Add price range filter
+//     if (minPrice !== undefined || maxPrice !== undefined) {
+//       productQuery.price = {};
+//       eBookQuery.price = {};
+//       if (minPrice !== undefined) {
+//         productQuery.price.$gte = minPrice;
+//         eBookQuery.price.$gte = minPrice;
+//       }
+//       if (maxPrice !== undefined) {
+//         productQuery.price.$lte = maxPrice;
+//         eBookQuery.price.$lte = maxPrice;
+//       }
+//     }
+
+//     // Add text search filter for both products and eBooks
+//     if (search) {
+//       productQuery.$text = { $search: search }; // Perform text search on products
+//       eBookQuery.$text = { $search: search }; // Perform text search on eBooks
+//     }
+
+//     // Add stock filter (only for physical products)
+//     if (
+//       inStock !== undefined &&
+//       productQuery.productType === "physicalproducts"
+//     ) {
+//       if (inStock) {
+//         // For in-stock products: either productQuantity > 0 OR at least one size has quantity > 0
+//         productQuery.$or = [
+//           { sizes: { $elemMatch: { quantity: { $gt: 0 } } } },
+//           { $and: [{ sizes: { $size: 0 } }, { productQuantity: { $gt: 0 } }] },
+//           {
+//             $and: [
+//               { sizes: { $exists: false } },
+//               { productQuantity: { $gt: 0 } },
+//             ],
+//           },
+//         ];
+//       } else {
+//         // For out-of-stock products: either productQuantity = 0 OR all sizes have quantity = 0
+//         productQuery.$or = [
+//           // Products with sizes where all sizes have quantity = 0
+//           {
+//             $and: [
+//               { sizes: { $exists: true, $ne: [] } },
+//               { sizes: { $not: { $elemMatch: { quantity: { $gt: 0 } } } } },
+//             ],
+//           },
+//           // Products without sizes and productQuantity = 0
+//           {
+//             $and: [
+//               { $or: [{ sizes: { $size: 0 } }, { sizes: { $exists: false } }] },
+//               { productQuantity: 0 },
+//             ],
+//           },
+//         ];
+//       }
+//     }
+
+//     if (minRating !== undefined) {
+//       // First, get product IDs with average rating >= minRating
+//       const productsWithMinRating = await ProductReview.aggregate([
+//         {
+//           $group: {
+//             _id: "$product",
+//             averageRating: { $avg: "$rating" },
+//           },
+//         },
+//         { $match: { averageRating: { $gte: minRating } } },
+//         { $project: { _id: 1 } },
+//       ]);
+
+//       // Extract product IDs
+//       const productIds = productsWithMinRating.map((item: any) => item._id);
+
+//       // Add to query
+//       if (productIds.length > 0) {
+//         productQuery._id = { $in: productIds };
+//         // Similar for eBookQuery if needed
+//       } else {
+//         // No products match the rating criteria
+//         // Return empty result (you can handle this differently if needed)
+//         productQuery._id = { $in: [] };
+//         // Similar for eBookQuery if needed
+//       }
+//     }
+//     // // Add rating filter for both
+//     // if (minRating !== undefined) {
+//     //   productQuery.rating = { $gte: minRating };
+//     //   eBookQuery.rating = { $gte: minRating };
+//     // }
+
+//     // Add date filter (for both)
+//     if (dateFrom || dateTo) {
+//       productQuery.updatedAt = {};
+//       eBookQuery.updatedAt = {};
+//       if (dateFrom) {
+//         productQuery.updatedAt.$gte = dateFrom;
+//         eBookQuery.updatedAt.$gte = dateFrom;
+//       }
+//       if (dateTo) {
+//         productQuery.updatedAt.$lte = dateTo;
+//         eBookQuery.updatedAt.$lte = dateTo;
+//       }
+//     }
+
+//     // Calculate the number of documents to fetch
+//     const totalLimit = page * limit;
+
+//     // Determine sorting options
+//     const sortOptions: any = {};
+//     if (sortBy) {
+//       sortOptions[sortBy] = sortOrder === "asc" ? 1 : -1;
+//     }
+
+//     // If search is provided, sort by text score to get the most relevant results first
+//     if (search) {
+//       sortOptions.score = { $meta: "textScore" };
+//     }
+
+//     // Fetch both products and eBooks in parallel
+//     const [products, eBooks] = await Promise.all([
+//       Product.find(productQuery)
+//         .select("_id name price images sizes productType")
+//         .sort(sortOptions)
+//         .limit(totalLimit)
+//         .lean()
+//         .select(search ? { score: { $meta: "textScore" } } : {}), // Include text score if search is provided
+//       EBook.find(eBookQuery)
+//         .select("_id title price coverIMG category productType")
+//         .sort(sortOptions)
+//         .limit(totalLimit)
+//         .lean()
+//         .select(search ? { score: { $meta: "textScore" } } : {}), // Include text score if search is provided
+//     ]);
+
+//     // Combine the results with an identifier to differentiate between products and eBooks
+//     const combinedResults = [
+//       ...products.map((product) => ({ ...product, type: "physicalproducts" })),
+//       ...eBooks.map((eBook) => ({ ...eBook, type: "digitalproducts" })),
+//     ];
+
+//     return combinedResults;
+//   } catch (error: any) {
+//     throw new Error(`Failed to fetch products and eBooks: ${error.message}`);
+//   }
+// }
 
 export async function fetchProductData(id: string) {
   const cookieStore = await cookies();
