@@ -3,7 +3,6 @@ export const productTypeArr = ["physicalproducts", "digitalproducts"];
 export const productCategories = [
   "Electronics",
   "Clothing",
-  "Books",
   "Furniture",
   "Toys",
   "Groceries",
@@ -14,7 +13,7 @@ export const productCategories = [
 ];
 
 export const subCategories: { [key: string]: string[] } = {
-  "School Supplies": [
+  School_Supplies: [
     "Writing Instruments",
     "Paper Products",
     "Organizational Supplies",
@@ -22,7 +21,7 @@ export const subCategories: { [key: string]: string[] } = {
     "Technology and Gadgets",
     "Classroom Essentials",
   ],
-  "Body Care Products": [
+  Body_Care_Products: [
     "Skincare",
     "Hair Care",
     "Oral Care",
@@ -40,7 +39,7 @@ export const subCategories: { [key: string]: string[] } = {
     "Seasonal Wear",
     "Fashion Jewelry",
   ],
-  "Phone Accessories": [
+  Phone_Accessories: [
     "Protective Gear",
     "Charging Solutions",
     "Audio Accessories",
@@ -68,15 +67,6 @@ export const subCategories: { [key: string]: string[] } = {
     "Outerwear",
     "Sleepwear",
     "Formalwear",
-  ],
-  Books: [
-    "Fiction",
-    "Non-Fiction",
-    "Educational",
-    "Children's Books",
-    "Comics",
-    "Biographies",
-    "Self-Help",
   ],
   Furniture: [
     "Living Room",
