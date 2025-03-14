@@ -224,7 +224,7 @@ function PayoutHistory() {
         </CardHeader>
         <CardContent>
           <DataTable
-            caption="Pending settlements with status 'requested' or 'processing'"
+            caption="Pending settlements with status 'Requested' or 'Processing'"
             columns={["Order ID", "Amount", "Bank", "Status", "Request Date"]}
             data={pendingSettlements}
             renderRow={(settlement) => (
@@ -258,7 +258,7 @@ function PayoutHistory() {
         </CardHeader>
         <CardContent>
           <DataTable
-            caption="Completed settlements with status 'paid'"
+            caption="Completed settlements with status 'Paid'"
             columns={["Order ID", "Amount", "Bank", "Status", "Date"]}
             data={successfulSettlements}
             renderRow={(settlement) => (

@@ -67,7 +67,7 @@ const UpdatePayoutForm = () => {
     }
 
     const payoutData = {
-      payoutMethod: "bank transfer",
+      payoutMethod: "Bank Transfer",
       bankDetails: {
         bankName: selectedBank.name,
         accountNumber,

@@ -19,8 +19,8 @@ import {
 import { BankDetails, PayoutAccount } from "@/types";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { calculateCommission } from "@/constant/constant";
 import { addCommasToNumber } from "@/lib/utils";
+import { useToast } from "@/components/ui/use-toast";
 
 interface PayableAmount {
   payableAmount: number;
@@ -28,6 +28,7 @@ interface PayableAmount {
 }
 
 function PayoutDialog({ payableAmount, orderID }: PayableAmount) {
+  const { toast } = useToast();
   const [payoutAccounts, setPayoutAccounts] = useState<PayoutAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPayoutAccount, setselectedPayoutAccount] =
@@ -63,21 +64,48 @@ function PayoutDialog({ payableAmount, orderID }: PayableAmount) {
   };
 
   const handleSubmit = async () => {
+    setLoading(true); // Set loading state before the request
+
     const body = {
       orderID: orderID,
       settlementAmount: payableAmount,
-      selectedPayoutAccount: selectedPayoutAccount
+      selectedPayoutAccount: selectedPayoutAccount,
     };
 
     try {
       const response = await axios.post("/api/store/settlement", body);
 
       if (response.status === 200) {
-      } else {
+        toast({
+          title: "Success",
+          description: "Settlement requested successfully",
+        });
+      } else if (response.status === 409) {
+        toast({
+          title: "Error",
+          description: response.data.message,
+        });
       }
     } catch (error: any) {
+      // Check if the error has a response from the server
+      if (error.response) {
+        toast({
+          title: "Error",
+          description:
+            error.response.data.message ||
+            "An error occurred while processing your request. Please try again later.",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description:
+            "An error occurred while processing your request. Please try again later. If this error persists, please contact our support team.",
+        });
+      }
+
+      console.error("An error occurred while processing your request.", error);
     } finally {
-      setLoading(false);
+      setLoading(false); // Stop loading after the request is complete
     }
   };
 
@@ -119,9 +147,11 @@ function PayoutDialog({ payableAmount, orderID }: PayableAmount) {
                       <Card
                         key={index}
                         className={`cursor-pointer my-3 ${
+                          selectedPayoutAccount?.accountNumber ===
+                            account.bankDetails.accountNumber &&
                           selectedPayoutAccount?.bankName ===
-                          account.bankDetails.bankName
-                            ? "!border-udua-blue-primary !border"
+                            account.bankDetails.bankName
+                            ? "!border-udua-orange-primary !border"
                             : ""
                         }`}
                         onClick={() => handleClick(index)}
@@ -146,7 +176,11 @@ function PayoutDialog({ payableAmount, orderID }: PayableAmount) {
               </div>
             )}
 
-            <Button disabled={selectedPayoutAccount === null ? true : false} onClick={() => handleSubmit()}>
+            <Button
+              disabled={selectedPayoutAccount === null ? true : false}
+              onClick={() => handleSubmit()}
+              className="bg-udua-orange-primary/85 hover:bg-udua-orange-primary"
+            >
               Submit
             </Button>
           </DialogHeader>

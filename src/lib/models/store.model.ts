@@ -15,7 +15,7 @@ const PayoutAccountSchema = new Schema(
           validator: function (this: any) {
             // If payout method is 'bank transfer', bankName is required
             return (
-              this.payoutMethod !== "bank transfer" ||
+              this.payoutMethod !== "Bank Transfer" ||
               !!this.bankDetails.bankName
             );
           },
@@ -28,7 +28,7 @@ const PayoutAccountSchema = new Schema(
           validator: function (this: any) {
             // If payout method is 'bank transfer', accountNumber is required
             return (
-              this.payoutMethod !== "bank transfer" ||
+              this.payoutMethod !== "Bank Transfer" ||
               !!this.bankDetails.accountNumber
             );
           },
@@ -41,7 +41,7 @@ const PayoutAccountSchema = new Schema(
           validator: function (this: any) {
             // If payout method is 'bank transfer', accountHolderName is required
             return (
-              this.payoutMethod !== "bank transfer" ||
+              this.payoutMethod !== "Bank Transfer" ||
               !!this.bankDetails.accountHolderName
             );
           },

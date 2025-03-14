@@ -3,6 +3,7 @@ import { connectToDB } from "@/lib/mongoose";
 import Order from "@/lib/models/order.model";
 import Product from "@/lib/models/product.model";
 import { getStoreIDFromToken } from "@/lib/helpers/getStoreIDFromToken";
+import EBook from "@/lib/models/digital-product.model";
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,12 +23,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const product = await Product.findOne().select(`_id`);
+    const products = await Product.findOne({}).select("_id");
+    const digitalProducts = await EBook.findOne({}).select("_id");
 
     const orderDetail = await Order.findById(orderID)
       .populate({
-        path: "products.product",
+        path: "products.physicalProducts",
         match: { storeID: storeID.toString() },
+        select: "_id name images", // Replace with the fields you want to include
+      })
+      .populate({
+        path: "products.digitalProducts",
+        match: { storeID: storeID.toString() },
+        select: "_id title coverIMG", // Replace with the fields you want to include
       })
       .exec();
 

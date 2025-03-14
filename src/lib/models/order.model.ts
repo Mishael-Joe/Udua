@@ -1,7 +1,8 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 interface IOrderProduct {
-  product: mongoose.Schema.Types.ObjectId;
+  physicalProducts: mongoose.Schema.Types.ObjectId;
+  digitalProducts: mongoose.Schema.Types.ObjectId;
   store: mongoose.Schema.Types.ObjectId;
   quantity: number;
   price: number;
@@ -15,13 +16,23 @@ interface IOrder extends Document {
   status: string;
   createdAt: Date;
   updatedAt: Date;
+  postalCode: string;
   shippingAddress?: string;
   shippingMethod?: string;
   trackingNumber?: string;
   deliveryDate?: Date;
   paymentMethod?: string;
   paymentStatus?: string;
-  deliveryStatus?: string;
+  deliveryStatus?:
+    | "Order Placed"
+    | "Processing"
+    | "Shipped"
+    | "Out for Delivery"
+    | "Delivered"
+    | "Canceled"
+    | "Returned"
+    | "Failed Delivery"
+    | "Refunded";
   notes?: string;
   discount?: number;
   taxAmount?: number;
@@ -30,11 +41,16 @@ interface IOrder extends Document {
 // TODO: Add delivery status
 
 const OrderProductSchema = new Schema<IOrderProduct>({
-  product: {
+  physicalProducts: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Product",
-    required: true,
+    ref: "physicalproducts",
   },
+  // Array of Products for stores that deals with physical products
+  digitalProducts: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "digitalproducts",
+  },
+
   store: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Store",
@@ -56,6 +72,7 @@ const OrderSchema = new Schema<IOrder>(
     products: [OrderProductSchema],
     totalAmount: { type: Number, required: true },
     status: { type: String, required: true },
+    postalCode: { type: String, required: true },
     shippingAddress: { type: String },
     shippingMethod: { type: String },
     trackingNumber: { type: String },

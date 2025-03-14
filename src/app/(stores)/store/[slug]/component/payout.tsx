@@ -20,7 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { calculateCommission, security } from "@/constant/constant";
-import { Order } from "@/types";
+import { Order, Settlement } from "@/types";
 import {
   ArrowUpRightFromSquare,
   Loader,
@@ -86,6 +86,9 @@ const SecurityCard = ({
 
 export default function Payout({ params }: { params: { slug: string } }) {
   const [fulfilledOrders, setFulfilledOrders] = useState<Order[]>([]);
+  const [pendingSettlements, setPendingSettlements] = useState<Settlement[]>(
+    []
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -94,6 +97,7 @@ export default function Payout({ params }: { params: { slug: string } }) {
         const { data } = await axios.post<{ fulfiliedOrders: Order[] }>(
           "/api/store/fulfilied-orders"
         );
+        console.log("data.fulfiliedOrders", data.fulfiliedOrders);
         setFulfilledOrders(data.fulfiliedOrders);
       } catch (error) {
         console.error("Failed to fetch fulfilled orders:", error);
@@ -105,6 +109,24 @@ export default function Payout({ params }: { params: { slug: string } }) {
     fetchFulfilledOrders();
   }, []);
 
+  useEffect(() => {
+    const fetchPendingSettlements = async () => {
+      try {
+        const { data } = await axios.post<{ pendingSettlements: Settlement[] }>(
+          "/api/store/settlement/fetch-settlement"
+        );
+        console.log("data.pendingSettlement", data.pendingSettlements);
+        setPendingSettlements(data.pendingSettlements);
+      } catch (error) {
+        console.error("Failed to fetch fulfilled orders:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPendingSettlements();
+  }, []);
+
   const totalAvailablePayout = fulfilledOrders.reduce((total, order) => {
     return (
       total +
@@ -114,6 +136,16 @@ export default function Payout({ params }: { params: { slug: string } }) {
       )
     );
   }, 0);
+
+  // const totalAvailablePayout = fulfilledOrders.reduce((total, order) => {
+  //   return (
+  //     total +
+  //     order.products.reduce(
+  //       (sum, product) => sum + calculateCommission(product.price).settleAmount,
+  //       0
+  //     )
+  //   );
+  // }, 0);
 
   if (loading) {
     return (
@@ -152,9 +184,9 @@ export default function Payout({ params }: { params: { slug: string } }) {
               <TableHeader>
                 <TableRow>
                   <TableHead>Status</TableHead>
-                  <TableHead>Product</TableHead>
-                  <TableHead>Quantity</TableHead>
-                  <TableHead>Price</TableHead>
+                  <TableHead>Order ID</TableHead>
+                  {/* <TableHead>Quantity</TableHead>
+                  <TableHead>Price</TableHead> */}
                   <TableHead>Payout</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Actions</TableHead>
@@ -168,38 +200,33 @@ export default function Payout({ params }: { params: { slug: string } }) {
                     </TableCell>
 
                     <TableCell>
-                      {order.products.map((productOrder) => (
+                      {order._id}
+                      {/* {order.products.map((productOrder) => (
                         <div key={productOrder.product?._id}>
                           {productOrder.product?.name || "Deleted Product"}
                         </div>
-                      ))}
+                      ))} */}
                     </TableCell>
 
                     <TableCell>
-                      {order.products.map((productOrder) => (
-                        <div key={productOrder.product?._id}>
-                          {productOrder.quantity}
-                        </div>
-                      ))}
-                    </TableCell>
-
-                    <TableCell>
-                      {order.products.map((productOrder) => (
-                        <div key={productOrder.product?._id}>
-                          &#8358;{addCommasToNumber(productOrder.price)}
-                        </div>
-                      ))}
-                    </TableCell>
-
-                    <TableCell>
-                      {order.products.map((productOrder) => (
+                      &#8358;
+                      {addCommasToNumber(
+                        order.products.reduce(
+                          (sum, product) =>
+                            sum +
+                            calculateCommission(product.price).settleAmount *
+                              product.quantity,
+                          0
+                        )
+                      )}
+                      {/* {order.products.map((productOrder) => (
                         <div key={productOrder.product?._id}>
                           &#8358;
                           {addCommasToNumber(
                             calculateCommission(productOrder.price).settleAmount
                           )}
                         </div>
-                      ))}
+                      ))} */}
                     </TableCell>
 
                     <TableCell>
@@ -225,6 +252,89 @@ export default function Payout({ params }: { params: { slug: string } }) {
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <Link
                             href={`/store/${params.slug}/order-details/${order._id}`}
+                            legacyBehavior
+                          >
+                            <DropdownMenuItem asChild>
+                              <a className="cursor-pointer">View Details</a>
+                            </DropdownMenuItem>
+                          </Link>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Orders Awaiting Settlement</CardTitle>
+            <CardDescription>
+              Orders that settlement has been requested for and is pending
+              completion.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableCaption>
+                A list of your orders that are in the process of being settled.
+              </TableCaption>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Settlement Status</TableHead>
+
+                  <TableHead>Order ID</TableHead>
+                  {/* <TableHead>Quantity</TableHead>
+                   */}
+                  <TableHead>Payout</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pendingSettlements.map((settlement) => (
+                  <TableRow key={settlement._id}>
+                    <TableCell className="font-medium text-udua-orange-primary">
+                      {settlement.payoutStatus}
+                    </TableCell>
+
+                    <TableCell>{settlement.orderID}</TableCell>
+
+                    <TableCell>
+                      &#8358;
+                      {addCommasToNumber(settlement.settlementAmount)}
+                    </TableCell>
+
+                    <TableCell>
+                      {new Date(settlement.createdAt).toLocaleDateString(
+                        "en-US",
+                        {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        }
+                      )}
+                    </TableCell>
+
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            aria-label="Order actions"
+                          >
+                            <MoreHorizontalIcon className="w-5 h-5" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <Link
+                            href={`/store/${params.slug}/order-details/${settlement._id}`}
                             legacyBehavior
                           >
                             <DropdownMenuItem asChild>

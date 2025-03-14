@@ -32,25 +32,7 @@ import Image from "next/image";
 import { addCommasToNumber } from "@/lib/utils";
 import dynamic from "next/dynamic";
 import { OderHistorySkeletonLoader } from "@/utils/skeleton-loaders/oderHistory-skeleton";
-
-// TypeScript interfaces for better type safety
-interface Product {
-  _id: string;
-  name: string;
-  images: string[];
-}
-
-interface Order {
-  _id: string;
-  createdAt: string;
-  status: string;
-  deliveryStatus: string;
-  totalAmount: number;
-  products: Array<{
-    product: Product;
-    quantity: number;
-  }>;
-}
+import { Order } from "@/types";
 
 // Lazy load non-critical components
 const Aside1 = dynamic(() => import("./aside-1"), {
@@ -77,6 +59,7 @@ export function OrderHistory() {
           signal: controller.signal,
         });
         setOrders(data.orders);
+        console.log("Orders", data.orders);
       } catch (err) {
         if (!axios.isCancel(err)) {
           setError("Failed to load order history. Please try again later.");
@@ -151,16 +134,39 @@ export function OrderHistory() {
                   {orders.map((order) => (
                     <TableRow key={order._id}>
                       <TableCell>
-                        {order.products[0]?.product.images[0] && (
-                          <Image
-                            alt={`Product preview for ${order.products[0].product.name}`}
-                            className="aspect-square rounded-md object-cover"
-                            height={64}
-                            width={64}
-                            src={order.products[0].product.images[0]}
-                            placeholder="blur"
-                            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkqAcAAIUAgUW0RjgAAAAASUVORK5CYII="
-                          />
+                        {order.products[0].digitalProducts && (
+                          <>
+                            {order.products[0].digitalProducts.coverIMG[0] && (
+                              <Image
+                                alt={`Product preview for ${order.products[0].digitalProducts.title}`}
+                                className="aspect-square rounded-md object-cover"
+                                height={64}
+                                width={64}
+                                src={
+                                  order.products[0].digitalProducts.coverIMG[0]
+                                }
+                                placeholder="blur"
+                                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkqAcAAIUAgUW0RjgAAAAASUVORK5CYII="
+                              />
+                            )}
+                          </>
+                        )}
+                        {order.products[0].physicalProducts && (
+                          <>
+                            {order.products[0].physicalProducts.images[0] && (
+                              <Image
+                                alt={`Product preview for ${order.products[0].physicalProducts.name}`}
+                                className="aspect-square rounded-md object-cover"
+                                height={64}
+                                width={64}
+                                src={
+                                  order.products[0].physicalProducts.images[0]
+                                }
+                                placeholder="blur"
+                                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkqAcAAIUAgUW0RjgAAAAASUVORK5CYII="
+                              />
+                            )}
+                          </>
                         )}
                       </TableCell>
                       <TableCell>

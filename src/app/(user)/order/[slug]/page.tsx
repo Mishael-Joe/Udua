@@ -41,7 +41,9 @@ interface PageParams {
   slug: string;
 }
 
-export default function OrderDetailsPage(props: { params: Promise<PageParams> }) {
+export default function OrderDetailsPage(props: {
+  params: Promise<PageParams>;
+}) {
   const params = use(props.params);
   const [orderDetails, setOrderDetails] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
@@ -63,6 +65,7 @@ export default function OrderDetailsPage(props: { params: Promise<PageParams> })
           { orderID: params.slug },
           { signal: controller.signal }
         );
+        console.log(`data`, data);
         setOrderDetails(data.orderDetail);
       } catch (error) {
         handleError(error, "Failed to load order details");
@@ -197,14 +200,27 @@ export default function OrderDetailsPage(props: { params: Promise<PageParams> })
               submitting={submitting}
             />
           </CardHeader>
-          <CardContent className="space-y-6">
-            {orderDetails.products.map((product) => (
-              <ProductItem
-                key={product.product._id}
-                product={product}
-                onReviewInit={setSelectedProductId}
-              />
-            ))}
+          <CardContent className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4 lg:gap-3.5 w-full justify-between">
+            {orderDetails.products.map((product) => {
+              if (product.physicalProducts) {
+                return (
+                  <ProductItem
+                    key={product.physicalProducts._id}
+                    product={product}
+                    onReviewInit={setSelectedProductId}
+                    deliveryStatus={orderDetails.deliveryStatus}
+                  />
+                );
+              } else if (product.digitalProducts) {
+                return (
+                  <ProductItem
+                    key={product.digitalProducts._id}
+                    product={product}
+                    onReviewInit={setSelectedProductId}
+                  />
+                );
+              }
+            })}
           </CardContent>
         </Card>
       </main>
@@ -218,22 +234,39 @@ const OrderSummary = ({ order }: { order: Order }) => (
       <CardTitle className="text-lg">Order Summary</CardTitle>
       <CardDescription>ID: {order._id}</CardDescription>
     </CardHeader>
-    <CardContent className="grid gap-2 text-sm">
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <p className="font-medium">Order Date</p>
-          <time dateTime={new Date(order.createdAt).toISOString()}>
-            {new Date(order.createdAt).toLocaleDateString()}
-          </time>
-        </div>
-        <div>
-          <p className="font-medium">Total Amount</p>
-          <p>₦{addCommasToNumber(order.totalAmount)}</p>
-        </div>
-        <div className="col-span-2">
-          <p className="font-medium">Shipping Address</p>
-          <p>{order.shippingAddress}</p>
-        </div>
+    <CardContent className="sm:grid grid-cols-2 gap-4 text-sm">
+      {/* Order metadata section */}
+      <div>
+        <h1 className="mb-2 font-semibold text-xl">Order Details</h1>
+
+        <p>Order Date: {new Date(order.createdAt).toLocaleString()}</p>
+        <p>Order Status: {order.status}</p>
+        <p>
+          Total Amount: &#8358;
+          {addCommasToNumber(order.totalAmount)}
+        </p>
+      </div>
+
+      {/* Payment information section */}
+      <div>
+        <h1 className="mb-2 font-semibold text-xl mt-2 sm:mt-0">
+          Payment Information
+        </h1>
+
+        <p>Payment Method: {order.paymentMethod.toUpperCase()}</p>
+        <p>Payment Status: {order.paymentStatus.toUpperCase()}</p>
+      </div>
+
+      {/* Shipping information section */}
+      <div className="col-span-2">
+        <h1 className="mb-2 font-semibold text-xl mt-2 sm:mt-0">
+          Shipping Information
+        </h1>
+
+        <p>Shipping Address: {order.shippingAddress}</p>
+        <p>Shipping Method: {order.shippingMethod}</p>
+        <p>Postal Code: {order.postalCode}</p>
+        {/* <p>Tracking Number: {order._id}</p> */}
       </div>
     </CardContent>
   </Card>
@@ -242,32 +275,85 @@ const OrderSummary = ({ order }: { order: Order }) => (
 const ProductItem = ({
   product,
   onReviewInit,
+  deliveryStatus,
 }: {
-  product: Order["products"][number];
+  product: Order["products"][number]; // Type annotation indicating 'product' is a single item from the 'products' array in an 'Order'
   onReviewInit: (id: string) => void;
-}) => (
-  <div className="grid sm:grid-cols-2 gap-4 relative">
-    <div className="aspect-square relative rounded-lg overflow-hidden border-2 border-gray-200">
-      <Image
-        src={product.product.images[0]}
-        alt={product.product.name}
-        fill
-        className="object-cover"
-        quality={85}
-        placeholder="blur"
-        blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkqAcAAIUAgUW0RjgAAAAASUVORK5CYII="
-      />
-    </div>
+  deliveryStatus?: Order["deliveryStatus"];
+}) => {
+  if (product.physicalProducts) {
+    return (
+      <div className="relative">
+        <div className="aspect-square relative rounded-lg overflow-hidden border-2 border-gray-200">
+          <Image
+            src={product.physicalProducts.images[0]}
+            alt={product.physicalProducts.name}
+            fill
+            className="object-cover"
+            quality={85}
+            placeholder="blur"
+            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkqAcAAIUAgUW0RjgAAAAASUVORK5CYII="
+          />
+        </div>
 
-    <div className="space-y-2">
-      <h3 className="font-medium">{product.product.name}</h3>
-      <p>Quantity: {product.quantity}</p>
-      <p>Price: ₦{addCommasToNumber(product.price)}</p>
+        <div className="space-y-0.5 mt-1 grid grid-cols-1">
+          <h3 className="font-medium truncate">
+            {product.physicalProducts.name}
+          </h3>
+          <p>Quantity: {product.quantity}</p>
+          <p>Price: ₦{addCommasToNumber(product.price)}</p>
 
-      <ReviewDialog productId={product.product._id!} onInit={onReviewInit} />
-    </div>
-  </div>
-);
+          {deliveryStatus === "Delivered" && (
+            <ReviewDialog
+              productId={product.physicalProducts._id!}
+              onInit={onReviewInit}
+            />
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  if (product.digitalProducts) {
+    return (
+      <div className="relative">
+        <div className="aspect-square relative rounded-lg overflow-hidden border-2 border-gray-200">
+          {product.digitalProducts !== null &&
+            product.digitalProducts.coverIMG !== null && (
+              <Image
+                src={product.digitalProducts.coverIMG[0] || "/placeholder.svg"}
+                alt={product.digitalProducts.title}
+                fill
+                className="object-cover"
+                quality={85}
+                placeholder="blur"
+                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkqAcAAIUAgUW0RjgAAAAASUVORK5CYII="
+              />
+            )}
+        </div>
+
+        <div className="mt-1 grid grid-cols-1">
+          <h3 className="font-medium truncate">
+            {product.digitalProducts && `${product.digitalProducts.title}`}
+          </h3>
+          <p className="font-medium">
+            Quantity {product.quantity && product.quantity}
+          </p>
+          {product.price && (
+            <p className="font-medium">
+              &#8358; {addCommasToNumber(product.price)}{" "}
+            </p>
+          )}
+
+          <ReviewDialog
+            productId={product.digitalProducts._id!}
+            onInit={onReviewInit}
+          />
+        </div>
+      </div>
+    );
+  }
+};
 
 const ReviewDialog = ({
   productId,
@@ -281,14 +367,14 @@ const ReviewDialog = ({
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
+      <DialogTrigger asChild className="absolute right-2 top-1">
         <Button
-          className="mt-2"
+          className="bg-udua-orange-primary/85 hover:bg-udua-orange-primary"
           onClick={() => onInit(productId)}
           aria-label="Review product"
+          size={"icon"}
         >
-          <ClipboardEditIcon className="mr-2" />
-          Review Product
+          <ClipboardEditIcon />
         </Button>
       </DialogTrigger>
 
@@ -350,10 +436,13 @@ const DeliveryStatus = ({
       <Button
         onClick={onUpdate}
         disabled={submitting}
-        className="bg-purple-500 hover:bg-purple-600 text-sm"
+        className="bg-udua-orange-primary/85 hover:bg-udua-orange-primary text-sm"
       >
-        {submitting ? <Loader className="animate-spin mr-2" /> : null}
-        Mark as Delivered
+        {submitting ? (
+          <Loader className="animate-spin mr-2" />
+        ) : (
+          "Mark as Delivered"
+        )}
       </Button>
     )}
   </div>

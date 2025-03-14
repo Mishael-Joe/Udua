@@ -120,7 +120,7 @@ export default function SellerDashboard() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {orders!.map((order) => (
+                  {/* {orders!.map((order) => (
                     <TableRow key={order._id}>
                       <TableCell className="font-medium">{order._id}</TableCell>
                       <TableCell>
@@ -172,7 +172,7 @@ export default function SellerDashboard() {
                       </TableCell>
                       <TableCell>{order.status}</TableCell>
                     </TableRow>
-                  ))}
+                  ))} */}
                 </TableBody>
                 <TableFooter>
                   <TableRow>

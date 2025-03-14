@@ -32,7 +32,7 @@ export type Product = {
     price: number; // Size-specific price (Optional, for size-based products)
     quantity: number; // Stock for that size
   }[];
-  productQuantity: string;
+  productQuantity: string | number;
   images: string[];
   description: string;
   specifications: string;
@@ -48,6 +48,7 @@ export type Product = {
 };
 
 export type DigitalProduct = {
+  _id?: string;
   storeID: string;
   title: string;
   author: string;
@@ -169,7 +170,7 @@ export type RequestBodyTypes = {
   city: string;
   state: string;
   postal_code: string;
-  itemsInCart: Product[];
+  itemsInCart: CartItems[];
   deliveryMethod: string;
   userID: string;
 };
@@ -180,7 +181,7 @@ export type ResultDataMetadataItemsInCart = {
   city: string;
   state: string;
   postal_code: string;
-  itemsInCart: Product[];
+  itemsInCart: CartItems[];
   deliveryMethod: string;
 };
 
@@ -203,7 +204,8 @@ export type IOrder = {
 };
 
 export type ProductOrder = {
-  product: Product;
+  physicalProducts: Product;
+  digitalProducts: DigitalProduct;
   quantity: number;
   price: number;
 };
@@ -216,11 +218,24 @@ export type Order = {
   totalAmount: number;
   status: string;
   shippingAddress: string;
+  postalCode: string;
+  trackingNumber: number;
   shippingMethod: string;
   paymentMethod: string;
   paymentStatus: string;
-  deliveryStatus: string;
+  deliveryStatus:
+    | "Order Placed"
+    | "Processing"
+    | "Shipped"
+    | "Out for Delivery"
+    | "Delivered"
+    | "Canceled"
+    | "Returned"
+    | "Failed Delivery"
+    | "Refunded";
   createdAt: Date;
+  deliveryDate: Date;
+  updatedAt: Date;
 };
 
 export interface Cart {
@@ -345,7 +360,7 @@ export interface Settlement {
   orderID: string;
   settlementAmount: number;
   payoutAccount: Payout_Account;
-  payoutStatus: "requested" | "completed" | "failed"; // assuming there could be other statuses
+  payoutStatus: "Requested" | "Processing" | "Paid" | "Failed"; // assuming there could be other statuses
   createdAt: string; // ISO Date string
   updatedAt: string; // ISO Date string
   __v: number;

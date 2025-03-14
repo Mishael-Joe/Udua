@@ -39,6 +39,7 @@ export default function StoreDashboard({
           "/api/store/orders"
         );
         setOrders(data.orders);
+        // console.log("data.orders", data.orders);
       } catch (error) {
         console.error("Failed to fetch orders:", error);
       }
@@ -113,25 +114,60 @@ export default function StoreDashboard({
                       {order.deliveryStatus}
                     </TableCell>
                     <TableCell>
-                      {order.products.map((productOrder) => (
-                        <div key={productOrder.product?._id}>
-                          {productOrder.product?.name || "Deleted Product"}
-                        </div>
-                      ))}
+                      {order.products.map((productOrder) => {
+                        if (productOrder.physicalProducts) {
+                          return (
+                            <div key={productOrder.physicalProducts._id}>
+                              {productOrder.physicalProducts.name ||
+                                "Deleted Product"}
+                            </div>
+                          );
+                        }
+                        if (productOrder.digitalProducts) {
+                          return (
+                            <div key={productOrder.digitalProducts._id}>
+                              {productOrder.digitalProducts.title ||
+                                "Deleted Product"}
+                            </div>
+                          );
+                        }
+                      })}
                     </TableCell>
                     <TableCell>
-                      {order.products.map((productOrder) => (
-                        <div key={productOrder.product?._id}>
-                          {productOrder.quantity}
-                        </div>
-                      ))}
+                      {order.products.map((productOrder) => {
+                        if (productOrder.physicalProducts) {
+                          return (
+                            <div key={productOrder.physicalProducts._id}>
+                              {productOrder.quantity}
+                            </div>
+                          );
+                        }
+                        if (productOrder.digitalProducts) {
+                          return (
+                            <div key={productOrder.digitalProducts._id}>
+                              {productOrder.quantity}
+                            </div>
+                          );
+                        }
+                      })}
                     </TableCell>
                     <TableCell>
-                      {order.products.map((productOrder) => (
-                        <div key={productOrder.product?._id}>
-                          &#8358;{addCommasToNumber(productOrder.price)}
-                        </div>
-                      ))}
+                      {order.products.map((productOrder) => {
+                        if (productOrder.physicalProducts) {
+                          return (
+                            <div key={productOrder.physicalProducts._id}>
+                              &#8358;{addCommasToNumber(productOrder.price)}
+                            </div>
+                          );
+                        }
+                        if (productOrder.digitalProducts) {
+                          return (
+                            <div key={productOrder.digitalProducts._id}>
+                              &#8358;{addCommasToNumber(productOrder.price)}
+                            </div>
+                          );
+                        }
+                      })}
                     </TableCell>
                     <TableCell>{order.paymentStatus}</TableCell>
                     <TableCell>

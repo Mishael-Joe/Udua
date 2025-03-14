@@ -2,7 +2,7 @@
 
 import { NextResponse } from "next/server";
 import Product from "@/lib/models/product.model"; // Import Product model
-import { RequestBodyTypes } from "@/types";
+import { Product as Products, RequestBodyTypes } from "@/types";
 
 export async function POST(request: Request) {
   const requestBody = await request.json();
@@ -20,27 +20,57 @@ export async function POST(request: Request) {
   }: RequestBodyTypes = requestBody.meta;
 
   const subamount = Number(amount * 100);
-  // console.log("uniqueRef", uniqueRef);
 
   try {
     // Inventory Check
-    // console.log("itemsInCart", itemsInCart);
     for (const item of itemsInCart) {
-      const product = await Product.findById(item._id);
-      if (!product) {
-        return NextResponse.json(
-          { error: `Product not found: ${item._id}` },
-          { status: 400 }
+      if (item.productType === "physicalproducts") {
+        const product: Products | null = await Product.findById(
+          item.product._id
         );
-      }
 
-      if (product.productQuantity < item.quantity!) {
-        return NextResponse.json(
-          {
-            error: `Insufficient stock for product: ${product.productName}. Available: ${product.productQuantity}, Requested: ${item.quantity}`,
-          },
-          { status: 400 }
-        );
+        if (!product) {
+          return NextResponse.json(
+            { error: `Product not found: ${item.product._id}` },
+            { status: 400 }
+          );
+        }
+
+        // Check stock for products without sizes
+        if (!item.selectedSize) {
+          if ((product.productQuantity as number)! < item.quantity!) {
+            return NextResponse.json(
+              {
+                error: `Insufficient stock for product: ${product.name}. Available: ${product.productQuantity}, Requested: ${item.quantity}`,
+              },
+              { status: 400 }
+            );
+          }
+        }
+        // Check stock for products with sizes
+        else {
+          const selectedProductSize = product.sizes?.find(
+            (size) => size.size === item.selectedSize?.size
+          );
+
+          if (!selectedProductSize) {
+            return NextResponse.json(
+              {
+                error: `Selected size not available for product: ${product.name}`,
+              },
+              { status: 400 }
+            );
+          }
+
+          if (selectedProductSize.quantity < item.selectedSize.quantity) {
+            return NextResponse.json(
+              {
+                error: `Insufficient stock for product: ${product.name} (Size: ${item.selectedSize.size}). Available: ${selectedProductSize.quantity}, Requested: ${item.quantity}`,
+              },
+              { status: 400 }
+            );
+          }
+        }
       }
     }
 
