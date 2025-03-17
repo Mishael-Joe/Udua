@@ -67,7 +67,7 @@ export default function StoreInventory({
           { signal: controller.signal }
         );
         setStoreProducts(data.products);
-        console.log(" data.products", data.products);
+        // console.log(" data.products", data.products);
       } catch (error: any) {
         if (!axios.isCancel(error)) {
           console.error("Failed to fetch products", error.message);

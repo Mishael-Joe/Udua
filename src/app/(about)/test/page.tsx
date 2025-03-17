@@ -24,7 +24,7 @@ async function uploadToS3(e: ChangeEvent<HTMLFormElement>) {
 
     const res = data.data.data;
     const { uploadUrl, key } = res;
-    console.log("Generated upload URL: ", uploadUrl);
+    // console.log("Generated upload URL: ", uploadUrl);
 
     if (!uploadUrl || typeof uploadUrl !== "string") {
       console.error("Invalid upload URL:", uploadUrl);
@@ -51,7 +51,7 @@ async function deleteFiles(fileKeys: string[]) {
       params: { keys: fileKeys }, // Pass an array of keys
     });
 
-    console.log("Files deleted:", response.data);
+    // console.log("Files deleted:", response.data);
   } catch (error) {
     console.error("Error deleting files:", error);
   }

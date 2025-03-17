@@ -204,25 +204,21 @@ export type IOrder = {
 };
 
 export type ProductOrder = {
-  physicalProducts: Product;
-  digitalProducts: DigitalProduct;
+  physicalProducts?: Product | string; // ObjectId reference
+  digitalProducts?: DigitalProduct | string; // ObjectId reference
+  store: string;
   quantity: number;
   price: number;
 };
 
-export type Order = {
+export type SubOrder = {
   _id: string;
-  user: string;
-  stores: string[];
+  store: string; // ObjectId reference
   products: ProductOrder[];
   totalAmount: number;
-  status: string;
-  shippingAddress: string;
-  postalCode: string;
-  trackingNumber: number;
-  shippingMethod: string;
-  paymentMethod: string;
-  paymentStatus: string;
+  shippingMethod?: string;
+  trackingNumber?: string;
+  deliveryDate?: Date;
   deliveryStatus:
     | "Order Placed"
     | "Processing"
@@ -233,10 +229,53 @@ export type Order = {
     | "Returned"
     | "Failed Delivery"
     | "Refunded";
+};
+
+export type Order = {
+  _id: string;
+  user: string; // ObjectId reference
+  stores: string[]; // Array of store ObjectId references
+  subOrders: SubOrder[]; // Array of sub-orders, each tied to a specific store
+  totalAmount: number;
+  status: string;
+  postalCode: string;
+  shippingAddress?: string;
+  paymentMethod?: string;
+  paymentStatus?: string;
+  notes?: string;
+  discount?: number;
+  taxAmount?: number;
   createdAt: Date;
-  deliveryDate: Date;
   updatedAt: Date;
 };
+
+// export type Order = {
+//   _id: string;
+//   user: string;
+//   stores: string[];
+//   products: ProductOrder[];
+//   totalAmount: number;
+//   status: string;
+//   shippingAddress: string;
+//   postalCode: string;
+//   trackingNumber: number;
+//   shippingMethod: string;
+//   paymentMethod: string;
+//   paymentStatus: string;
+//   deliveryStatus:
+//     | "Order Placed"
+//     | "Processing"
+//     | "Shipped"
+//     | "Out for Delivery"
+//     | "Delivered"
+//     | "Canceled"
+//     | "Returned"
+//     | "Failed Delivery"
+//     | "Refunded";
+//   createdAt: Date;
+//   deliveryDate: Date;
+//   updatedAt: Date;
+// };
 
 export interface Cart {
   product: {
@@ -250,6 +289,7 @@ export interface Cart {
     coverIMG?: string[];
     title: string;
   };
+  storeID: string;
   _id: string;
   selectedSize: {
     price: number;
@@ -273,6 +313,7 @@ export type ContextType = {
   quantity: number;
   addToCart: (
     product: CombinedProduct,
+    storeID: string,
     quantity: number,
     selectedSize: {
       size: string;
@@ -357,7 +398,8 @@ export interface Payout_Account {
 export interface Settlement {
   _id: string;
   storeID: string;
-  orderID: string;
+  mainOrderID: string;
+  subOrderID: string;
   settlementAmount: number;
   payoutAccount: Payout_Account;
   payoutStatus: "Requested" | "Processing" | "Paid" | "Failed"; // assuming there could be other statuses

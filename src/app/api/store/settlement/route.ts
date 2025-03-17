@@ -5,13 +5,15 @@ import Settlement from "@/lib/models/settlement.model";
 import Store from "@/lib/models/store.model";
 import { sendEmail } from "@/lib/services/email.service";
 import { BankDetails } from "@/types";
+import Order from "@/lib/models/order.model";
 
 export async function POST(request: NextRequest) {
   try {
     const requestBody = await request.json();
-    const { orderID, settlementAmount, selectedPayoutAccount } =
+    const { mainOrderID, subOrderID, settlementAmount, selectedPayoutAccount } =
       requestBody as {
-        orderID: string;
+        mainOrderID: string;
+        subOrderID: string;
         settlementAmount: number;
         selectedPayoutAccount: BankDetails;
       };
@@ -28,13 +30,23 @@ export async function POST(request: NextRequest) {
 
     const store = await Store.findById(storeID).select("name storeEmail");
 
-    const checkSettlement = await Settlement.findOne({
-      storeID: storeID,
-      orderID: orderID,
-    });
-
     if (!store) {
       return NextResponse.json({ error: "Store not found" }, { status: 404 });
+    }
+
+    const checkSettlement = await Settlement.findOne({
+      storeID: storeID,
+      mainOrderID: mainOrderID,
+      subOrderID: subOrderID,
+    });
+
+    if (checkSettlement) {
+      return NextResponse.json(
+        {
+          message: `Settlement has already been requested for orderID ${mainOrderID}`,
+        },
+        { status: 409 }
+      );
     }
 
     const text = `
@@ -42,7 +54,7 @@ export async function POST(request: NextRequest) {
 
     We hope this message finds you well. We are writing to confirm that you have successfully requested a settlement for the following order on our platform:
 
-    Order ID: ${orderID}
+    Order ID: ${mainOrderID}
     Settlement Amount: ${settlementAmount}
 
     Payout Account:
@@ -69,7 +81,7 @@ export async function POST(request: NextRequest) {
         <p>We hope this message finds you well. We are writing to confirm that you have successfully requested a settlement for the following order on our platform:</p>
 
         <ul>
-          <li><strong>Order ID:</strong> ${orderID}</li>
+          <li><strong>Order ID:</strong> ${mainOrderID}</li>
           <li><strong>Settlement Amount:</strong> ${settlementAmount}</li>
         </ul>
 
@@ -94,32 +106,50 @@ export async function POST(request: NextRequest) {
 
     `;
 
-    if (checkSettlement) {
-      return NextResponse.json(
-        {
-          message: `Settlement has already been requested for orderID ${orderID}`,
+    const result = await Order.updateOne(
+      {
+        _id: mainOrderID,
+        "subOrders._id": subOrderID,
+      },
+      {
+        $set: {
+          "subOrders.$.payoutStatus": "Requested",
         },
-        { status: 409 }
+      }
+    );
+
+    if (result.matchedCount === 0) {
+      return NextResponse.json(
+        { error: "Order or SubOrder not found" },
+        { status: 404 }
       );
     }
 
-    await sendEmail({
-      to: store.storeEmail,
-      subject: `Settlement Request Confirmation for Order ID: ${orderID}`,
-      text,
-      html,
-    });
+    if (result.modifiedCount === 0) {
+      return NextResponse.json(
+        { error: "No changes made to the order" },
+        { status: 400 }
+      );
+    }
 
     // Create a new settlement request
     const settlement = new Settlement({
       storeID,
-      orderID,
+      mainOrderID,
+      subOrderID,
       settlementAmount,
       payoutAccount: selectedPayoutAccount,
       payoutStatus: "Requested",
     });
 
     await settlement.save();
+
+    await sendEmail({
+      to: store.storeEmail,
+      subject: `Settlement Request Confirmation for Order ID: ${mainOrderID}`,
+      text,
+      html,
+    });
 
     return NextResponse.json(
       { message: "Settlement requested successfully", settlement },

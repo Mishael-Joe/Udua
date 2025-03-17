@@ -94,11 +94,11 @@ export default function Payout({ params }: { params: { slug: string } }) {
   useEffect(() => {
     const fetchFulfilledOrders = async () => {
       try {
-        const { data } = await axios.post<{ fulfiliedOrders: Order[] }>(
+        const { data } = await axios.post<{ fulfilledOrders: Order[] }>(
           "/api/store/fulfilied-orders"
         );
-        console.log("data.fulfiliedOrders", data.fulfiliedOrders);
-        setFulfilledOrders(data.fulfiliedOrders);
+        // console.log("data.fulfiliedOrders", data.fulfilledOrders);
+        setFulfilledOrders(data.fulfilledOrders);
       } catch (error) {
         console.error("Failed to fetch fulfilled orders:", error);
       } finally {
@@ -115,7 +115,7 @@ export default function Payout({ params }: { params: { slug: string } }) {
         const { data } = await axios.post<{ pendingSettlements: Settlement[] }>(
           "/api/store/settlement/fetch-settlement"
         );
-        console.log("data.pendingSettlement", data.pendingSettlements);
+        // console.log("data.pendingSettlement", data.pendingSettlements);
         setPendingSettlements(data.pendingSettlements);
       } catch (error) {
         console.error("Failed to fetch fulfilled orders:", error);
@@ -130,7 +130,7 @@ export default function Payout({ params }: { params: { slug: string } }) {
   const totalAvailablePayout = fulfilledOrders.reduce((total, order) => {
     return (
       total +
-      order.products.reduce(
+      order.subOrders[0].products.reduce(
         (sum, product) => sum + calculateCommission(product.price).settleAmount,
         0
       )
@@ -196,7 +196,7 @@ export default function Payout({ params }: { params: { slug: string } }) {
                 {fulfilledOrders.map((order) => (
                   <TableRow key={order._id}>
                     <TableCell className="font-medium text-green-600">
-                      {order.deliveryStatus}
+                      {order.subOrders[0].deliveryStatus}
                     </TableCell>
 
                     <TableCell>
@@ -211,7 +211,7 @@ export default function Payout({ params }: { params: { slug: string } }) {
                     <TableCell>
                       &#8358;
                       {addCommasToNumber(
-                        order.products.reduce(
+                        order.subOrders[0].products.reduce(
                           (sum, product) =>
                             sum +
                             calculateCommission(product.price).settleAmount *
@@ -302,7 +302,7 @@ export default function Payout({ params }: { params: { slug: string } }) {
                       {settlement.payoutStatus}
                     </TableCell>
 
-                    <TableCell>{settlement.orderID}</TableCell>
+                    <TableCell>{settlement.mainOrderID}</TableCell>
 
                     <TableCell>
                       &#8358;
@@ -334,7 +334,7 @@ export default function Payout({ params }: { params: { slug: string } }) {
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <Link
-                            href={`/store/${params.slug}/order-details/${settlement._id}`}
+                            href={`/store/${params.slug}/order-details/${settlement.mainOrderID}`}
                             legacyBehavior
                           >
                             <DropdownMenuItem asChild>

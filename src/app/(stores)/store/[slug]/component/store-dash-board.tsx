@@ -60,7 +60,7 @@ export default function StoreDashboard({
   const totalSales = orders.reduce(
     (count, order) =>
       count +
-      order.products.reduce(
+      order.subOrders[0].products.reduce(
         (productCount, productOrder) => productCount + productOrder.quantity,
         0
       ),
@@ -99,9 +99,9 @@ export default function StoreDashboard({
               <TableHeader>
                 <TableRow className="text-[12.8px]">
                   <TableHead>Order Status</TableHead>
-                  <TableHead>Product Name</TableHead>
-                  <TableHead>Quantity</TableHead>
-                  <TableHead>Price</TableHead>
+                  {/* <TableHead>Product Name</TableHead> */}
+                  <TableHead>Total Quantity</TableHead>
+                  {/* <TableHead>Price</TableHead> */}
                   <TableHead>Payment Status</TableHead>
                   <TableHead>Order Date</TableHead>
                   <TableHead>Actions</TableHead>
@@ -111,9 +111,9 @@ export default function StoreDashboard({
                 {orders.map((order) => (
                   <TableRow key={order._id}>
                     <TableCell className="font-medium">
-                      {order.deliveryStatus}
+                      {order.subOrders[0].deliveryStatus}
                     </TableCell>
-                    <TableCell>
+                    {/* <TableCell>
                       {order.products.map((productOrder) => {
                         if (productOrder.physicalProducts) {
                           return (
@@ -132,9 +132,10 @@ export default function StoreDashboard({
                           );
                         }
                       })}
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell>
-                      {order.products.map((productOrder) => {
+                      {order.subOrders[0].products.length}
+                      {/* {order.products.map((productOrder) => {
                         if (productOrder.physicalProducts) {
                           return (
                             <div key={productOrder.physicalProducts._id}>
@@ -149,9 +150,9 @@ export default function StoreDashboard({
                             </div>
                           );
                         }
-                      })}
+                      })} */}
                     </TableCell>
-                    <TableCell>
+                    {/* <TableCell>
                       {order.products.map((productOrder) => {
                         if (productOrder.physicalProducts) {
                           return (
@@ -168,8 +169,8 @@ export default function StoreDashboard({
                           );
                         }
                       })}
-                    </TableCell>
-                    <TableCell>{order.paymentStatus}</TableCell>
+                    </TableCell> */}
+                    <TableCell>{order.paymentStatus?.toUpperCase()}</TableCell>
                     <TableCell>
                       {new Date(order.createdAt).toLocaleDateString("en-US", {
                         year: "numeric",

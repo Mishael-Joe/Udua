@@ -6,8 +6,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ClipboardEditIcon, Loader, Star } from "lucide-react";
-import { Order } from "@/types";
-import { addCommasToNumber } from "@/lib/utils";
+// import type { Order, OrderProduct } from "@/types";
+import type { DigitalProduct, Order, Product, ProductOrder } from "@/types";
+import { addCommasToNumber, getStatusClassName } from "@/lib/utils";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -34,6 +35,13 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
 import Aside1 from "@/app/(user)/components/aside-1";
 import OrderDetailsSkeleton from "@/utils/skeleton-loaders/order-details-skeleton";
 
@@ -54,6 +62,7 @@ export default function OrderDetailsPage(props: {
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
   const [selectedProductId, setSelectedProductId] = useState("");
+  const [selectedSubOrderId, setSelectedSubOrderId] = useState("");
 
   useEffect(() => {
     const controller = new AbortController();
@@ -90,13 +99,14 @@ export default function OrderDetailsPage(props: {
     });
   };
 
-  const updateDeliveryStatus = async () => {
+  const updateDeliveryStatus = async (subOrderId: string) => {
     if (!orderDetails) return;
 
     try {
       setSubmitting(true);
       await axios.post("/api/store/update-order-delivery-status", {
-        orderID: orderDetails._id,
+        mainOrderID: orderDetails._id,
+        subOrderID: subOrderId,
         updatedDeliveryStatus: "Delivered",
       });
 
@@ -154,6 +164,12 @@ export default function OrderDetailsPage(props: {
     );
   }
 
+  // Count total products across all subOrders
+  const totalProducts = orderDetails.subOrders.reduce(
+    (total, subOrder) => total + subOrder.products.length,
+    0
+  );
+
   return (
     <div className="grid min-h-screen max-w-7xl mx-auto md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
       <aside className="hidden border-r bg-muted/10 md:block">
@@ -189,38 +205,89 @@ export default function OrderDetailsPage(props: {
         <OrderSummary order={orderDetails} />
 
         <Card>
-          <CardHeader className="flex flex-col sm:flex-row justify-between gap-4">
+          <CardHeader>
             <CardTitle>
-              {orderDetails.products.length} Product
-              {orderDetails.products.length > 1 ? "s" : ""}
+              {totalProducts} Product{totalProducts > 1 ? "s" : ""} from{" "}
+              {orderDetails.stores.length} Store
+              {orderDetails.stores.length > 1 ? "s" : ""}
             </CardTitle>
-            <DeliveryStatus
-              status={orderDetails.deliveryStatus}
-              onUpdate={updateDeliveryStatus}
-              submitting={submitting}
-            />
           </CardHeader>
-          <CardContent className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4 lg:gap-3.5 w-full justify-between">
-            {orderDetails.products.map((product) => {
-              if (product.physicalProducts) {
-                return (
-                  <ProductItem
-                    key={product.physicalProducts._id}
-                    product={product}
-                    onReviewInit={setSelectedProductId}
-                    deliveryStatus={orderDetails.deliveryStatus}
-                  />
-                );
-              } else if (product.digitalProducts) {
-                return (
-                  <ProductItem
-                    key={product.digitalProducts._id}
-                    product={product}
-                    onReviewInit={setSelectedProductId}
-                  />
-                );
-              }
-            })}
+          <CardContent>
+            <Accordion type="single" collapsible className="w-full">
+              {orderDetails.subOrders.map((subOrder, index) => (
+                <AccordionItem
+                  key={subOrder._id || index}
+                  value={`store-${index}`}
+                >
+                  <AccordionTrigger className="hover:no-underline">
+                    <div className="flex justify-between items-center w-full pr-4">
+                      <span>Store {index + 1}</span>
+                      <Badge
+                        className={getStatusClassName(subOrder.deliveryStatus)}
+                      >
+                        {subOrder.deliveryStatus}
+                      </Badge>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="mb-4 flex justify-between items-center">
+                      <div>
+                        <p className="text-sm">
+                          Shipping Method: {subOrder.shippingMethod}
+                        </p>
+                        {subOrder.trackingNumber && (
+                          <p className="text-sm">
+                            Tracking: {subOrder.trackingNumber}
+                          </p>
+                        )}
+                        {subOrder.deliveryDate && (
+                          <p className="text-sm">
+                            Expected Delivery:{" "}
+                            {new Date(
+                              subOrder.deliveryDate
+                            ).toLocaleDateString()}
+                          </p>
+                        )}
+                      </div>
+
+                      {subOrder.deliveryStatus === "Out for Delivery" && (
+                        <Button
+                          onClick={() =>
+                            updateDeliveryStatus(subOrder._id || "")
+                          }
+                          disabled={submitting}
+                          className="bg-udua-orange-primary/85 hover:bg-udua-orange-primary text-sm"
+                        >
+                          {submitting ? (
+                            <Loader className="animate-spin mr-2" />
+                          ) : (
+                            "Mark as Delivered"
+                          )}
+                        </Button>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4 lg:gap-3.5 w-full justify-between">
+                      {subOrder.products.map((product, productIndex) => (
+                        <ProductItem
+                          key={`${
+                            product.physicalProducts ||
+                            product.digitalProducts ||
+                            productIndex
+                          }`}
+                          product={product}
+                          onReviewInit={(id) => {
+                            setSelectedProductId(id);
+                            setSelectedSubOrderId(subOrder._id || "");
+                          }}
+                          deliveryStatus={subOrder.deliveryStatus}
+                        />
+                      ))}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
           </CardContent>
         </Card>
       </main>
@@ -253,8 +320,8 @@ const OrderSummary = ({ order }: { order: Order }) => (
           Payment Information
         </h1>
 
-        <p>Payment Method: {order.paymentMethod.toUpperCase()}</p>
-        <p>Payment Status: {order.paymentStatus.toUpperCase()}</p>
+        <p>Payment Method: {order.paymentMethod?.toUpperCase()}</p>
+        <p>Payment Status: {order.paymentStatus?.toUpperCase()}</p>
       </div>
 
       {/* Shipping information section */}
@@ -264,9 +331,8 @@ const OrderSummary = ({ order }: { order: Order }) => (
         </h1>
 
         <p>Shipping Address: {order.shippingAddress}</p>
-        <p>Shipping Method: {order.shippingMethod}</p>
         <p>Postal Code: {order.postalCode}</p>
-        {/* <p>Tracking Number: {order._id}</p> */}
+        <p>Stores: {order.stores.length}</p>
       </div>
     </CardContent>
   </Card>
@@ -277,17 +343,20 @@ const ProductItem = ({
   onReviewInit,
   deliveryStatus,
 }: {
-  product: Order["products"][number]; // Type annotation indicating 'product' is a single item from the 'products' array in an 'Order'
+  product: ProductOrder;
   onReviewInit: (id: string) => void;
-  deliveryStatus?: Order["deliveryStatus"];
+  deliveryStatus?: string;
 }) => {
   if (product.physicalProducts) {
     return (
       <div className="relative">
         <div className="aspect-square relative rounded-lg overflow-hidden border-2 border-gray-200">
           <Image
-            src={product.physicalProducts.images[0]}
-            alt={product.physicalProducts.name}
+            src={
+              (product.physicalProducts as Product).images?.[0] ||
+              "/placeholder.svg"
+            }
+            alt={(product.physicalProducts as Product).name || "Product"}
             fill
             className="object-cover"
             quality={85}
@@ -298,14 +367,14 @@ const ProductItem = ({
 
         <div className="space-y-0.5 mt-1 grid grid-cols-1">
           <h3 className="font-medium truncate">
-            {product.physicalProducts.name}
+            {(product.physicalProducts as Product).name}
           </h3>
           <p>Quantity: {product.quantity}</p>
           <p>Price: ₦{addCommasToNumber(product.price)}</p>
 
           {deliveryStatus === "Delivered" && (
             <ReviewDialog
-              productId={product.physicalProducts._id!}
+              productId={(product.physicalProducts as Product)._id!}
               onInit={onReviewInit}
             />
           )}
@@ -319,10 +388,16 @@ const ProductItem = ({
       <div className="relative">
         <div className="aspect-square relative rounded-lg overflow-hidden border-2 border-gray-200">
           {product.digitalProducts !== null &&
-            product.digitalProducts.coverIMG !== null && (
+            (product.digitalProducts as DigitalProduct).coverIMG !== null && (
               <Image
-                src={product.digitalProducts.coverIMG[0] || "/placeholder.svg"}
-                alt={product.digitalProducts.title}
+                src={
+                  (product.digitalProducts as DigitalProduct).coverIMG[0] ||
+                  "/placeholder.svg"
+                }
+                alt={
+                  (product.digitalProducts as DigitalProduct).title ||
+                  "Digital Product"
+                }
                 fill
                 className="object-cover"
                 quality={85}
@@ -334,7 +409,8 @@ const ProductItem = ({
 
         <div className="mt-1 grid grid-cols-1">
           <h3 className="font-medium truncate">
-            {product.digitalProducts && `${product.digitalProducts.title}`}
+            {product.digitalProducts &&
+              `${(product.digitalProducts as DigitalProduct).title}`}
           </h3>
           <p className="font-medium">
             Quantity {product.quantity && product.quantity}
@@ -345,14 +421,18 @@ const ProductItem = ({
             </p>
           )}
 
-          <ReviewDialog
-            productId={product.digitalProducts._id!}
-            onInit={onReviewInit}
-          />
+          {deliveryStatus === "Delivered" && (
+            <ReviewDialog
+              productId={(product.digitalProducts as DigitalProduct)._id!}
+              onInit={onReviewInit}
+            />
+          )}
         </div>
       </div>
     );
   }
+
+  return null;
 };
 
 const ReviewDialog = ({
@@ -421,32 +501,455 @@ const ReviewDialog = ({
   );
 };
 
-const DeliveryStatus = ({
-  status,
-  onUpdate,
-  submitting,
-}: {
-  status: string;
-  onUpdate: () => void;
-  submitting: boolean;
-}) => (
-  <div className="flex flex-col items-end gap-2">
-    <span className="text-sm">Status: {status}</span>
-    {status === "Out for Delivery" && (
-      <Button
-        onClick={onUpdate}
-        disabled={submitting}
-        className="bg-udua-orange-primary/85 hover:bg-udua-orange-primary text-sm"
-      >
-        {submitting ? (
-          <Loader className="animate-spin mr-2" />
-        ) : (
-          "Mark as Delivered"
-        )}
-      </Button>
-    )}
-  </div>
-);
+// "use client";
+
+// import { useEffect, useState, use } from "react";
+// import axios from "axios";
+// import Image from "next/image";
+// import Link from "next/link";
+// import { useRouter } from "next/navigation";
+// import { ClipboardEditIcon, Loader, Star } from "lucide-react";
+// import { Order } from "@/types";
+// import { addCommasToNumber } from "@/lib/utils";
+// import { useToast } from "@/components/ui/use-toast";
+// import { Button } from "@/components/ui/button";
+// import { Textarea } from "@/components/ui/textarea";
+// import {
+//   Card,
+//   CardContent,
+//   CardDescription,
+//   CardHeader,
+//   CardTitle,
+// } from "@/components/ui/card";
+// import {
+//   Dialog,
+//   DialogContent,
+//   DialogDescription,
+//   DialogHeader,
+//   DialogTitle,
+//   DialogTrigger,
+// } from "@/components/ui/dialog";
+// import {
+//   Breadcrumb,
+//   BreadcrumbItem,
+//   BreadcrumbLink,
+//   BreadcrumbList,
+//   BreadcrumbPage,
+//   BreadcrumbSeparator,
+// } from "@/components/ui/breadcrumb";
+// import Aside1 from "@/app/(user)/components/aside-1";
+// import OrderDetailsSkeleton from "@/utils/skeleton-loaders/order-details-skeleton";
+
+// interface PageParams {
+//   slug: string;
+// }
+
+// export default function OrderDetailsPage(props: {
+//   params: Promise<PageParams>;
+// }) {
+//   const params = use(props.params);
+//   const [orderDetails, setOrderDetails] = useState<Order | null>(null);
+//   const [loading, setLoading] = useState(true);
+//   const [submitting, setSubmitting] = useState(false);
+//   const { toast } = useToast();
+//   const router = useRouter();
+
+//   const [rating, setRating] = useState(0);
+//   const [review, setReview] = useState("");
+//   const [selectedProductId, setSelectedProductId] = useState("");
+
+//   useEffect(() => {
+//     const controller = new AbortController();
+
+//     const fetchOrderData = async () => {
+//       try {
+//         const { data } = await axios.post(
+//           "/api/user/orderDetails",
+//           { orderID: params.slug },
+//           { signal: controller.signal }
+//         );
+//         console.log(`data`, data);
+//         setOrderDetails(data.orderDetail);
+//       } catch (error) {
+//         handleError(error, "Failed to load order details");
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchOrderData();
+//     return () => controller.abort();
+//   }, [params.slug]);
+
+//   const handleError = (error: unknown, context: string) => {
+//     const message = axios.isAxiosError(error)
+//       ? error.response?.data?.error || context
+//       : context;
+
+//     toast({
+//       variant: "destructive",
+//       title: "Error",
+//       description: message,
+//     });
+//   };
+
+//   const updateDeliveryStatus = async () => {
+//     if (!orderDetails) return;
+
+//     try {
+//       setSubmitting(true);
+//       await axios.post("/api/store/update-order-delivery-status", {
+//         orderID: orderDetails._id,
+//         updatedDeliveryStatus: "Delivered",
+//       });
+
+//       toast({
+//         title: "Success",
+//         description: "Order status updated to Delivered",
+//       });
+//       router.refresh();
+//     } catch (error) {
+//       handleError(error, "Failed to update status");
+//     } finally {
+//       setSubmitting(false);
+//     }
+//   };
+
+//   const submitReview = async () => {
+//     if (!review.trim() || !rating) {
+//       toast({
+//         variant: "destructive",
+//         title: "Error",
+//         description: "Please complete all required fields",
+//       });
+//       return;
+//     }
+
+//     try {
+//       setSubmitting(true);
+//       await axios.post("/api/store/product-store-reviews", {
+//         rating,
+//         writeUp: review,
+//         orderID: orderDetails?._id,
+//         productID: selectedProductId,
+//       });
+
+//       toast({
+//         title: "Success",
+//         description: "Review submitted successfully",
+//       });
+//     } catch (error) {
+//       handleError(error, "Failed to submit review");
+//     } finally {
+//       setSubmitting(false);
+//     }
+//   };
+
+//   if (loading) {
+//     return <OrderDetailsSkeleton />;
+//   }
+
+//   if (!orderDetails) {
+//     return (
+//       <div className="w-full min-h-screen flex items-center justify-center">
+//         <p>Order details not found</p>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="grid min-h-screen max-w-7xl mx-auto md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+//       <aside className="hidden border-r bg-muted/10 md:block">
+//         <div className="flex h-full max-h-screen flex-col gap-2">
+//           <Aside1 />
+//         </div>
+//       </aside>
+
+//       <main className="flex flex-col gap-4 p-4 md:py-4">
+//         <header className="flex justify-between items-center">
+//           <Breadcrumb className="hidden md:flex">
+//             <BreadcrumbList>
+//               <BreadcrumbItem>
+//                 <BreadcrumbLink asChild>
+//                   <Link href="/dashboard">Dashboard</Link>
+//                 </BreadcrumbLink>
+//               </BreadcrumbItem>
+//               <BreadcrumbSeparator />
+//               <BreadcrumbItem>
+//                 <BreadcrumbLink asChild>
+//                   <Link href="/orders">Orders</Link>
+//                 </BreadcrumbLink>
+//               </BreadcrumbItem>
+//               <BreadcrumbSeparator />
+//               <BreadcrumbItem>
+//                 <BreadcrumbPage>Order Details</BreadcrumbPage>
+//               </BreadcrumbItem>
+//             </BreadcrumbList>
+//           </Breadcrumb>
+//           <h1 className="text-xl font-semibold">Order Details</h1>
+//         </header>
+
+//         <OrderSummary order={orderDetails} />
+
+//         <Card>
+//           <CardHeader className="flex flex-col sm:flex-row justify-between gap-4">
+//             <CardTitle>
+//               {orderDetails.products.length} Product
+//               {orderDetails.products.length > 1 ? "s" : ""}
+//             </CardTitle>
+//             <DeliveryStatus
+//               status={orderDetails.deliveryStatus}
+//               onUpdate={updateDeliveryStatus}
+//               submitting={submitting}
+//             />
+//           </CardHeader>
+//           <CardContent className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4 lg:gap-3.5 w-full justify-between">
+//             {orderDetails.products.map((product) => {
+//               if (product.physicalProducts) {
+//                 return (
+//                   <ProductItem
+//                     key={product.physicalProducts._id}
+//                     product={product}
+//                     onReviewInit={setSelectedProductId}
+//                     deliveryStatus={orderDetails.deliveryStatus}
+//                   />
+//                 );
+//               } else if (product.digitalProducts) {
+//                 return (
+//                   <ProductItem
+//                     key={product.digitalProducts._id}
+//                     product={product}
+//                     onReviewInit={setSelectedProductId}
+//                   />
+//                 );
+//               }
+//             })}
+//           </CardContent>
+//         </Card>
+//       </main>
+//     </div>
+//   );
+// }
+
+// const OrderSummary = ({ order }: { order: Order }) => (
+//   <Card>
+//     <CardHeader>
+//       <CardTitle className="text-lg">Order Summary</CardTitle>
+//       <CardDescription>ID: {order._id}</CardDescription>
+//     </CardHeader>
+//     <CardContent className="sm:grid grid-cols-2 gap-4 text-sm">
+//       {/* Order metadata section */}
+//       <div>
+//         <h1 className="mb-2 font-semibold text-xl">Order Details</h1>
+
+//         <p>Order Date: {new Date(order.createdAt).toLocaleString()}</p>
+//         <p>Order Status: {order.status}</p>
+//         <p>
+//           Total Amount: &#8358;
+//           {addCommasToNumber(order.totalAmount)}
+//         </p>
+//       </div>
+
+//       {/* Payment information section */}
+//       <div>
+//         <h1 className="mb-2 font-semibold text-xl mt-2 sm:mt-0">
+//           Payment Information
+//         </h1>
+
+//         <p>Payment Method: {order.paymentMethod.toUpperCase()}</p>
+//         <p>Payment Status: {order.paymentStatus.toUpperCase()}</p>
+//       </div>
+
+//       {/* Shipping information section */}
+//       <div className="col-span-2">
+//         <h1 className="mb-2 font-semibold text-xl mt-2 sm:mt-0">
+//           Shipping Information
+//         </h1>
+
+//         <p>Shipping Address: {order.shippingAddress}</p>
+//         <p>Shipping Method: {order.shippingMethod}</p>
+//         <p>Postal Code: {order.postalCode}</p>
+//         {/* <p>Tracking Number: {order._id}</p> */}
+//       </div>
+//     </CardContent>
+//   </Card>
+// );
+
+// const ProductItem = ({
+//   product,
+//   onReviewInit,
+//   deliveryStatus,
+// }: {
+//   product: Order["products"][number]; // Type annotation indicating 'product' is a single item from the 'products' array in an 'Order'
+//   onReviewInit: (id: string) => void;
+//   deliveryStatus?: Order["deliveryStatus"];
+// }) => {
+//   if (product.physicalProducts) {
+//     return (
+//       <div className="relative">
+//         <div className="aspect-square relative rounded-lg overflow-hidden border-2 border-gray-200">
+//           <Image
+//             src={product.physicalProducts.images[0]}
+//             alt={product.physicalProducts.name}
+//             fill
+//             className="object-cover"
+//             quality={85}
+//             placeholder="blur"
+//             blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkqAcAAIUAgUW0RjgAAAAASUVORK5CYII="
+//           />
+//         </div>
+
+//         <div className="space-y-0.5 mt-1 grid grid-cols-1">
+//           <h3 className="font-medium truncate">
+//             {product.physicalProducts.name}
+//           </h3>
+//           <p>Quantity: {product.quantity}</p>
+//           <p>Price: ₦{addCommasToNumber(product.price)}</p>
+
+//           {deliveryStatus === "Delivered" && (
+//             <ReviewDialog
+//               productId={product.physicalProducts._id!}
+//               onInit={onReviewInit}
+//             />
+//           )}
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   if (product.digitalProducts) {
+//     return (
+//       <div className="relative">
+//         <div className="aspect-square relative rounded-lg overflow-hidden border-2 border-gray-200">
+//           {product.digitalProducts !== null &&
+//             product.digitalProducts.coverIMG !== null && (
+//               <Image
+//                 src={product.digitalProducts.coverIMG[0] || "/placeholder.svg"}
+//                 alt={product.digitalProducts.title}
+//                 fill
+//                 className="object-cover"
+//                 quality={85}
+//                 placeholder="blur"
+//                 blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkqAcAAIUAgUW0RjgAAAAASUVORK5CYII="
+//               />
+//             )}
+//         </div>
+
+//         <div className="mt-1 grid grid-cols-1">
+//           <h3 className="font-medium truncate">
+//             {product.digitalProducts && `${product.digitalProducts.title}`}
+//           </h3>
+//           <p className="font-medium">
+//             Quantity {product.quantity && product.quantity}
+//           </p>
+//           {product.price && (
+//             <p className="font-medium">
+//               &#8358; {addCommasToNumber(product.price)}{" "}
+//             </p>
+//           )}
+
+//           <ReviewDialog
+//             productId={product.digitalProducts._id!}
+//             onInit={onReviewInit}
+//           />
+//         </div>
+//       </div>
+//     );
+//   }
+// };
+
+// const ReviewDialog = ({
+//   productId,
+//   onInit,
+// }: {
+//   productId: string;
+//   onInit: (id: string) => void;
+// }) => {
+//   const [rating, setRating] = useState(0);
+//   const [review, setReview] = useState("");
+
+//   return (
+//     <Dialog>
+//       <DialogTrigger asChild className="absolute right-2 top-1">
+//         <Button
+//           className="bg-udua-orange-primary/85 hover:bg-udua-orange-primary"
+//           onClick={() => onInit(productId)}
+//           aria-label="Review product"
+//           size={"icon"}
+//         >
+//           <ClipboardEditIcon />
+//         </Button>
+//       </DialogTrigger>
+
+//       <DialogContent className="max-w-md">
+//         <DialogHeader>
+//           <DialogTitle>Product Review</DialogTitle>
+//           <DialogDescription>
+//             Share your experience with this product
+//           </DialogDescription>
+//         </DialogHeader>
+
+//         <div className="space-y-4">
+//           <div className="flex justify-center gap-2">
+//             {[...Array(5)].map((_, i) => {
+//               const value = i + 1;
+//               return (
+//                 <button
+//                   key={value}
+//                   onClick={() => setRating(value)}
+//                   className="focus:outline-none"
+//                   aria-label={`Rate ${value} stars`}
+//                 >
+//                   <Star
+//                     className={`h-8 w-8 transition-colors ${
+//                       value <= rating
+//                         ? "text-yellow-500 fill-yellow-500"
+//                         : "text-gray-300"
+//                     }`}
+//                   />
+//                 </button>
+//               );
+//             })}
+//           </div>
+
+//           <Textarea
+//             value={review}
+//             onChange={(e) => setReview(e.target.value)}
+//             placeholder="Share your thoughts..."
+//             className="min-h-[120px]"
+//           />
+//         </div>
+//       </DialogContent>
+//     </Dialog>
+//   );
+// };
+
+// const DeliveryStatus = ({
+//   status,
+//   onUpdate,
+//   submitting,
+// }: {
+//   status: string;
+//   onUpdate: () => void;
+//   submitting: boolean;
+// }) => (
+//   <div className="flex flex-col items-end gap-2">
+//     <span className="text-sm">Status: {status}</span>
+//     {status === "Out for Delivery" && (
+//       <Button
+//         onClick={onUpdate}
+//         disabled={submitting}
+//         className="bg-udua-orange-primary/85 hover:bg-udua-orange-primary text-sm"
+//       >
+//         {submitting ? (
+//           <Loader className="animate-spin mr-2" />
+//         ) : (
+//           "Mark as Delivered"
+//         )}
+//       </Button>
+//     )}
+//   </div>
+// );
 
 // "use client";
 

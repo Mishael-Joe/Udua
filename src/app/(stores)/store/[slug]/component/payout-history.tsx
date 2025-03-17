@@ -96,7 +96,7 @@ const DataTable = ({
   caption: string;
   columns: string[];
   data: any[];
-  renderRow: (item: any) => React.ReactNode;
+  renderRow: (item: Settlement | PayoutAccount) => React.ReactNode;
 }) => (
   <Table>
     <TableCaption>{caption}</TableCaption>
@@ -113,7 +113,7 @@ const DataTable = ({
   </Table>
 );
 
-function PayoutHistory() {
+function PayoutHistory({ params }: { params: { slug: string } }) {
   // State management with TypeScript types
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -205,7 +205,7 @@ function PayoutHistory() {
         <StatsCard
           title="Pending Settlement"
           value={pendingSettlementAmount}
-          description="Payouts with status 'requested' or 'processing'"
+          description="Payouts with status 'Requested' or 'Processing'"
           icon={ClockIcon}
         />
         <StatsCard
@@ -228,21 +228,54 @@ function PayoutHistory() {
             columns={["Order ID", "Amount", "Bank", "Status", "Request Date"]}
             data={pendingSettlements}
             renderRow={(settlement) => (
-              <TableRow key={settlement._id}>
-                <TableCell>{settlement.orderID}</TableCell>
+              <TableRow key={(settlement as Settlement)._id}>
+                <TableCell>{(settlement as Settlement).mainOrderID}</TableCell>
                 <TableCell>
-                  ₦{addCommasToNumber(settlement.settlementAmount)}
+                  ₦
+                  {addCommasToNumber(
+                    (settlement as Settlement).settlementAmount
+                  )}
                 </TableCell>
-                <TableCell>{settlement.payoutAccount.bankName}</TableCell>
+                <TableCell>
+                  {(settlement as Settlement).payoutAccount.bankName}
+                </TableCell>
                 <TableCell className="uppercase">
-                  {settlement.payoutStatus}
+                  {(settlement as Settlement).payoutStatus}
                 </TableCell>
                 <TableCell>
-                  {new Date(settlement.createdAt).toLocaleDateString("en-US", {
+                  {new Date(
+                    (settlement as Settlement).createdAt
+                  ).toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "short",
                     day: "numeric",
                   })}
+                </TableCell>
+                <TableCell>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Order actions"
+                      >
+                        <MoreHorizontalIcon className="w-5 h-5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                      <Link
+                        href={`/store/${params.slug}/order-details/${
+                          (settlement as Settlement).mainOrderID
+                        }`}
+                        legacyBehavior
+                      >
+                        <DropdownMenuItem asChild>
+                          <a className="cursor-pointer">View Details</a>
+                        </DropdownMenuItem>
+                      </Link>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </TableCell>
               </TableRow>
             )}
@@ -259,24 +292,64 @@ function PayoutHistory() {
         <CardContent>
           <DataTable
             caption="Completed settlements with status 'Paid'"
-            columns={["Order ID", "Amount", "Bank", "Status", "Date"]}
+            columns={[
+              "Order ID",
+              "Amount",
+              "Bank",
+              "Status",
+              "Date",
+              "Actions",
+            ]}
             data={successfulSettlements}
             renderRow={(settlement) => (
-              <TableRow key={settlement._id}>
-                <TableCell>{settlement.orderID}</TableCell>
+              <TableRow key={(settlement as Settlement)._id}>
+                <TableCell>{(settlement as Settlement).mainOrderID}</TableCell>
                 <TableCell>
-                  ₦{addCommasToNumber(settlement.settlementAmount)}
+                  ₦
+                  {addCommasToNumber(
+                    (settlement as Settlement).settlementAmount
+                  )}
                 </TableCell>
-                <TableCell>{settlement.payoutAccount.bankName}</TableCell>
+                <TableCell>
+                  {(settlement as Settlement).payoutAccount.bankName}
+                </TableCell>
                 <TableCell className="uppercase">
-                  {settlement.payoutStatus}
+                  {(settlement as Settlement).payoutStatus}
                 </TableCell>
                 <TableCell>
-                  {new Date(settlement.createdAt).toLocaleDateString("en-US", {
+                  {new Date(
+                    (settlement as Settlement).createdAt
+                  ).toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "short",
                     day: "numeric",
                   })}
+                </TableCell>
+                <TableCell>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Order actions"
+                      >
+                        <MoreHorizontalIcon className="w-5 h-5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                      <Link
+                        href={`/store/${params.slug}/order-details/${
+                          (settlement as Settlement).mainOrderID
+                        }`}
+                        legacyBehavior
+                      >
+                        <DropdownMenuItem asChild>
+                          <a className="cursor-pointer">View Details</a>
+                        </DropdownMenuItem>
+                      </Link>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </TableCell>
               </TableRow>
             )}
@@ -296,13 +369,19 @@ function PayoutHistory() {
             columns={["Method", "Bank", "Account Number", "Account Name"]}
             data={payoutAccounts}
             renderRow={(account) => (
-              <TableRow key={account.payoutMethod}>
+              <TableRow key={(account as PayoutAccount).payoutMethod}>
                 <TableCell className="uppercase">
-                  {account.payoutMethod}
+                  {(account as PayoutAccount).payoutMethod}
                 </TableCell>
-                <TableCell>{account.bankDetails.bankName}</TableCell>
-                <TableCell>{account.bankDetails.accountNumber}</TableCell>
-                <TableCell>{account.bankDetails.accountHolderName}</TableCell>
+                <TableCell>
+                  {(account as PayoutAccount).bankDetails.bankName}
+                </TableCell>
+                <TableCell>
+                  {(account as PayoutAccount).bankDetails.accountNumber}
+                </TableCell>
+                <TableCell>
+                  {(account as PayoutAccount).bankDetails.accountHolderName}
+                </TableCell>
               </TableRow>
             )}
           />

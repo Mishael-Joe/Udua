@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectToDB } from "@/lib/mongoose";
 import { getStoreIDFromToken } from "@/lib/helpers/getStoreIDFromToken";
 import Settlement from "@/lib/models/settlement.model";
-import Store from "@/lib/models/store.model";
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,7 +17,7 @@ export async function POST(request: NextRequest) {
 
     const pendingSettlements = await Settlement.find({
       storeID: storeID,
-      payoutStatus: ["Requested", "Processing"],
+      payoutStatus: { $in: ["Requested", "Processing"] },
     });
 
     // console.log(`pendingSettlements`, pendingSettlements);

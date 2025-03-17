@@ -28,7 +28,7 @@ const ContactSupport = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Simulate form submission to the server (replace with actual logic)
-    console.log("Form submitted:", formData);
+    // console.log("Form submitted:", formData);
     setIsSubmitted(true); // Mark as submitted after submission
   };
 

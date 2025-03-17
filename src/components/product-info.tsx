@@ -49,8 +49,11 @@ export function ProductInfo({ product }: ForProductInfo) {
 
   // Unified add to cart handler
   const handleAddToCart = useCallback(() => {
+    const storeID = product.storeID;
+    // console.log("storeID", storeID);
     addToCart(
       product,
+      storeID,
       quantity,
       isPhysicalProduct ? selectedSize : null,
       isPhysicalProduct ? selectedColor : null

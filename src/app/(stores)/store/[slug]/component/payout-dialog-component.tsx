@@ -24,10 +24,15 @@ import { useToast } from "@/components/ui/use-toast";
 
 interface PayableAmount {
   payableAmount: number;
-  orderID: string;
+  mainOrderID: string;
+  subOrderID: string;
 }
 
-function PayoutDialog({ payableAmount, orderID }: PayableAmount) {
+function PayoutDialog({
+  payableAmount,
+  mainOrderID,
+  subOrderID,
+}: PayableAmount) {
   const { toast } = useToast();
   const [payoutAccounts, setPayoutAccounts] = useState<PayoutAccount[]>([]);
   const [loading, setLoading] = useState(true);
@@ -67,7 +72,8 @@ function PayoutDialog({ payableAmount, orderID }: PayableAmount) {
     setLoading(true); // Set loading state before the request
 
     const body = {
-      orderID: orderID,
+      mainOrderID: mainOrderID,
+      subOrderID: subOrderID,
       settlementAmount: payableAmount,
       selectedPayoutAccount: selectedPayoutAccount,
     };

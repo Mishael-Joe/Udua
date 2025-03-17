@@ -1,10 +1,11 @@
 import { Suspense } from "react";
 import PayoutHistory from "../component/payout-history";
 
-function Page() {
+async function Page(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   return (
     <Suspense fallback={`Loading...`}>
-      <PayoutHistory />
+      <PayoutHistory params={params} />
     </Suspense>
   );
 }

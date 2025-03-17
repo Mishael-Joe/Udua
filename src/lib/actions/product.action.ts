@@ -310,7 +310,7 @@ export async function fetchProductsAndEBooks(
     const [products, eBooks] = await Promise.all([
       Product.find(productQuery)
         .select(
-          "_id name price images sizes productType productCategory description"
+          "_id name price images sizes productType description specifications storeID"
         )
         .sort(sortOptions)
         .skip(skip)
@@ -318,7 +318,9 @@ export async function fetchProductsAndEBooks(
         .lean()
         .select(search ? { score: { $meta: "textScore" } } : {}),
       EBook.find(eBookQuery)
-        .select("_id title price coverIMG category productType description")
+        .select(
+          "_id title price coverIMG productType description specifications storeID"
+        )
         .sort(sortOptions)
         .skip(skip)
         .limit(limit)

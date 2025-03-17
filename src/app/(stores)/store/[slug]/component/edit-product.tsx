@@ -41,7 +41,7 @@ export default function EditProduct({
 }: {
   params: { productID: string };
 }) {
-  console.log("params", params);
+  // console.log("params", params);
   const [product, setProduct] = useState<Products>({
     name: "",
     price: "",

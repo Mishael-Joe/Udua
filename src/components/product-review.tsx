@@ -82,6 +82,7 @@ const ProductReviewComponent = ({ product }: { product: { _id: string } }) => {
           total4Star,
           total5Star,
         } = response.data;
+        // console.log("Product Reviews:", reviews);
 
         setProductReviews(reviews);
         setTotalPages(totalPages);

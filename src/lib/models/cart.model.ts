@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 interface CartItem {
   product: mongoose.Schema.Types.ObjectId;
+  storeID: mongoose.Schema.Types.ObjectId; // New field to track store ID
   quantity: number;
   productType: "physicalproducts" | "digitalproducts";
   selectedSize?: {
@@ -22,6 +23,11 @@ const cartItemSchema = new Schema<CartItem>({
     type: Schema.Types.ObjectId,
     refPath: "items.productType",
     required: true,
+  },
+  storeID: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Store",
+    required: true, // Ensures we know which store this product belongs to
   },
   quantity: { type: Number, required: true },
   productType: {

@@ -3,7 +3,7 @@ import { connectToDB } from "@/lib/mongoose";
 import ProductReview from "@/lib/models/product-review.model";
 import { ObjectId } from "mongodb"; // or "mongoose"
 import { Types } from "mongoose";
-import User from "@/lib/models/user.model"; 
+import User from "@/lib/models/user.model";
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       product: productID,
     });
 
-    const user = User.findOne().select('_id')
+    const user = User.findOne().select("_id");
 
     // Fetch paginated reviews
     const reviews = await ProductReview.find({ product: productID })

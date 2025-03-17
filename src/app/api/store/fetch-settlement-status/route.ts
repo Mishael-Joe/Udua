@@ -6,8 +6,11 @@ import Settlement from "@/lib/models/settlement.model";
 export async function POST(request: NextRequest) {
   try {
     const requestBody = await request.json();
-    const { orderID } = requestBody;
-    // console.log("orderID", orderID);
+    const { mainOrderID, subOrderID } = requestBody as {
+      mainOrderID: string;
+      subOrderID: string;
+    };
+    // console.log("requestBody", requestBody);
 
     await connectToDB();
     const storeID = await getStoreIDFromToken(request);
@@ -22,7 +25,8 @@ export async function POST(request: NextRequest) {
     // Fetch the settlement for the store and order
     const settlement = await Settlement.findOne({
       storeID: storeID.toString(),
-      orderID: orderID.toString(),
+      mainOrderID: mainOrderID.toString(),
+      subOrderID: subOrderID.toString(),
     }).lean();
 
     // Check if the settlement was found

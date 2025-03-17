@@ -4,7 +4,7 @@ import axios from "axios";
 import { type ChangeEvent, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { addCommasToNumber } from "@/lib/utils";
+import { addCommasToNumber, getStatusClassName } from "@/lib/utils";
 
 import {
   Breadcrumb,
@@ -24,11 +24,12 @@ import {
 } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader } from "lucide-react";
-import type { Order, Settlement } from "@/types";
+import type { DigitalProduct, Order, Product, Settlement } from "@/types";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import PayoutDialog from "./payout-dialog-component";
 import { calculateCommission } from "@/constant/constant";
+import { Badge } from "@/components/ui/badge";
 
 /**
  * Available order status options for updating delivery status
@@ -116,11 +117,15 @@ export default function OrderDetails({
    */
   useEffect(() => {
     const fetchSettlementStatus = async () => {
+      if (orderDetails === undefined) return;
       try {
         const response = await axios.post<{ settlement: Settlement }>(
           "/api/store/fetch-settlement-status",
           {
-            orderID: params.orderID,
+            mainOrderID:
+              orderDetails !== undefined ? orderDetails._id : params.orderID,
+            subOrderID:
+              orderDetails !== undefined && orderDetails.subOrders[0]._id, // order id for this particular store. Each store in the substore arr has a unique order id
           }
         );
         if (response.status === 200) {
@@ -132,7 +137,7 @@ export default function OrderDetails({
     };
 
     fetchSettlementStatus();
-  }, []);
+  }, [orderDetails]);
 
   /**
    * Handle delivery status dropdown change
@@ -166,16 +171,22 @@ export default function OrderDetails({
       return;
     }
 
-    const body = {
-      orderID: orderDetails !== undefined ? orderDetails._id : params.orderID,
-      updatedDeliveryStatus: deliveryStatus.status,
-    };
+    // const body = {
+    //   mainOrderID:
+    //     orderDetails !== undefined ? orderDetails._id : params.orderID,
+    //   subOrderID: orderDetails !== undefined && orderDetails.subOrders[0]._id, // order id for this particular store. Each store in the substore arr has a unique order id
+    //   updatedDeliveryStatus: deliveryStatus.status,
+    // };
 
     try {
       const response = await axios.post(
         "/api/store/update-order-delivery-status",
         {
-          body,
+          mainOrderID:
+            orderDetails !== undefined ? orderDetails._id : params.orderID,
+          subOrderID:
+            orderDetails !== undefined && orderDetails.subOrders[0]._id, // order id for this particular store. Each store in the substore arr has a unique order id
+          updatedDeliveryStatus: deliveryStatus.status,
         }
       );
 
@@ -245,10 +256,13 @@ export default function OrderDetails({
    * Uses the commission calculation utility to determine the settlement amount
    * after platform fees are deducted
    */
-  const totalAvailablePayout = orderDetails.products.reduce((total, order) => {
-    // Sum the prices of all products in order
-    return total + calculateCommission(order.price).settleAmount;
-  }, 0);
+  const totalAvailablePayout = orderDetails.subOrders[0].products.reduce(
+    (total, order) => {
+      // Sum the prices of all products in order
+      return total + calculateCommission(order.price).settleAmount;
+    },
+    0
+  );
 
   if (orderDetails !== undefined) {
     return (
@@ -311,15 +325,15 @@ export default function OrderDetails({
 
               <p>
                 Customer Payment Method:{" "}
-                {orderDetails.paymentMethod.toUpperCase()}
+                {orderDetails.paymentMethod?.toUpperCase()}
               </p>
               <p>
                 Customer Payment Status:{" "}
-                {orderDetails.paymentStatus.toUpperCase()}
+                {orderDetails.paymentStatus?.toUpperCase()}
               </p>
 
               {/* Payout information - only shown for delivered orders */}
-              {orderDetails.deliveryStatus === "Delivered" && (
+              {orderDetails.subOrders[0].deliveryStatus === "Delivered" && (
                 <p>
                   Payout Amount: &#8358;{" "}
                   {addCommasToNumber(totalAvailablePayout)}
@@ -334,7 +348,7 @@ export default function OrderDetails({
               </h1>
 
               <p>Shipping Address: {orderDetails.shippingAddress}</p>
-              <p>Shipping Method: {orderDetails.shippingMethod}</p>
+              <p>Shipping Method: {orderDetails.subOrders[0].shippingMethod}</p>
               <p>Postal Code: {orderDetails.postalCode}</p>
               {/* <p>Tracking Number: {orderDetails._id}</p> */}
             </div>
@@ -342,12 +356,13 @@ export default function OrderDetails({
 
           {/* Payout action section - conditional rendering based on delivery and payout status */}
           <CardFooter className="float-right">
-            {orderDetails.deliveryStatus === "Delivered" && (
+            {orderDetails.subOrders[0].deliveryStatus === "Delivered" && (
               <>
                 {payoutStatus === null ? (
                   <PayoutDialog
                     payableAmount={totalAvailablePayout}
-                    orderID={orderDetails._id}
+                    mainOrderID={orderDetails._id}
+                    subOrderID={orderDetails.subOrders[0]._id}
                   />
                 ) : payoutStatus === "Requested" ? (
                   <p>Payout Requested</p>
@@ -366,20 +381,32 @@ export default function OrderDetails({
           <CardHeader>
             <div className="flex gap-3 w-full justify-between">
               <CardTitle className="text-lg sm:text-2xl">
-                Product{orderDetails.products.length > 1 && "s"} Purchased
+                Product{orderDetails.subOrders[0].products.length > 1 && "s"}{" "}
+                Purchased
               </CardTitle>
 
               {/* Delivery status management section */}
               <CardDescription className="flex flex-col gap-2 items-end">
                 {orderDetails.stores.length === 1 ? (
                   <>
-                    Order Status: {orderDetails.deliveryStatus}
+                    <p>
+                      Order Status:{" "}
+                      <Badge
+                        className={getStatusClassName(
+                          orderDetails.subOrders[0].deliveryStatus
+                        )}
+                      >
+                        {orderDetails.subOrders[0].deliveryStatus}
+                      </Badge>
+                    </p>
                     {/* Only show status update controls for orders that are not in a final state */}
-                    {orderDetails.deliveryStatus !== "Delivered" &&
-                      orderDetails.deliveryStatus !== "Canceled" &&
-                      orderDetails.deliveryStatus !== "Returned" &&
-                      orderDetails.deliveryStatus !== "Failed Delivery" &&
-                      orderDetails.deliveryStatus !== "Refunded" && (
+                    {orderDetails.subOrders[0].deliveryStatus !== "Delivered" &&
+                      orderDetails.subOrders[0].deliveryStatus !== "Canceled" &&
+                      orderDetails.subOrders[0].deliveryStatus !== "Returned" &&
+                      orderDetails.subOrders[0].deliveryStatus !==
+                        "Failed Delivery" &&
+                      orderDetails.subOrders[0].deliveryStatus !==
+                        "Refunded" && (
                         <>
                           <select
                             aria-label="Select Delivery Status"
@@ -424,24 +451,25 @@ export default function OrderDetails({
 
           {/* Product grid - displays all products in the order */}
           <CardContent className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4 lg:gap-3.5 w-full justify-between">
-            {orderDetails.products.map((product) => {
+            {orderDetails.subOrders[0].products.map((product) => {
               // Handle physical products
               if (product.physicalProducts) {
                 return (
                   <div
                     className="gri sm:grid-cols-2 gap-4 text-sm w-full relative"
-                    key={product.physicalProducts.name}
+                    key={(product.physicalProducts as Product).name}
                   >
                     {/* Product image */}
                     <div className="aspect-square w-full overflow-hidden rounded-lg border-2 border-gray-200 bg-gray-100 group-hover:opacity-75 dark:border-gray-800">
                       {product.physicalProducts !== null &&
-                        product.physicalProducts.images !== null && (
+                        (product.physicalProducts as Product).images !==
+                          null && (
                           <Image
                             src={
-                              product.physicalProducts.images[0] ||
+                              (product.physicalProducts as Product).images[0] ||
                               "/placeholder.svg"
                             }
-                            alt={product.physicalProducts.name}
+                            alt={(product.physicalProducts as Product).name}
                             width={300}
                             height={150}
                             className="h-full w-full object-cover object-center"
@@ -454,7 +482,7 @@ export default function OrderDetails({
                     <div className="">
                       <h3 className="mt-4 font-medium truncate">
                         {product.physicalProducts &&
-                          ` ${product.physicalProducts.name}`}
+                          ` ${(product.physicalProducts as Product).name}`}
                       </h3>
                       <p className="mt-2 font-medium">
                         Quantity Bought: {product.quantity && product.quantity}
@@ -474,18 +502,21 @@ export default function OrderDetails({
                 return (
                   <div
                     className="gri sm:grid-cols-2 gap-4 text-sm w-full relative"
-                    key={product.digitalProducts.title}
+                    key={(product.digitalProducts as DigitalProduct).title}
                   >
                     {/* Product image */}
                     <div className="aspect-square w-full overflow-hidden rounded-lg border-2 border-gray-200 bg-gray-100 group-hover:opacity-75 dark:border-gray-800">
                       {product.physicalProducts !== null &&
-                        product.digitalProducts.coverIMG !== null && (
+                        (product.digitalProducts as DigitalProduct).coverIMG !==
+                          null && (
                           <Image
                             src={
-                              product.digitalProducts.coverIMG[0] ||
-                              "/placeholder.svg"
+                              (product.digitalProducts as DigitalProduct)
+                                .coverIMG[0] || "/placeholder.svg"
                             }
-                            alt={product.digitalProducts.title}
+                            alt={
+                              (product.digitalProducts as DigitalProduct).title
+                            }
                             width={300}
                             height={150}
                             className="h-full w-full object-cover object-center"
@@ -498,7 +529,9 @@ export default function OrderDetails({
                     <div className="">
                       <h3 className="mt-4 font-medium truncate">
                         {product.digitalProducts &&
-                          ` ${product.digitalProducts.title}`}
+                          ` ${
+                            (product.digitalProducts as DigitalProduct).title
+                          }`}
                       </h3>
                       <p className="mt-2 font-medium">
                         Quantity Bought: {product.quantity && product.quantity}

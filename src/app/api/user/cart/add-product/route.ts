@@ -18,13 +18,16 @@ import { getUserDataFromToken } from "@/lib/helpers/getUserDataFromToken";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { productID, productType, quantity, selectedSize } = body;
+    const { productID, productType, quantity, selectedSize, storeID } = body;
 
     const userId = await getUserDataFromToken(request);
 
-    if (!userId || !productID || !productType || !quantity) {
+    if (!userId || !productID || !productType || !quantity || !storeID) {
       return NextResponse.json(
-        { error: "userId, productID, productType and quantity are required" },
+        {
+          error:
+            "userId, productID, productType quantity and storeID are required",
+        },
         { status: 400 }
       );
     }
@@ -60,6 +63,7 @@ export async function POST(request: NextRequest) {
       // Add a new item to the cart.
       cart.items.push({
         product: productID,
+        storeID,
         productType,
         quantity,
         selectedSize: selectedSize || undefined,

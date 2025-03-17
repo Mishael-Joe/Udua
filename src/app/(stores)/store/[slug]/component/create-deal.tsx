@@ -49,7 +49,7 @@ function UploadDeal({ params }: { params: { slug: string } }) {
           { signal: controller.signal }
         );
         setProducts(data.products);
-        console.log(" data.products", data.products);
+        // console.log(" data.products", data.products);
       } catch (error: any) {
         if (!axios.isCancel(error)) {
           console.error("Failed to fetch products", error.message);
@@ -78,7 +78,7 @@ function UploadDeal({ params }: { params: { slug: string } }) {
   });
 
   const handleNext = async () => {
-    console.log("form values:", form.watch()); // Logs current form values
+    // console.log("form values:", form.watch()); // Logs current form values
 
     const arrOfFieldsToValidat: (
       | "dealType"
