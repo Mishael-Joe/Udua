@@ -1,9 +1,13 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import type React from "react";
+
+import { AdminData, withAdminAuth } from "./auth/with-admin-auth";
+import { PERMISSIONS } from "@/lib/rbac/permissions";
+import { FormEvent, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
-import { FormEvent, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
 
 interface Store {
@@ -15,7 +19,7 @@ interface Store {
   confirmPassword?: string;
 }
 
-function AdminCreateStore() {
+function CreateStorePage({ admin }: { admin?: AdminData }) {
   const [store, setStore] = useState<Store>({
     name: "",
     storeOwner: "",
@@ -97,102 +101,97 @@ function AdminCreateStore() {
   };
 
   return (
-    <section>
-      <h3 className="my-3 text-xl font-medium text-center text-gray-600 dark:text-gray-200">
-        Create Store
-      </h3>
+    <section className="px-6 py-2">
+      <h1 className="text-2xl font-bold mb-2 text-center">Create New Store</h1>
+      <p className="mb-4 text-center">Welcome, {admin?.name}!</p>
 
-      <div>
-        <div>
-          <div className="w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800 mb-6">
-            <div className="px-6 py-4">
-              <p className="mt-3 text-center text-gray-500 dark:text-gray-400">
-                Provide the store details.
-              </p>
+      <div className="max-w-lg mx-auto shadow space-y-4">
+        <p className="text-center pt-4 text-gray-500 dark:text-gray-400">
+          Provide the store details.
+        </p>
 
-              <form onSubmit={(e) => handleSubmit(e)} className="space-y-8 ">
-                <input
-                  className="block w-full px-4 py-2 mt-2 dark:text-slate-200 text-black placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400"
-                  aria-label="ID"
-                  type="text"
-                  name="storeOwner"
-                  value={store.storeOwner}
-                  onChange={handleChange}
-                  placeholder="User ID"
-                  required
-                />
+        <form onSubmit={(e) => handleSubmit(e)} className="space-y-8 p-3">
+          <input
+            className="block w-full px-4 py-2 mt-2 dark:text-slate-200 text-black placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400"
+            aria-label="ID"
+            type="text"
+            name="storeOwner"
+            value={store.storeOwner}
+            onChange={handleChange}
+            placeholder="User ID"
+            required
+          />
 
-                <input
-                  className="block w-full px-4 py-2 mt-2 dark:text-slate-200 text-black placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400"
-                  aria-label="Store Name"
-                  type="text"
-                  name="name"
-                  value={store.name}
-                  onChange={handleChange}
-                  placeholder="Store Name"
-                  required
-                />
+          <input
+            className="block w-full px-4 py-2 mt-2 dark:text-slate-200 text-black placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400"
+            aria-label="Store Name"
+            type="text"
+            name="name"
+            value={store.name}
+            onChange={handleChange}
+            placeholder="Store Name"
+            required
+          />
 
-                <input
-                  className="block w-full px-4 py-2 mt-2 dark:text-slate-200 text-black placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400"
-                  aria-label="Store Email"
-                  type="email"
-                  name="storeEmail"
-                  value={store.storeEmail}
-                  onChange={handleChange}
-                  placeholder="Store Email"
-                  required
-                />
+          <input
+            className="block w-full px-4 py-2 mt-2 dark:text-slate-200 text-black placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400"
+            aria-label="Store Email"
+            type="email"
+            name="storeEmail"
+            value={store.storeEmail}
+            onChange={handleChange}
+            placeholder="Store Email"
+            required
+          />
 
-                <input
-                  className="block w-full px-4 py-2 mt-2 dark:text-slate-200 text-black placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400"
-                  aria-label="Store Unique Id"
-                  type="text"
-                  name="uniqueId"
-                  value={store.uniqueId}
-                  onChange={handleChange}
-                  placeholder="Store Unique Id"
-                  required
-                />
+          <input
+            className="block w-full px-4 py-2 mt-2 dark:text-slate-200 text-black placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400"
+            aria-label="Store Unique Id"
+            type="text"
+            name="uniqueId"
+            value={store.uniqueId}
+            onChange={handleChange}
+            placeholder="Store Unique Id"
+            required
+          />
 
-                <input
-                  className="block w-full px-4 py-2 mt-2 dark:text-slate-200 text-black placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400"
-                  aria-label="Store Unique Id"
-                  type="password"
-                  name="defaultPassword"
-                  value={store.defaultPassword}
-                  onChange={handleChange}
-                  placeholder="Default Password"
-                  required
-                />
+          <input
+            className="block w-full px-4 py-2 mt-2 dark:text-slate-200 text-black placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400"
+            aria-label="Store Unique Id"
+            type="password"
+            name="defaultPassword"
+            value={store.defaultPassword}
+            onChange={handleChange}
+            placeholder="Default Password"
+            required
+          />
 
-                <input
-                  className="block w-full px-4 py-2 mt-2 dark:text-slate-200 text-black placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400"
-                  aria-label="Store Unique Id"
-                  type="password"
-                  name="confirmPassword"
-                  value={store.confirmPassword}
-                  onChange={handleChange}
-                  placeholder="confirm Password"
-                  required
-                />
-                <Button
-                  type="submit"
-                  className="items-end w-full bg-purple-500 hover:bg-purple-600"
-                >
-                  {!isLoading && "Submit"}
-                  {isLoading && (
-                    <Loader className=" animate-spin w-5 h-5 mr-4" />
-                  )}{" "}
-                  {isLoading && "Please wait..."}
-                </Button>
-              </form>
-            </div>
-          </div>
-        </div>
+          <input
+            className="block w-full px-4 py-2 mt-2 dark:text-slate-200 text-black placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400"
+            aria-label="Store Unique Id"
+            type="password"
+            name="confirmPassword"
+            value={store.confirmPassword}
+            onChange={handleChange}
+            placeholder="confirm Password"
+            required
+          />
+          <Button
+            type="submit"
+            className="items-end w-full bg-purple-500 hover:bg-purple-600"
+          >
+            {!isLoading && "Submit"}
+            {isLoading && (
+              <Loader className=" animate-spin w-5 h-5 mr-4" />
+            )}{" "}
+            {isLoading && "Please wait..."}
+          </Button>
+        </form>
       </div>
     </section>
   );
 }
 
-export default AdminCreateStore;
+export const AdminCreateStore = withAdminAuth(CreateStorePage, {
+  requiredPermissions: [PERMISSIONS.CREATE_STORE],
+});

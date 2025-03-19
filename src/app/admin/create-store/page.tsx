@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import AdminCreateStore from "../components/create-store";
+import { AdminCreateStore } from "../components/create-store";
 
 export default async function Page() {
   return (

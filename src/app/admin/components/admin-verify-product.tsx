@@ -34,7 +34,7 @@ type UnverifiedProducts = Products & {
 export default function AllUnverifiedProduct() {
   const [allUnverifiedProduct, setAllUnverifiedProduct] = useState<
     UnverifiedProducts[] | null
-  >(null);
+  >([]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -66,7 +66,7 @@ export default function AllUnverifiedProduct() {
   // Calculate total revenue and total sales
   if (allUnverifiedProduct !== null) {
     return (
-      <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
+      <main className="flex flex-col gap-4 py-4 md:py-0 px-6 md:gap-8">
         <h1 className="text-2xl font-semibold ">
           Products submitted for verification
         </h1>
@@ -132,13 +132,16 @@ export default function AllUnverifiedProduct() {
                         {product.price}
                       </TableCell>
 
-                      {/* <TableCell>
-                        {new Date(product.createdAt).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
-                      </TableCell> */}
+                      <TableCell>
+                        {new Date(product.createdAt).toLocaleDateString(
+                          "en-US"
+                          // {
+                          //   year: "numeric",
+                          //   month: "long",
+                          //   day: "numeric",
+                          // }
+                        )}
+                      </TableCell>
 
                       <TableCell>
                         <DropdownMenu>
