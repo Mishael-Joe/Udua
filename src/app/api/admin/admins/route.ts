@@ -39,14 +39,14 @@ export async function GET(request: NextRequest) {
     const admins = await Admin.find().select("-password").sort({ name: 1 });
 
     // Log this action
-    await logAdminAction(
-      tokenData,
-      {
-        action: "VIEW_ADMINS",
-        myModule: "ADMIN_MANAGEMENT",
-      },
-      request
-    );
+    // await logAdminAction(
+    //   tokenData,
+    //   {
+    //     action: "VIEW_ADMINS",
+    //     myModule: "ADMIN_MANAGEMENT",
+    //   },
+    //   request
+    // );
 
     return NextResponse.json({ admins });
   } catch (error: any) {

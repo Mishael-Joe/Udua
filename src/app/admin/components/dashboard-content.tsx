@@ -15,7 +15,7 @@ function DashboardContent({ admin }: { admin?: any }) {
           <DashboardCard
             title="Products"
             description="Manage and verify products"
-            link="/admin/products"
+            link="/admin/verify-products"
           />
         ) : null}
 

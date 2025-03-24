@@ -86,37 +86,40 @@ interface IProduct extends Document {
   isVisible: boolean;
 }
 
-const productSchema = new Schema<IProduct>({
-  storeID: { type: String, required: true },
-  productType: {
-    type: String,
-    enum: ["physicalproducts", "digitalproducts"],
-    default: "physicalproducts",
-    required: true,
+const productSchema = new Schema<IProduct>(
+  {
+    storeID: { type: String, required: true },
+    productType: {
+      type: String,
+      enum: ["physicalproducts", "digitalproducts"],
+      default: "physicalproducts",
+      required: true,
+    },
+    name: { type: String, required: true, index: true },
+    price: {
+      type: Number,
+      required: function () {
+        return !this.sizes || this.sizes.length === 0;
+      },
+    }, // Required if sizes are not provided
+    sizes: [
+      {
+        size: { type: String }, // E.g., "S", "M", "L"
+        price: { type: Number }, // Size-specific price
+        quantity: { type: Number }, // Stock for that size
+      },
+    ],
+    productQuantity: { type: Number },
+    images: { type: [String], default: [] },
+    description: { type: String, required: true, index: true },
+    specifications: { type: [String], required: true },
+    category: { type: [String], required: true, index: true },
+    subCategory: { type: [String], required: true, index: true },
+    isVerifiedProduct: { type: Boolean, default: false },
+    isVisible: { type: Boolean, default: true },
   },
-  name: { type: String, required: true, index: true },
-  price: {
-    type: Number,
-    required: function () {
-      return !this.sizes || this.sizes.length === 0;
-    },
-  }, // Required if sizes are not provided
-  sizes: [
-    {
-      size: { type: String }, // E.g., "S", "M", "L"
-      price: { type: Number }, // Size-specific price
-      quantity: { type: Number }, // Stock for that size
-    },
-  ],
-  productQuantity: { type: Number },
-  images: { type: [String], default: [] },
-  description: { type: String, required: true, index: true },
-  specifications: { type: [String], required: true },
-  category: { type: [String], required: true, index: true },
-  subCategory: { type: [String], required: true, index: true },
-  isVerifiedProduct: { type: Boolean, default: false },
-  isVisible: { type: Boolean, default: true },
-});
+  { timestamps: true } // Adds createdAt and updatedAt automatically
+);
 
 // Text index for searchability
 productSchema.index(

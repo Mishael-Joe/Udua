@@ -42,11 +42,14 @@ const cartItemSchema = new Schema<CartItem>({
   }, // Optional field for size-based products
 });
 
-const cartSchema = new Schema<Cart>({
-  user: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  items: [cartItemSchema],
-  updatedAt: { type: Date, default: Date.now },
-});
+const cartSchema = new Schema<Cart>(
+  {
+    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    items: [cartItemSchema],
+    updatedAt: { type: Date, default: Date.now },
+  },
+  { timestamps: true } // Adds createdAt and updatedAt automatically
+);
 
 const Cart = mongoose.models.Cart || mongoose.model<Cart>("Cart", cartSchema);
 

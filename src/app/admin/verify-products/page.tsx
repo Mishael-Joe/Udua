@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import AllUnverifiedProduct from "../components/admin-verify-product";
+import { AllUnverifiedProduct } from "../components/admin-verify-product";
 
 export default async function Page() {
   return (

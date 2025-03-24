@@ -55,16 +55,16 @@ const items = [
     url: "/admin/unverify-product",
     icon: XIcon,
   },
-  {
-    title: "Order details",
-    url: "/admin/order-details",
-    icon: ShoppingCart,
-  },
-  {
-    title: "Dispute & Resolution",
-    url: "/admin/dispute-resolution",
-    icon: FileEdit,
-  },
+  // {
+  //   title: "Order details",
+  //   url: "/admin/order-details",
+  //   icon: ShoppingCart,
+  // },
+  // {
+  //   title: "Dispute & Resolution",
+  //   url: "/admin/dispute-resolution",
+  //   icon: FileEdit,
+  // },
   {
     title: "Finance and Settlement",
     url: "/admin/settlement",
@@ -85,28 +85,6 @@ const items = [
 export function AppSidebar({ userName }: { userName: string }) {
   return (
     <Sidebar variant="sidebar" collapsible="icon" className="mt-16">
-      {/* <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton>
-                  Select Workspace
-                  <ChevronDown className="ml-auto" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-[--radix-popper-anchor-width]">
-                <DropdownMenuItem>
-                  <span>Acme Inc</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <span>Acme Corp.</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader> */}
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
@@ -151,24 +129,3 @@ export function AppSidebar({ userName }: { userName: string }) {
     </Sidebar>
   );
 }
-
-// import {
-//     Sidebar,
-//     SidebarContent,
-//     SidebarFooter,
-//     SidebarGroup,
-//     SidebarHeader,
-//   } from "@/components/ui/sidebar"
-
-//   export function AppSidebar() {
-//     return (
-//       <Sidebar>
-//         <SidebarHeader />
-//         <SidebarContent>
-//           <SidebarGroup />
-//           <SidebarGroup />
-//         </SidebarContent>
-//         <SidebarFooter />
-//       </Sidebar>
-//     )
-//   }

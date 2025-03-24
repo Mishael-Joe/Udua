@@ -4,7 +4,11 @@ import axios from "axios";
 import { type ChangeEvent, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { addCommasToNumber, getStatusClassName } from "@/lib/utils";
+import {
+  addCommasToNumber,
+  formatCurrency,
+  getStatusClassName,
+} from "@/lib/utils";
 
 import {
   Breadcrumb,
@@ -25,7 +29,6 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { Loader } from "lucide-react";
 import type { DigitalProduct, Order, Product, Settlement } from "@/types";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import PayoutDialog from "./payout-dialog-component";
 import { calculateCommission } from "@/constant/constant";
@@ -56,7 +59,6 @@ export default function OrderDetails({
   params: { orderID: string; slug: string };
 }) {
   const { toast } = useToast();
-  const router = useRouter();
 
   // State for managing the delivery status update
   const [deliveryStatus, setDeliverStatus] = useState({
@@ -79,22 +81,21 @@ export default function OrderDetails({
    * Fetch order details from the API
    * Includes error handling and timeout logic for better UX
    */
+  const fetchOrderData = async () => {
+    try {
+      const response = await axios.post("/api/store/order-details", {
+        orderID: params.orderID,
+      });
+      setOrderDetails(response.data.orderDetail);
+      // console.log(`response.data.oederDetail`, response.data.orderDetail);
+      setLoading(false); // Stop loading when data is fetched
+    } catch (error: any) {
+      setError(true);
+      setLoading(false);
+      console.error("Failed to fetch seller Products", error.message);
+    }
+  };
   useEffect(() => {
-    const fetchOrderData = async () => {
-      try {
-        const response = await axios.post("/api/store/order-details", {
-          orderID: params.orderID,
-        });
-        setOrderDetails(response.data.orderDetail);
-        // console.log(`response.data.oederDetail`, response.data.orderDetail);
-        setLoading(false); // Stop loading when data is fetched
-      } catch (error: any) {
-        setError(true);
-        setLoading(false);
-        console.error("Failed to fetch seller Products", error.message);
-      }
-    };
-
     // Fetch data when component mounts
     fetchOrderData();
 
@@ -191,6 +192,8 @@ export default function OrderDetails({
       );
 
       if (response.status === 200) {
+        // Refresh the page to show updated data
+        fetchOrderData();
         toast({
           title: `Success`,
           description: `You have Successfully updated this product order status to ${deliveryStatus.status}.`,
@@ -212,9 +215,6 @@ export default function OrderDetails({
         title: `Error`,
         description: `Failed to update this product order status.`,
       });
-    } finally {
-      // Refresh the page to show updated data
-      router.refresh();
     }
   };
 
@@ -348,7 +348,23 @@ export default function OrderDetails({
               </h1>
 
               <p>Shipping Address: {orderDetails.shippingAddress}</p>
-              <p>Shipping Method: {orderDetails.subOrders[0].shippingMethod}</p>
+              <p className="text-sm">
+                Shipping Method:{" "}
+                {orderDetails.subOrders[0].shippingMethod?.name}
+              </p>
+              <p className="text-sm">
+                Shipping Price:{" "}
+                {formatCurrency(
+                  orderDetails.subOrders[0].shippingMethod?.price!
+                )}
+              </p>
+              <p className="text-sm">
+                Estimated Delivery Days:{" "}
+                {
+                  orderDetails.subOrders[0].shippingMethod
+                    ?.estimatedDeliveryDays
+                }
+              </p>
               <p>Postal Code: {orderDetails.postalCode}</p>
               {/* <p>Tracking Number: {orderDetails._id}</p> */}
             </div>

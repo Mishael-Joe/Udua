@@ -5,22 +5,27 @@ import mongoose, { Schema, Document } from "mongoose";
  * A sub-order is linked to a specific store and contains its own products and tracking details.
  */
 interface ISubOrder {
-  store: mongoose.Schema.Types.ObjectId; // Store associated with the sub-order
-  products: IOrderProduct[]; // List of products for the sub-order
-  totalAmount: number; // Total amount for this sub-order
-  shippingMethod?: string; // Shipping method for the sub-order
-  trackingNumber?: string; // Tracking number for the sub-order
-  deliveryDate?: Date; // Expected delivery date for this sub-order
+  store: mongoose.Schema.Types.ObjectId;
+  products: IOrderProduct[];
+  totalAmount: number;
+  shippingMethod?: {
+    name: string;
+    price: number;
+    estimatedDeliveryDays?: number;
+    description?: string;
+  };
+  trackingNumber?: string;
+  deliveryDate?: Date;
   deliveryStatus:
-    | "Order Placed" // Initial status when the order is placed
-    | "Processing" // Status when the order is being prepared
-    | "Shipped" // Status when the order is shipped
-    | "Out for Delivery" // Status when the order is out for delivery
-    | "Delivered" // Status when the order has been delivered
-    | "Canceled" // Status when the order is canceled
-    | "Returned" // Status when the order is returned by the customer
-    | "Failed Delivery" // Status when the delivery attempt fails
-    | "Refunded"; // Status when the order has been refunded
+    | "Order Placed"
+    | "Processing"
+    | "Shipped"
+    | "Out for Delivery"
+    | "Delivered"
+    | "Canceled"
+    | "Returned"
+    | "Failed Delivery"
+    | "Refunded";
   payoutStatus: "Requested" | "Processing" | "Paid" | "Failed" | "";
 }
 
@@ -90,7 +95,13 @@ const SubOrderSchema = new Schema<ISubOrder>({
   },
   products: [OrderProductSchema], // Array of products for this sub-order
   totalAmount: { type: Number, required: true }, // Total amount for the sub-order
-  shippingMethod: { type: String }, // Optional shipping method for the sub-order
+  shippingMethod: {
+    // Changed from String to Object
+    name: { type: String },
+    price: { type: Number },
+    estimatedDeliveryDays: { type: Number },
+    description: { type: String },
+  }, // Optional shipping method for the sub-order
   trackingNumber: { type: String }, // Optional tracking number for the sub-order
   deliveryDate: { type: Date }, // Optional delivery date for the sub-order
   deliveryStatus: {

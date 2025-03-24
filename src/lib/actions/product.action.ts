@@ -550,8 +550,10 @@ export async function fetchProductData(id: string) {
     // If no product is found, attempt to find it in the EBook schema
     if (!productData) {
       const foundEBook = await EBook.findById(id).select(
-        "_id title author description price fileType fileSize publisher coverIMG language productType"
+        "_id title author description price fileType fileSize publisher coverIMG language productType storeID"
       );
+
+      // console.log("foundEBook", foundEBook);
 
       if (foundEBook) {
         productData = foundEBook.toObject(); // Convert Mongoose Document to plain object

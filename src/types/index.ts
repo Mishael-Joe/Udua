@@ -216,7 +216,12 @@ export type SubOrder = {
   store: string; // ObjectId reference
   products: ProductOrder[];
   totalAmount: number;
-  shippingMethod?: string;
+  shippingMethod?: {
+    name: string;
+    price: number;
+    estimatedDeliveryDays?: number;
+    description?: string;
+  };
   trackingNumber?: string;
   deliveryDate?: Date;
   deliveryStatus:

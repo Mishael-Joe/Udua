@@ -6,6 +6,7 @@ export const PERMISSIONS = {
   EDIT_PRODUCT: "edit_product",
   DELETE_PRODUCT: "delete_product",
   VERIFY_PRODUCT: "verify_product",
+  UNVERIFY_PRODUCT: "unverify_product",
 
   // Order permissions
   VIEW_ORDERS: "view_orders",

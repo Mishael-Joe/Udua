@@ -106,6 +106,11 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
     selectedSize: { size: string; price: number; quantity: number } | null,
     selectedColor: string | null
   ) => {
+    // console.log("product", product);
+    // console.log("storeID", storeID);
+    // console.log("quantity", quantity);
+    // console.log("selectedSize", selectedSize);
+    // console.log("selectedColor", selectedColor);
     try {
       // Build the payload to send to the server.
       const payload = {

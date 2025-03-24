@@ -8,7 +8,11 @@ import { useRouter } from "next/navigation";
 import { ClipboardEditIcon, Loader, Star } from "lucide-react";
 // import type { Order, OrderProduct } from "@/types";
 import type { DigitalProduct, Order, Product, ProductOrder } from "@/types";
-import { addCommasToNumber, getStatusClassName } from "@/lib/utils";
+import {
+  addCommasToNumber,
+  formatCurrency,
+  getStatusClassName,
+} from "@/lib/utils";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -64,24 +68,21 @@ export default function OrderDetailsPage(props: {
   const [selectedProductId, setSelectedProductId] = useState("");
   const [selectedSubOrderId, setSelectedSubOrderId] = useState("");
 
+  const fetchOrderData = async () => {
+    try {
+      const { data } = await axios.post("/api/user/orderDetails", {
+        orderID: params.slug,
+      });
+      console.log(`data`, data);
+      setOrderDetails(data.orderDetail);
+    } catch (error) {
+      handleError(error, "Failed to load order details");
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
     const controller = new AbortController();
-
-    const fetchOrderData = async () => {
-      try {
-        const { data } = await axios.post(
-          "/api/user/orderDetails",
-          { orderID: params.slug },
-          { signal: controller.signal }
-        );
-        console.log(`data`, data);
-        setOrderDetails(data.orderDetail);
-      } catch (error) {
-        handleError(error, "Failed to load order details");
-      } finally {
-        setLoading(false);
-      }
-    };
 
     fetchOrderData();
     return () => controller.abort();
@@ -114,6 +115,7 @@ export default function OrderDetailsPage(props: {
         title: "Success",
         description: "Order status updated to Delivered",
       });
+      fetchOrderData();
       router.refresh();
     } catch (error) {
       handleError(error, "Failed to update status");
@@ -233,7 +235,15 @@ export default function OrderDetailsPage(props: {
                     <div className="mb-4 flex justify-between items-center">
                       <div>
                         <p className="text-sm">
-                          Shipping Method: {subOrder.shippingMethod}
+                          Shipping Method: {subOrder.shippingMethod?.name}
+                        </p>
+                        <p className="text-sm">
+                          Shipping Price:{" "}
+                          {formatCurrency(subOrder.shippingMethod?.price!)}
+                        </p>
+                        <p className="text-sm">
+                          Estimated Delivery Days:{" "}
+                          {subOrder.shippingMethod?.estimatedDeliveryDays}
                         </p>
                         {subOrder.trackingNumber && (
                           <p className="text-sm">

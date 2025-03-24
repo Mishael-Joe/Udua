@@ -109,7 +109,7 @@ const Profile = () => {
           <ProfileSections user={user} />
           <StoreSection user={user} />
           <VerificationSection user={user} />
-          <AdminSection user={user} />
+          {/* <AdminSection user={user} /> */}
           <RecentProducts
             products={recentlyViewedProducts}
             blurData={blurData}
@@ -219,22 +219,22 @@ const VerificationSection = ({ user }: { user: User }) =>
     </InfoSection>
   );
 
-const AdminSection = ({ user }: { user: User }) =>
-  user.isAdmin && (
-    <InfoSection title="Admin Portal" className="mt-4">
-      <p className="max-w-xl">
-        Access administrative tools and manage platform settings.
-      </p>
-      <Link href="/admin/create-store" className="flex justify-end pt-3">
-        <Button
-          variant="outline"
-          className="border-udua-orange-primary text-udua-orange-primary"
-        >
-          Admin Dashboard
-        </Button>
-      </Link>
-    </InfoSection>
-  );
+// const AdminSection = ({ user }: { user: User }) =>
+//   user.isAdmin && (
+//     <InfoSection title="Admin Portal" className="mt-4">
+//       <p className="max-w-xl">
+//         Access administrative tools and manage platform settings.
+//       </p>
+//       <Link href="/admin/create-store" className="flex justify-end pt-3">
+//         <Button
+//           variant="outline"
+//           className="border-udua-orange-primary text-udua-orange-primary"
+//         >
+//           Admin Dashboard
+//         </Button>
+//       </Link>
+//     </InfoSection>
+//   );
 
 const RecentProducts = ({
   products,

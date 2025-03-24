@@ -5,7 +5,7 @@ const settlementSchema = new Schema(
   {
     storeID: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Store",
+      ref: "stores",
       required: true,
     },
     mainOrderID: {
