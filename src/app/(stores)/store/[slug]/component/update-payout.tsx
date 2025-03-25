@@ -3,17 +3,34 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Loader2Icon } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Bank, PayoutAccount } from "@/types";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Loader2, Banknote, AlertCircle } from "lucide-react";
 
-const UpdatePayoutForm = () => {
+/**
+ * Component for managing and updating payout accounts
+ * Allows users to add new bank accounts and view existing ones
+ */
+const UpdatePayoutAccountForm = () => {
+  // State management
   const [banks, setBanks] = useState<Bank[]>([]);
   const [selectedBank, setSelectedBank] = useState<Bank | null>(null);
   const [accountNumber, setAccountNumber] = useState("");
   const [accountHolderName, setAccountHolderName] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isValidating, setIsValidating] = useState(false);
   const [payoutAccounts, setPayoutAccounts] = useState<PayoutAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,14 +38,16 @@ const UpdatePayoutForm = () => {
   const { toast } = useToast();
   const router = useRouter();
 
-  // Fetch payout accounts on component mount
+  /**
+   * Fetch existing payout accounts on component mount
+   */
   useEffect(() => {
     const fetchPayoutAccounts = async () => {
       try {
         const { data } = await axios.post("/api/store/fetch-payout-accounts");
         setPayoutAccounts(data.payoutAccounts);
       } catch (error: any) {
-        setError(error.message || "Failed to fetch payout accounts");
+        setError(error.message || "Failed to load payout accounts");
       } finally {
         setLoading(false);
       }
@@ -37,189 +56,238 @@ const UpdatePayoutForm = () => {
     fetchPayoutAccounts();
   }, []);
 
-  // Fetch banks on component mount
+  /**
+   * Fetch list of supported banks from API
+   */
   useEffect(() => {
     const fetchBanks = async () => {
       try {
         const { data } = await axios.post("/api/store/fetch-banks");
         setBanks(data.data);
       } catch (error: any) {
-        console.error("Failed to fetch banks:", error.message);
+        console.error("Bank fetch failed:", error.message);
+        toast({
+          variant: "destructive",
+          title: "Bank List Error",
+          description: "Failed to load bank list. Please refresh the page.",
+        });
       }
     };
 
     fetchBanks();
-  }, []);
+  }, [toast]);
 
-  // Handle form submission
+  /**
+   * Handle form submission for new payout account
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-
-    if (!selectedBank || !accountNumber || !accountHolderName) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Please fill out all fields",
-      });
-      setIsLoading(false);
-      return;
-    }
-
-    const payoutData = {
-      payoutMethod: "Bank Transfer",
-      bankDetails: {
-        bankName: selectedBank.name,
-        accountNumber,
-        accountHolderName,
-      },
-    };
+    setIsSubmitting(true);
 
     try {
-      const res = await axios.post("/api/store/add-payout-account", payoutData);
+      const res = await axios.post("/api/store/add-payout-account", {
+        payoutMethod: "Bank Transfer",
+        bankDetails: {
+          bankName: selectedBank?.name,
+          accountNumber,
+          accountHolderName,
+          bankCode: selectedBank?.code,
+          bankId: selectedBank?.id,
+        },
+      });
 
       if (res.status === 200) {
         toast({
-          title: "Success",
+          title: "Account Added",
           description: "Payout account added successfully",
         });
-        router.back();
+        router.refresh();
       }
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Error",
+        title: "Submission Error",
         description: "Failed to add payout account. Please try again.",
       });
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
 
+  /**
+   * Validate account number against selected bank
+   */
+  const validateAccountNumber = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedBank?.code || accountNumber.length !== 10) return;
+
+    setIsValidating(true);
+    try {
+      const res = await axios.post("/api/store/resolve-account-name", {
+        config: { accountNumber, bankCode: selectedBank.code },
+      });
+
+      toast({
+        title: "Account Verified",
+        description: `Account Name: ${res.data.data.account_name}`,
+      });
+      setAccountHolderName(res.data.data.account_name);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Validation Failed",
+        description: "Invalid account number. Please check and try again.",
+      });
+    } finally {
+      setIsValidating(false);
+    }
+  };
+
+  // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2Icon className="animate-spin w-8 h-8" />
+      <div className="max-w-7xl mx-auto p-8 space-y-8">
+        <Skeleton className="h-9 w-64 mb-4" />
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {[...Array(3)].map((_, i) => (
+            <Skeleton key={i} className="h-32 rounded-lg" />
+          ))}
+        </div>
+        <Skeleton className="h-96 rounded-lg" />
       </div>
     );
   }
 
+  // Error state
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-red-600">{error}</p>
+      <div className="max-w-4xl mx-auto p-8">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       </div>
     );
   }
 
   return (
-    <main className="max-w-4xl mx-auto p-4 md:p-8 space-y-8">
-      {/* Payout Accounts Section */}
-      <section>
-        <h1 className="text-2xl font-bold mb-4">My Payout Accounts</h1>
+    <div className="max-w-4xl mx-auto p-4 md:p-8 space-y-8">
+      {/* Existing Accounts Section */}
+      <section className="space-y-4">
+        <h1 className="text-2xl font-bold flex items-center gap-2">
+          <Banknote className="h-6 w-6" />
+          Payout Accounts
+        </h1>
+
         {payoutAccounts.length > 0 ? (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {payoutAccounts.map((account, index) => (
-              <div
-                key={index}
-                className="p-4 border rounded-lg hover:shadow-md transition-shadow"
-              >
-                <h3 className="font-semibold mb-2">
-                  {account.bankDetails.bankName}
-                </h3>
-                <p className="text-sm text-gray-600">
-                  {account.bankDetails.accountNumber}
-                </p>
-                <p className="text-sm text-gray-600">
-                  {account.bankDetails.accountHolderName}
-                </p>
-              </div>
+              <Card key={index} className="hover:shadow-md transition-shadow">
+                <CardHeader className="pb-2">
+                  <h3 className="font-semibold">
+                    {account.bankDetails.bankName}
+                  </h3>
+                </CardHeader>
+                <CardContent className="space-y-1">
+                  <p className="text-sm font-mono">
+                    {account.bankDetails.accountNumber}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {account.bankDetails.accountHolderName}
+                  </p>
+                </CardContent>
+              </Card>
             ))}
           </div>
         ) : (
-          <p className="text-gray-600">No payout accounts found.</p>
+          <Alert>
+            <AlertDescription>No payout accounts found</AlertDescription>
+          </Alert>
         )}
       </section>
 
-      {/* Add Payout Account Form */}
-      <section>
-        <h2 className="text-2xl font-bold mb-6">Add Payout Account</h2>
+      {/* Add Account Form */}
+      <section className="space-y-4">
+        <h2 className="text-2xl font-bold flex items-center gap-2">
+          <Banknote className="h-6 w-6" />
+          Add New Account
+        </h2>
+
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Bank Selection */}
-          <div>
-            <label className="block text-sm font-medium mb-2">Bank Name</label>
-            <select
-              value={selectedBank?.name || ""}
-              onChange={(e) => {
-                const bank = banks.find((b) => b.name === e.target.value);
-                setSelectedBank(bank || null);
-              }}
-              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-              required
-            >
-              <option value="" disabled>
-                Select a bank
-              </option>
-              {banks.map((bank) => (
-                <option key={bank.id} value={bank.name}>
-                  {bank.name}
-                </option>
-              ))}
-            </select>
+          <div className="space-y-4">
+            {/* Bank Selection */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Bank Name</label>
+              <Select
+                onValueChange={(value) => {
+                  const bank = banks.find((b) => b.name === value);
+                  setSelectedBank(bank || null);
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a bank" />
+                </SelectTrigger>
+                <SelectContent>
+                  {banks.map((bank) => (
+                    <SelectItem key={bank.id} value={bank.name}>
+                      {bank.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Account Details */}
+            {selectedBank && (
+              <>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Account Number</label>
+                  <Input
+                    type="text"
+                    value={accountNumber}
+                    onChange={(e) => setAccountNumber(e.target.value)}
+                    onBlur={validateAccountNumber}
+                    placeholder="10-digit account number"
+                    pattern="\d{10}"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Account Name</label>
+                  <Input
+                    type="text"
+                    value={accountHolderName}
+                    onChange={(e) =>
+                      setAccountHolderName(e.target.value.toUpperCase())
+                    }
+                    readOnly={isValidating}
+                    className="bg-muted"
+                  />
+                </div>
+              </>
+            )}
           </div>
 
-          {/* Account Details */}
-          {selectedBank && (
-            <>
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Account Number
-                </label>
-                <input
-                  type="text"
-                  value={accountNumber}
-                  onChange={(e) => setAccountNumber(e.target.value)}
-                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Account Holder Name
-                </label>
-                <input
-                  type="text"
-                  value={accountHolderName}
-                  onChange={(e) =>
-                    setAccountHolderName(e.target.value.toUpperCase())
-                  }
-                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                  required
-                />
-              </div>
-            </>
-          )}
-
           {/* Submit Button */}
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="w-full md:w-auto float-right mt-6"
-          >
-            {isLoading ? (
-              <div className="flex items-center gap-2">
-                <Loader2Icon className="animate-spin w-4 h-4" />
-                <span>Processing...</span>
-              </div>
-            ) : (
-              "Add Account"
-            )}
-          </Button>
+          <div className="flex justify-end">
+            <Button
+              type="submit"
+              disabled={isSubmitting || isValidating || !accountHolderName}
+            >
+              {isSubmitting || isValidating ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {isValidating ? "Validating..." : "Submitting..."}
+                </>
+              ) : (
+                "Add Account"
+              )}
+            </Button>
+          </div>
         </form>
       </section>
-    </main>
+    </div>
   );
 };
 
-export default UpdatePayoutForm;
+export default UpdatePayoutAccountForm;

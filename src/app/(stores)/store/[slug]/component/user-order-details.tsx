@@ -30,7 +30,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Loader } from "lucide-react";
 import type { DigitalProduct, Order, Product, Settlement } from "@/types";
 import { Button } from "@/components/ui/button";
-import PayoutDialog from "./payout-dialog-component";
+import { PayoutDialog } from "./payout-dialog-component";
 import { calculateCommission } from "@/constant/constant";
 import { Badge } from "@/components/ui/badge";
 

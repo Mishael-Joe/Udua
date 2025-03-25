@@ -386,6 +386,8 @@ export interface BankDetails {
   bankName: string;
   accountNumber: string;
   accountHolderName: string;
+  bankCode: Number;
+  bankId: Number;
 }
 
 export interface PayoutAccount {

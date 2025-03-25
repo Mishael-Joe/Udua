@@ -40,12 +40,14 @@ import { Settlement } from "@/types";
 import { addCommasToNumber } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { withAdminAuth } from "./auth/with-admin-auth";
+import { PERMISSIONS } from "@/lib/rbac/permissions";
 
 /**
  * Admin Settlement Dashboard Component
  * Displays pending settlement requests and financial overview for administrators
  */
-function AdminSettlement() {
+function AdminSettlementPage() {
   // State Management
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -266,7 +268,9 @@ function AdminSettlement() {
   );
 }
 
-export default AdminSettlement;
+export default withAdminAuth(AdminSettlementPage, {
+  requiredPermissions: [PERMISSIONS.VIEW_SETTLEMENTS],
+});
 
 // "use client";
 

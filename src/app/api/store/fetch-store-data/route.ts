@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
       .populate({
         path: "physicalProducts",
         match: { isVerifiedProduct: true },
-        select: "_id name images price productType", // Replace with the fields you want to include
+        select: "_id name images price sizes productType", // Replace with the fields you want to include
       })
       .populate({
         path: "digitalProducts",

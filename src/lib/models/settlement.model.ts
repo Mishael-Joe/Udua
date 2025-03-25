@@ -28,6 +28,8 @@ const settlementSchema = new Schema(
         bankName: { type: String, required: true }, // Ensure all fields are required
         accountNumber: { type: String, required: true },
         accountHolderName: { type: String, required: true },
+        bankCode: { type: Number, required: true },
+        bankId: Number,
       }),
       required: true,
     },

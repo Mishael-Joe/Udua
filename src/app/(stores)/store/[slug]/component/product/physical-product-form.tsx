@@ -20,7 +20,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ChevronRight, Loader2, Upload, XIcon } from "lucide-react";
-import { productCategories, subCategories } from "@/constant/constant";
+import {
+  productCategories,
+  quillFormats,
+  quillModules,
+  subCategories,
+} from "@/constant/constant";
 
 import dynamic from "next/dynamic";
 import "react-quill-new/dist/quill.snow.css";
@@ -185,24 +190,6 @@ const PhysicalProductForm = ({
       sizes: prev.sizes!.filter((_, i) => i !== index),
     }));
   };
-
-  const quillModules = {
-    toolbar: [
-      ["bold", "italic", "underline", "strike", "blockquote"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      ["clean"],
-    ],
-  };
-
-  const quillFormats = [
-    "bold",
-    "italic",
-    "underline",
-    "strike",
-    "blockquote",
-    "list",
-    "bullet",
-  ];
 
   const handleProductDescriptionChange = (newContent: string) => {
     setPhysicalProduct((prev) => ({

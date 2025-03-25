@@ -86,6 +86,8 @@ const PayoutAccountSchema = new Schema(
           message: "Account holder name is required for bank transfer",
         },
       },
+      bankCode: { type: Number, required: true },
+      bankId: Number,
     },
     totalEarnings: {
       type: Number,
@@ -117,6 +119,7 @@ const StoreSchema = new mongoose.Schema(
       { type: mongoose.Schema.Types.ObjectId, ref: "digitalproducts" },
     ], // Array of E-books for stores that deals with digital products like e-books
     uniqueId: { type: String, unique: true, required: true }, // Unique store link ID
+    recipientCode: { type: String }, // Recommended by PayStack. visit @ `https://paystack.com/docs/transfers/creating-transfer-recipients/#save-the-recipient-code` for more details.
     description: { type: String },
     forgotpasswordToken: String,
     forgotpasswordTokenExpiry: Date,

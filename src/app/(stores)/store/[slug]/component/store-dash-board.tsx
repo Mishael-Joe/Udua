@@ -14,7 +14,6 @@ import {
 import { Order } from "@/types";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { addCommasToNumber } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -99,9 +98,7 @@ export default function StoreDashboard({
               <TableHeader>
                 <TableRow className="text-[12.8px]">
                   <TableHead>Order Status</TableHead>
-                  {/* <TableHead>Product Name</TableHead> */}
                   <TableHead>Total Quantity</TableHead>
-                  {/* <TableHead>Price</TableHead> */}
                   <TableHead>Payment Status</TableHead>
                   <TableHead>Order Date</TableHead>
                   <TableHead>Actions</TableHead>
@@ -113,63 +110,7 @@ export default function StoreDashboard({
                     <TableCell className="font-medium">
                       {order.subOrders[0].deliveryStatus}
                     </TableCell>
-                    {/* <TableCell>
-                      {order.products.map((productOrder) => {
-                        if (productOrder.physicalProducts) {
-                          return (
-                            <div key={productOrder.physicalProducts._id}>
-                              {productOrder.physicalProducts.name ||
-                                "Deleted Product"}
-                            </div>
-                          );
-                        }
-                        if (productOrder.digitalProducts) {
-                          return (
-                            <div key={productOrder.digitalProducts._id}>
-                              {productOrder.digitalProducts.title ||
-                                "Deleted Product"}
-                            </div>
-                          );
-                        }
-                      })}
-                    </TableCell> */}
-                    <TableCell>
-                      {order.subOrders[0].products.length}
-                      {/* {order.products.map((productOrder) => {
-                        if (productOrder.physicalProducts) {
-                          return (
-                            <div key={productOrder.physicalProducts._id}>
-                              {productOrder.quantity}
-                            </div>
-                          );
-                        }
-                        if (productOrder.digitalProducts) {
-                          return (
-                            <div key={productOrder.digitalProducts._id}>
-                              {productOrder.quantity}
-                            </div>
-                          );
-                        }
-                      })} */}
-                    </TableCell>
-                    {/* <TableCell>
-                      {order.products.map((productOrder) => {
-                        if (productOrder.physicalProducts) {
-                          return (
-                            <div key={productOrder.physicalProducts._id}>
-                              &#8358;{addCommasToNumber(productOrder.price)}
-                            </div>
-                          );
-                        }
-                        if (productOrder.digitalProducts) {
-                          return (
-                            <div key={productOrder.digitalProducts._id}>
-                              &#8358;{addCommasToNumber(productOrder.price)}
-                            </div>
-                          );
-                        }
-                      })}
-                    </TableCell> */}
+                    <TableCell>{order.subOrders[0].products.length}</TableCell>
                     <TableCell>{order.paymentStatus?.toUpperCase()}</TableCell>
                     <TableCell>
                       {new Date(order.createdAt).toLocaleDateString("en-US", {

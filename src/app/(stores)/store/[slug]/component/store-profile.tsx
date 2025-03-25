@@ -8,6 +8,7 @@ import { Loader, StoreIcon } from "lucide-react";
 import StoreDescription from "./store-description";
 import { Store } from "@/types";
 import { ProductGrid } from "@/components/product-grid";
+import DOMPurify from "dompurify";
 
 export default function StoreProfile() {
   const [store, setStore] = useState<Store | null>(null);
@@ -32,13 +33,15 @@ export default function StoreProfile() {
   if (!store) {
     return (
       <div className="w-full min-h-screen flex items-center justify-center">
-        <Loader className="animate-spin" size={48} />
+        <Loader className="animate-spin" />
       </div>
     );
   }
 
   // Destructure the store data for easy access.
   const { name, description, products } = store;
+
+  const sanitizedContentForDescription = DOMPurify.sanitize(description);
 
   return (
     <main className="overflow-hidden">
@@ -53,7 +56,13 @@ export default function StoreProfile() {
             <div className="flex flex-col gap-4 w-full sm:pl-5 lg:pl-0">
               <p className="text-2xl font-semibold">{name}</p>
               {/* Using Tailwind's line-clamp utility for a 3-line ellipsis */}
-              <p className="line-clamp-3 text-gray-700">{description}</p>
+              <div
+                className="line-clamp-3 text-gray-700"
+                dangerouslySetInnerHTML={{
+                  __html: sanitizedContentForDescription,
+                }}
+              ></div>
+              {/* <p className="line-clamp-3 text-gray-700">{description}</p> */}
             </div>
           </div>
         </div>

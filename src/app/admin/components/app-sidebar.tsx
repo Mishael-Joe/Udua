@@ -1,3 +1,5 @@
+"use client";
+
 import {
   CheckCheckIcon,
   FileEdit,
@@ -32,6 +34,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 // Menu items.
 const items = [
@@ -83,11 +87,25 @@ const items = [
 ];
 
 export function AppSidebar({ userName }: { userName: string }) {
+  const router = useRouter();
+  const signOut = async () => {
+    try {
+      const response = await axios.get("/api/auth/admin-sign-out");
+      if (response.status === 200) {
+        router.push(`/admin/dashboard`);
+      }
+      // console.log(`response`, response);
+
+      // return response;
+    } catch (error) {
+      return error;
+    }
+  };
   return (
-    <Sidebar variant="sidebar" collapsible="icon" className="mt-16">
+    <Sidebar variant="sidebar" collapsible="icon" className="">
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupLabel>Admin Dashboard</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
@@ -104,7 +122,7 @@ export function AppSidebar({ userName }: { userName: string }) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="mb-16">
+      <SidebarFooter className="">
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
@@ -118,7 +136,7 @@ export function AppSidebar({ userName }: { userName: string }) {
                 side="top"
                 className="w-[--radix-popper-anchor-width]"
               >
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={signOut} className="cursor-pointer">
                   <span>Sign out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>

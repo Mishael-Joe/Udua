@@ -20,7 +20,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ChevronRight, Loader2, Upload } from "lucide-react";
-import { bookCategories } from "@/constant/constant";
+import {
+  bookCategories,
+  quillFormats,
+  quillModules,
+} from "@/constant/constant";
 
 import dynamic from "next/dynamic";
 import "react-quill-new/dist/quill.snow.css";
@@ -145,24 +149,6 @@ const DigitalProductForm = ({
       }));
     }
   };
-
-  const quillModules = {
-    toolbar: [
-      ["bold", "italic", "underline", "strike", "blockquote"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      ["clean"],
-    ],
-  };
-
-  const quillFormats = [
-    "bold",
-    "italic",
-    "underline",
-    "strike",
-    "blockquote",
-    "list",
-    "bullet",
-  ];
 
   const handleDescriptionChange = (newContent: string) => {
     setDigitalProduct((prev) => ({

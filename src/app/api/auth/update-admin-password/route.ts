@@ -1,70 +1,111 @@
+import { Admin } from "@/lib/models/admin.model";
 import { connectToDB } from "@/lib/mongoose";
 import { NextRequest, NextResponse } from "next/server";
-import nodemailer from "nodemailer";
-import User from "@/lib/models/user.model";
-
-const generateResetToken = () => {
-  return Math.random().toString(36).substr(2); // Simplified for demonstration
-};
+import bcryptjs from "bcryptjs";
+import { logAdminAction } from "@/lib/audit/audit-logger";
+import { getAdminPermissions, verifyAdminToken } from "@/lib/rbac/jwt-utils";
 
 export async function POST(request: NextRequest) {
-  const requestBody = await request.json();
-  const { email } = requestBody;
-  // console.log("email", email);
-
-  const transporter = nodemailer.createTransport({
-    host: "smtp.zoho.com",
-    port: 465,
-    secure: true,
-    auth: {
-      user: "mishaeljoe55@zohomail.com",
-      pass: process.env.NEXT_SECRET_APP_SPECIFIED_KEY,
-    },
-  });
-
   try {
-    await connectToDB();
+    const requestBody = await request.json();
+    const { email, oldPassword, newPassword } = requestBody;
 
-    const user = await User.findOne({ email: email });
-
-    if (!user) {
+    const adminToken = request.cookies.get("adminToken")?.value;
+    if (!adminToken) {
       return NextResponse.json(
-        { error: "Make sure you provide the right Email" },
-        { status: 500 }
+        { error: "Authentication required" },
+        { status: 401 }
       );
     }
 
-    const resetToken = generateResetToken();
-    const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/reset-admin-password?token=${resetToken}`;
-    // const email = store.storeEmail;
+    const tokenData = await verifyAdminToken(adminToken);
+    if (!tokenData) {
+      return NextResponse.json(
+        { error: "Invalid or expired token" },
+        { status: 401 }
+      );
+    }
 
-    user.forgotpasswordToken = resetToken,
-    user.forgotpasswordTokenExpiry = Date.now() + 1000 * 60 * 15, // 15 minutes expiry: resetToken,
+    // Check if the requester has MANAGE_ADMINS permission
+    const permissions = getAdminPermissions(tokenData.roles);
 
-    await user.save();
+    // Validate request body
+    if (!email || !oldPassword || !newPassword) {
+      return NextResponse.json(
+        { message: "All fields are required" },
+        { status: 400 }
+      );
+    }
 
-    const mailOptions = {
-      from: "mishaeljoe55@zohomail.com", // sender address
-      to: email, // list of receivers
-      subject: "Password Reset",
-      html: `
-          <h1>UDUA</h1> </br>
-          <h2>Reset Admin Password.</h2> </br>
-          
-          <b>Click <a href="${resetUrl}">here</a> to reset your Admin password</b> </br>
-          <p>Expires in 15 minutes.</p>
-          
-          <p>Or copy this link and paste it on your browse </p>
-          <p>${resetUrl}</p>
-    `,
-    };
+    await connectToDB();
 
-    await transporter.sendMail(mailOptions);
+    // Find admin by email
+    const admin = await Admin.findOne({ email });
+    if (!admin) {
+      return NextResponse.json(
+        { message: "Invalid credentials" }, // Generic message for security
+        { status: 401 }
+      );
+    }
 
-    return NextResponse.json({ error: "Reset email sent" }, { status: 200 });
-  } catch (error: any) {
+    // Verify old password
+    const isPasswordValid = await bcryptjs.compare(oldPassword, admin.password);
+    if (!isPasswordValid) {
+      return NextResponse.json(
+        { message: "Invalid credentials" }, // Generic message for security
+        { status: 401 }
+      );
+    }
+
+    // Check if new password is different
+    const isSamePassword = await bcryptjs.compare(newPassword, admin.password);
+    if (isSamePassword) {
+      return NextResponse.json(
+        { message: "New password must be different from old password" },
+        { status: 400 }
+      );
+    }
+
+    // Validate password strength
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(newPassword)) {
+      return NextResponse.json(
+        {
+          message:
+            "Password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Hash new password
+    const salt = await bcryptjs.genSalt(10);
+    const hashedPassword = await bcryptjs.hash(newPassword, salt);
+
+    // Update password
+    admin.password = hashedPassword;
+    await admin.save();
+
+    // Log this action
+    await logAdminAction(
+      tokenData,
+      {
+        action: "ADMIN_PASSWORD_UPDATE",
+        myModule: "AUTHENTICATION",
+        details: { email: admin.email, permissions },
+      },
+      request
+    );
+
     return NextResponse.json(
-      { error: `Error: ${error.message}` },
+      { message: "Password updated successfully" },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    console.error("Password update error:", error);
+    return NextResponse.json(
+      { message: "An internal server error occurred" }, // Generic error message
       { status: 500 }
     );
   }

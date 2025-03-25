@@ -4,12 +4,9 @@ import { siteConfig } from "@/config/site";
 import { SiteBlob } from "@/components/site-blob";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
-import { SiteFooter } from "@/components/site-footer";
 import { Toaster } from "@/components/ui/toaster";
 import { StateContext } from "@/context/stateContext";
-import { AdminHeader } from "./components/admin-header";
 
-import AdminAside from "./components/admin-aside";
 import { Montserrat } from "next/font/google";
 import {
   Sidebar,
@@ -48,17 +45,15 @@ export default async function RootLayout({
       <body className={`${montserrat.className} scroll-smooth`}>
         <StateContext>
           <ThemeProvider attribute="class" defaultTheme="light">
-            <AdminHeader />
             <SiteBlob />
             <Toaster />
             <SidebarProvider defaultOpen={defaultOpen}>
               <AppSidebar userName={userName} />
               <SidebarInset>
                 <main className="relative">
-                  <SidebarTrigger className=" fixed top-16" />
+                  <SidebarTrigger className=" fixed top-2" />
                   {children}
                 </main>
-                {/* <SiteFooter /> */}
               </SidebarInset>
             </SidebarProvider>
             <TailwindIndicator />

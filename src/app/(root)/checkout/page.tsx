@@ -88,7 +88,7 @@ export default function CheckoutPage() {
 
         const data: CartResponse = await response.json();
         setCartItemsWithShippingMethod(data.groupedCart);
-        console.log("Cart data:", data);
+        // console.log("Cart data:", data);
 
         // Add mock shipping methods for testing if none exist
         // if (data.groupedCart && data.groupedCart.length > 0) {
@@ -205,7 +205,7 @@ export default function CheckoutPage() {
     //   // Optionally, update the cartItemsWithShippingMethod state
     //   setCartItemsWithShippingMethod(updatedCartItems);
     // }
-    console.log("cartItemsWithShippingMethod", cartItemsWithShippingMethod);
+    // console.log("cartItemsWithShippingMethod", cartItemsWithShippingMethod);
 
     if (!userData) return;
     const config = {

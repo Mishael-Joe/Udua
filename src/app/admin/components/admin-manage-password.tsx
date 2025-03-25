@@ -1,113 +1,203 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
-import axios from "axios";
 import { useState } from "react";
-import { Loader } from "lucide-react";
+import axios from "axios";
+import { Loader2 } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { withAdminAuth } from "./auth/with-admin-auth";
 
-const ResetAdminPassword = () => {
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+function UpdateAdminPasswordPage() {
   const { toast } = useToast();
+  const [formData, setFormData] = useState({
+    email: "",
+    oldPassword: "",
+    newPassword: "",
+    confirmNewPassword: "",
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const validateForm = () => {
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (formData.newPassword !== formData.confirmNewPassword) {
+      setError("New passwords do not match");
+      return false;
+    }
+    if (!passwordRegex.test(formData.newPassword)) {
+      setError(
+        "Password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character"
+      );
+      return false;
+    }
+    setError(null);
+    return true;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
 
     try {
       setIsLoading(true);
-
-      const response = await axios.post(`/api/auth/update-admin-password`, JSON.stringify({ email }));
-      // console.log(`response`, response);
-
-      if (response.data.success === true || response.status === 200) {
-        toast({
-          title: `Success`,
-          description: `We have sent a mail registered with this store.`,
-        });
-        setIsLoading(false);
-        setMessage(true);
-      } else {
-        toast({
-          variant: `destructive`,
-          title: `Error`,
-          description: `There was an error sending you the reset link. Please try again.`,
-        });
-        setIsLoading(false);
-      }
-    } catch (error) {
-      toast({
-        variant: `destructive`,
-        title: "Error",
-        description: `There was an error sending you the reset link. Please try again.`,
+      const response = await axios.post(`/api/auth/update-admin-password`, {
+        email: formData.email,
+        oldPassword: formData.oldPassword,
+        newPassword: formData.newPassword,
       });
+
+      if (response.status === 200) {
+        toast({
+          title: "Password Updated",
+          description: "Your password has been successfully updated.",
+        });
+        setFormData({
+          email: "",
+          oldPassword: "",
+          newPassword: "",
+          confirmNewPassword: "",
+        });
+      }
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message ||
+        "An error occurred while updating your password.";
+      setError(errorMessage);
+      toast({
+        variant: "destructive",
+        title: "Update Failed",
+        description: errorMessage,
+      });
+    } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <main className="min-h-screen flex flex-row justify-center items-center">
-      <section className="max-w-3xl mx-auto my-5 px-6">
-      {!message ? (
-        <div className="w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800">
-        <div className="px-6 py-4">
-          <div className="flex justify-center mx-auto">
-            {/* <Image
-              className="w-auto h-7 sm:h-8"
-              src="https://merakiui.com/images/logo.svg"
-              width={`60`}
-              height={`60`}
-              alt=""
-            /> */}
-          </div>
+    <main className="flex items-center justify-center min-h-screen p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold text-center">
+            Update Admin Password
+          </CardTitle>
+        </CardHeader>
 
-          <h3 className="mt-3 text-xl font-medium text-center text-gray-600 dark:text-gray-200">
-            Reset My Password (Admins Only).
-          </h3>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {error && (
+              <Alert variant="destructive">
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
 
-          <p className="mt-3 text-center text-gray-500 dark:text-gray-400">
-            Input the Email you used in registering with Udua.
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="email">Your E-mail</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="oldPassword">Current Password</Label>
+                <Input
+                  id="oldPassword"
+                  type={showPassword ? "text" : "password"}
+                  value={formData.oldPassword}
+                  onChange={(e) =>
+                    setFormData({ ...formData, oldPassword: e.target.value })
+                  }
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="newPassword">New Password</Label>
+                <Input
+                  id="newPassword"
+                  type={showPassword ? "text" : "password"}
+                  value={formData.newPassword}
+                  onChange={(e) =>
+                    setFormData({ ...formData, newPassword: e.target.value })
+                  }
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="confirmNewPassword">Confirm New Password</Label>
+                <Input
+                  id="confirmNewPassword"
+                  type={showPassword ? "text" : "password"}
+                  value={formData.confirmNewPassword}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      confirmNewPassword: e.target.value,
+                    })
+                  }
+                  required
+                />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="showPassword"
+                  checked={showPassword}
+                  onChange={(e) => setShowPassword(e.target.checked)}
+                  className="w-4 h-4"
+                />
+                <Label htmlFor="showPassword" className="text-sm">
+                  Show passwords
+                </Label>
+              </div>
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full hover:bg-udua-blue-primary bg-blue-500"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Updating...
+                </>
+              ) : (
+                "Update Password"
+              )}
+            </Button>
+          </form>
+        </CardContent>
+
+        <CardFooter className="flex justify-center">
+          <p className="text-sm text-muted-foreground">
+            Use a strong password with at least 8 characters
           </p>
-
-          <form onSubmit={handleSubmit} className="space-y-8 ">
-          <input
-            className="block w-full px-4 py-2 mt-2 dark:text-slate-200 text-black placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400"
-            aria-label="store id"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your Email"
-            required
-          />
-          <Button
-            type="submit"
-            className="items-end w-full bg-purple-500 hover:bg-purple-600"
-          >
-            {!isLoading && "Send Reset Link"}
-            {isLoading && (
-              <Loader className=" animate-spin w-5 h-5 mr-4" />
-            )}{" "}
-            {isLoading && "Please wait..."}
-          </Button>
-        </form>
-        </div>
-      </div>
-      ) : (
-        <div className="flex items-center flex-col">
-          <div className="border rounded-md py-4 px-6">
-            <p>A Link has been sent to the E-mail provided.</p>
-
-            <p className="pt-2">
-              Please ensure to check your E-mail and follow the instructions
-              carefully.
-            </p>
-          </div>
-        </div>
-      )}
-    </section>
+        </CardFooter>
+      </Card>
     </main>
   );
-};
+}
 
-export default ResetAdminPassword;
+export const UpdateAdminPassword = withAdminAuth(UpdateAdminPasswordPage);
