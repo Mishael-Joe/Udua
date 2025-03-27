@@ -53,7 +53,7 @@ export async function POST(request: Request) {
           .filter(Boolean) // Filter out undefined values
     );
 
-    console.log("productIDs", productIDs);
+    // console.log("productIDs", productIDs);
 
     // Fetch all physical products at once
     const productsFromDB = await Product.find({ _id: { $in: productIDs } });
@@ -171,13 +171,11 @@ export async function POST(request: Request) {
 
 // import { NextResponse } from "next/server";
 // import Product from "@/lib/models/product.model"; // Import Product model
-// import { Product as Products, RequestBodyTypes } from "@/types";
-// import { GroupedCart } from "@/app/(root)/checkout/page";
+// import { RequestBodyTypes } from "@/types";
 
 // export async function POST(request: Request) {
 //   const requestBody = await request.json();
-//   const { amount, selectedShippingMethods, cartItemsWithShippingMethod } =
-//     requestBody;
+//   const { amount } = requestBody;
 //   const { email, phone_number, name, uniqueRef } = requestBody.customer;
 //   const {
 //     address,
@@ -191,92 +189,27 @@ export async function POST(request: Request) {
 //   }: RequestBodyTypes = requestBody.meta;
 
 //   const subamount = Number(amount * 100);
+//   // console.log("uniqueRef", uniqueRef);
 
-//   // console.log("itemsInCart", itemsInCart);
-//   let updatedCartItems;
-//   // Iterate through cart items and assign selected shipping methods
-//   if (cartItemsWithShippingMethod) {
-//     const updatedCartItem: GroupedCart[] = cartItemsWithShippingMethod.map(
-//       (item: GroupedCart) => {
-//         // Find the selected shipping method for this store by storeID
-//         const selectedMethod = selectedShippingMethods[item.storeID];
-
-//         // console.log("selectedMethod", selectedMethod);
-
-//         // Destructure the item to exclude shippingMethods
-//         const { shippingMethods, ...restOfItem } = item;
-
-//         // Attach the selected shipping method to the item if it exists
-//         return {
-//           ...restOfItem,
-//           selectedShippingMethod: selectedMethod || null, // Fallback to null if no method is selected
-//         };
-//       }
-//     );
-
-//     // Optionally, update the cartItemsWithShippingMethod state
-//     updatedCartItems = updatedCartItem;
-//   }
-//   console.log("updatedCartItems", updatedCartItems);
 //   try {
 //     // Inventory Check
-//     for (const item of updatedCartItems!) {
-//       // console.log("item", item.products);
-//       if (item.products[0].productType === "physicalproducts") {
-//         const product: Products | null = await Product.findById(
-//           item.products[0].product._id
+//     // console.log("itemsInCart", itemsInCart);
+//     for (const item of itemsInCart) {
+//       const product = await Product.findById(item._id);
+//       if (!product) {
+//         return NextResponse.json(
+//           { error: `Product not found: ${item._id}` },
+//           { status: 400 }
 //         );
-//         // console.log("products", item.products[0].product);
-//         // console.log("product", product);
+//       }
 
-//         if (!product) {
-//           return NextResponse.json(
-//             { error: `Product not found: ${item.products[0].product._id}` },
-//             { status: 400 }
-//           );
-//         }
-
-//         // Check stock for products without sizes
-//         if (item.products[0].selectedSize?.size === undefined) {
-//           console.log("product", item.products[0].selectedSize?.size);
-//           if (
-//             (product.productQuantity as number)! < item.products[0].quantity!
-//           ) {
-//             return NextResponse.json(
-//               {
-//                 error: `Insufficient stock for product: ${product.name}. Available: ${product.productQuantity}, Requested: ${item.products[0].quantity}`,
-//               },
-//               { status: 400 }
-//             );
-//           }
-//         }
-//         // Check stock for products with sizes
-//         else {
-//           const selectedProductSize = product.sizes?.find(
-//             (size) => size.size === item.products[0].selectedSize?.size
-//           );
-
-//           if (!selectedProductSize) {
-//             return NextResponse.json(
-//               {
-//                 error: `Selected size not available for product: ${product.name}`,
-//               },
-//               { status: 400 }
-//             );
-//           }
-
-//           if (
-//             selectedProductSize.quantity <
-//             item.products[0].selectedSize.quantity
-//           ) {
-//             return NextResponse.json(
-//               {
-//                 error: `Insufficient stock for product: ${product.name} (Size: ${item.products[0].selectedSize.size}). Available: ${selectedProductSize.quantity}, Requested: ${item.products[0].quantity}`,
-//               },
-//               { status: 400 }
-//             );
-//           }
-//         }
+//       if (product.productQuantity < item.quantity!) {
+//         return NextResponse.json(
+//           {
+//             error: `Insufficient stock for product: ${product.productName}. Available: ${product.productQuantity}, Requested: ${item.quantity}`,
+//           },
+//           { status: 400 }
+//         );
 //       }
 //     }
 
@@ -304,19 +237,18 @@ export async function POST(request: Request) {
 //       },
 //     };
 
-//     // const response = await fetch(url, {
-//     //   method: "POST",
-//     //   headers: {
-//     //     "Content-Type": "application/json",
-//     //     Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-//     //   },
-//     //   body: JSON.stringify(fields),
-//     // });
+//     const response = await fetch(url, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+//       },
+//       body: JSON.stringify(fields),
+//     });
 
-//     // const result = await response.json();
+//     const result = await response.json();
 
-//     // return NextResponse.json(result);
-//     return NextResponse.json(updatedCartItems);
+//     return NextResponse.json(result);
 //   } catch (error) {
 //     console.error("Error:", error);
 //     return NextResponse.json(
@@ -325,14 +257,6 @@ export async function POST(request: Request) {
 //     );
 //   }
 // }
-
-// cartItems: [
-//   {
-//     storeID: '66fbae5615b9fec5eac1b9bb',
-//     products: [Array],
-//     selectedShippingMethod: [Object]
-//   }
-// ],
 
 let orderData = {
   cartItems: [

@@ -1,3 +1,18 @@
+/**
+ * Order Details Page
+ *
+ * This page displays comprehensive information about a user's order including:
+ * - Order summary (date, status, total amount)
+ * - Payment information
+ * - Shipping details
+ * - Products purchased grouped by store
+ * - Delivery status for each store's order
+ * - Functionality to mark orders as delivered
+ * - Product review submission
+ *
+ * @component OrderDetailsPage
+ */
+
 "use client";
 
 import { useEffect, useState, use } from "react";
@@ -5,8 +20,7 @@ import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ClipboardEditIcon, Loader, Star } from "lucide-react";
-// import type { Order, OrderProduct } from "@/types";
+import { ClipboardEditIcon, Loader, Star, Store } from "lucide-react";
 import type { DigitalProduct, Order, Product, ProductOrder } from "@/types";
 import {
   addCommasToNumber,
@@ -27,9 +41,9 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Breadcrumb,
@@ -63,17 +77,21 @@ export default function OrderDetailsPage(props: {
   const { toast } = useToast();
   const router = useRouter();
 
+  // Review state
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
   const [selectedProductId, setSelectedProductId] = useState("");
   const [selectedSubOrderId, setSelectedSubOrderId] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
 
+  /**
+   * Fetches order details from the API
+   */
   const fetchOrderData = async () => {
     try {
       const { data } = await axios.post("/api/user/orderDetails", {
         orderID: params.slug,
       });
-      console.log(`data`, data);
       setOrderDetails(data.orderDetail);
     } catch (error) {
       handleError(error, "Failed to load order details");
@@ -81,13 +99,18 @@ export default function OrderDetailsPage(props: {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     const controller = new AbortController();
-
     fetchOrderData();
     return () => controller.abort();
   }, [params.slug]);
 
+  /**
+   * Handles API errors with consistent error messaging
+   * @param error - The error object
+   * @param context - Context message for the error
+   */
   const handleError = (error: unknown, context: string) => {
     const message = axios.isAxiosError(error)
       ? error.response?.data?.error || context
@@ -100,6 +123,10 @@ export default function OrderDetailsPage(props: {
     });
   };
 
+  /**
+   * Updates the delivery status of a sub-order to "Delivered"
+   * @param subOrderId - The ID of the sub-order to update
+   */
   const updateDeliveryStatus = async (subOrderId: string) => {
     if (!orderDetails) return;
 
@@ -124,12 +151,15 @@ export default function OrderDetailsPage(props: {
     }
   };
 
+  /**
+   * Submits a product review to the API
+   */
   const submitReview = async () => {
     if (!review.trim() || !rating) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Please complete all required fields",
+        description: "Please provide both a rating and review",
       });
       return;
     }
@@ -147,11 +177,32 @@ export default function OrderDetailsPage(props: {
         title: "Success",
         description: "Review submitted successfully",
       });
+
+      // Reset form and close dialog
+      setRating(0);
+      setReview("");
+      setDialogOpen(false);
+
+      // Refresh data to reflect changes
+      fetchOrderData();
     } catch (error) {
       handleError(error, "Failed to submit review");
     } finally {
       setSubmitting(false);
     }
+  };
+
+  /**
+   * Initializes the review dialog with product information
+   * @param productId - The ID of the product being reviewed
+   * @param subOrderId - The ID of the sub-order containing the product
+   */
+  const handleReviewInit = (productId: string, subOrderId: string) => {
+    setSelectedProductId(productId);
+    setSelectedSubOrderId(subOrderId);
+    setRating(0);
+    setReview("");
+    setDialogOpen(true);
   };
 
   if (loading) {
@@ -172,139 +223,372 @@ export default function OrderDetailsPage(props: {
     0
   );
 
+  // return (
+  //   <div className="grid min-h-screen max-w-7xl mx-auto md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+  //     <aside className="hidden border-r bg-muted/10 md:block">
+  //       <div className="flex h-full max-h-screen flex-col gap-2">
+  //         <Aside1 />
+  //       </div>
+  //     </aside>
+
+  //     <main className="flex flex-col gap-4 p-4 md:py-4">
+  //       <header className="flex justify-between items-center">
+  //         <Breadcrumb className="hidden md:flex">
+  //           <BreadcrumbList>
+  //             <BreadcrumbItem>
+  //               <BreadcrumbLink asChild>
+  //                 <Link href="/dashboard">Dashboard</Link>
+  //               </BreadcrumbLink>
+  //             </BreadcrumbItem>
+  //             <BreadcrumbSeparator />
+  //             <BreadcrumbItem>
+  //               <BreadcrumbLink asChild>
+  //                 <Link href="/orders">Orders</Link>
+  //               </BreadcrumbLink>
+  //             </BreadcrumbItem>
+  //             <BreadcrumbSeparator />
+  //             <BreadcrumbItem>
+  //               <BreadcrumbPage>Order Details</BreadcrumbPage>
+  //             </BreadcrumbItem>
+  //           </BreadcrumbList>
+  //         </Breadcrumb>
+  //         <h1 className="text-xl font-semibold">Order Details</h1>
+  //       </header>
+
+  //       <OrderSummary order={orderDetails} />
+
+  //       <Card>
+  //         <CardHeader>
+  //           <CardTitle>
+  //             {totalProducts} Product{totalProducts > 1 ? "s" : ""} from{" "}
+  //             {orderDetails.stores.length} Store
+  //             {orderDetails.stores.length > 1 ? "s" : ""}
+  //           </CardTitle>
+  //         </CardHeader>
+  //         <CardContent>
+  //           <Accordion type="single" collapsible className="w-full">
+  //             {orderDetails.subOrders.map((subOrder, index) => (
+  //               <AccordionItem
+  //                 key={subOrder._id || index}
+  //                 value={`store-${index}`}
+  //               >
+  //                 <AccordionTrigger className="hover:no-underline">
+  //                   <div className="flex justify-between items-center w-full pr-4">
+  //                     <span>Store {index + 1}</span>
+  //                     <Badge
+  //                       className={getStatusClassName(subOrder.deliveryStatus)}
+  //                     >
+  //                       {subOrder.deliveryStatus}
+  //                     </Badge>
+  //                   </div>
+  //                 </AccordionTrigger>
+  //                 <AccordionContent>
+  //                   <div className="mb-4 flex justify-between items-center">
+  //                     <div>
+  //                       <p className="text-sm">
+  //                         Shipping Method: {subOrder.shippingMethod?.name}
+  //                       </p>
+  //                       <p className="text-sm">
+  //                         Shipping Price:{" "}
+  //                         {formatCurrency(subOrder.shippingMethod?.price!)}
+  //                       </p>
+  //                       <p className="text-sm">
+  //                         Estimated Delivery Days:{" "}
+  //                         {subOrder.shippingMethod?.estimatedDeliveryDays}
+  //                       </p>
+  //                       {subOrder.trackingNumber && (
+  //                         <p className="text-sm">
+  //                           Tracking: {subOrder.trackingNumber}
+  //                         </p>
+  //                       )}
+  //                       {subOrder.deliveryDate && (
+  //                         <p className="text-sm">
+  //                           Expected Delivery:{" "}
+  //                           {new Date(
+  //                             subOrder.deliveryDate
+  //                           ).toLocaleDateString()}
+  //                         </p>
+  //                       )}
+  //                     </div>
+
+  //                     {subOrder.deliveryStatus === "Out for Delivery" && (
+  //                       <Button
+  //                         onClick={() =>
+  //                           updateDeliveryStatus(subOrder._id || "")
+  //                         }
+  //                         disabled={submitting}
+  //                         className="bg-udua-orange-primary/85 hover:bg-udua-orange-primary text-sm"
+  //                       >
+  //                         {submitting ? (
+  //                           <Loader className="animate-spin mr-2" />
+  //                         ) : (
+  //                           "Mark as Delivered"
+  //                         )}
+  //                       </Button>
+  //                     )}
+  //                   </div>
+
+  //                   <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4 lg:gap-3.5 w-full justify-between">
+  //                     {subOrder.products.map((product, productIndex) => (
+  //                       <ProductItem
+  //                         key={`${
+  //                           product.physicalProducts ||
+  //                           product.digitalProducts ||
+  //                           productIndex
+  //                         }`}
+  //                         product={product}
+  //                         onReviewInit={(id) =>
+  //                           handleReviewInit(id, subOrder._id || "")
+  //                         }
+  //                         deliveryStatus={subOrder.deliveryStatus}
+  //                       />
+  //                     ))}
+  //                   </div>
+  //                 </AccordionContent>
+  //               </AccordionItem>
+  //             ))}
+  //           </Accordion>
+  //         </CardContent>
+  //       </Card>
+
+  //       {/* Review Dialog - Moved outside the product item for better state management */}
+  //       <ReviewDialog
+  //         open={dialogOpen}
+  //         setOpen={setDialogOpen}
+  //         rating={rating}
+  //         setRating={setRating}
+  //         review={review}
+  //         setReview={setReview}
+  //         onSubmit={submitReview}
+  //         submitting={submitting}
+  //       />
+  //     </main>
+  //   </div>
+  // );
   return (
-    <div className="grid min-h-screen max-w-7xl mx-auto md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-      <aside className="hidden border-r bg-muted/10 md:block">
-        <div className="flex h-full max-h-screen flex-col gap-2">
-          <Aside1 />
-        </div>
-      </aside>
+    <div className="max-w-7xl mx-auto px-4 md:px-3 py-8">
+      <div className="grid md:grid-cols-[280px_1fr] gap-6">
+        <aside className="bg-card rounded-lg shadow-sm hidden md:inline-block">
+          <div className="flex h-full flex-col gap-2">
+            <Aside1 />
+          </div>
+        </aside>
 
-      <main className="flex flex-col gap-4 p-4 md:py-4">
-        <header className="flex justify-between items-center">
-          <Breadcrumb className="hidden md:flex">
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href="/dashboard">Dashboard</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href="/orders">Orders</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Order Details</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-          <h1 className="text-xl font-semibold">Order Details</h1>
-        </header>
-
-        <OrderSummary order={orderDetails} />
-
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              {totalProducts} Product{totalProducts > 1 ? "s" : ""} from{" "}
-              {orderDetails.stores.length} Store
-              {orderDetails.stores.length > 1 ? "s" : ""}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Accordion type="single" collapsible className="w-full">
-              {orderDetails.subOrders.map((subOrder, index) => (
-                <AccordionItem
-                  key={subOrder._id || index}
-                  value={`store-${index}`}
+        <main className="space-y-6">
+          {/* Header Section */}
+          <div className="bg-card rounded-lg shadow-sm p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h1 className="text-2xl font-bold flex items-center gap-2">
+                Order Details
+                <Badge
+                  variant="outline"
+                  className="text-sm hidden sm:inline-block"
                 >
-                  <AccordionTrigger className="hover:no-underline">
-                    <div className="flex justify-between items-center w-full pr-4">
-                      <span>Store {index + 1}</span>
-                      <Badge
-                        className={getStatusClassName(subOrder.deliveryStatus)}
-                      >
-                        {subOrder.deliveryStatus}
-                      </Badge>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <div className="mb-4 flex justify-between items-center">
-                      <div>
-                        <p className="text-sm">
-                          Shipping Method: {subOrder.shippingMethod?.name}
-                        </p>
-                        <p className="text-sm">
-                          Shipping Price:{" "}
-                          {formatCurrency(subOrder.shippingMethod?.price!)}
-                        </p>
-                        <p className="text-sm">
-                          Estimated Delivery Days:{" "}
-                          {subOrder.shippingMethod?.estimatedDeliveryDays}
-                        </p>
-                        {subOrder.trackingNumber && (
-                          <p className="text-sm">
-                            Tracking: {subOrder.trackingNumber}
-                          </p>
-                        )}
-                        {subOrder.deliveryDate && (
-                          <p className="text-sm">
-                            Expected Delivery:{" "}
-                            {new Date(
+                  ID: {orderDetails?._id}
+                </Badge>
+              </h1>
+              <Breadcrumb className="hidden md:flex">
+                {/* ... existing breadcrumb content ... */}
+                <BreadcrumbList>
+                  <BreadcrumbItem>
+                    <BreadcrumbLink asChild>
+                      <Link href="/orders">Orders</Link>
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbPage>Order Details</BreadcrumbPage>
+                  </BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb>
+            </div>
+
+            {/* Order Summary */}
+            <div className="grid md:grid-cols-2 gap-6">
+              <Card className="bg-muted/50">
+                <CardHeader>
+                  <CardTitle className="text-lg">Order Overview</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <DetailItem
+                    label="Order Date"
+                    value={new Date(orderDetails.createdAt).toLocaleString()}
+                  />
+                  <DetailItem label="Status" value={orderDetails.status} />
+                  <DetailItem
+                    label="Total Amount"
+                    value={`₦${addCommasToNumber(orderDetails.totalAmount)}`}
+                  />
+                </CardContent>
+              </Card>
+
+              <Card className="bg-muted/50">
+                <CardHeader>
+                  <CardTitle className="text-lg">Delivery Info</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <DetailItem
+                    label="Shipping Address"
+                    value={orderDetails.shippingAddress!}
+                  />
+                  <DetailItem
+                    label="Postal Code"
+                    value={orderDetails.postalCode}
+                  />
+                  <DetailItem
+                    label="Stores"
+                    value={orderDetails.stores.length.toString()}
+                  />
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Stores Accordion */}
+          <Card className="bg-card rounded-lg shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-lg">
+                {totalProducts} Items from {orderDetails.stores.length} Stores
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Accordion type="single" collapsible className="w-full space-y-4">
+                {orderDetails.subOrders.map((subOrder, index) => (
+                  <AccordionItem
+                    key={subOrder._id || index}
+                    value={`store-${index}`}
+                    className="border rounded-lg"
+                  >
+                    <AccordionTrigger className="px-4 hover:no-underline">
+                      <div className="flex items-center justify-between w-full pr-4">
+                        <div className="flex items-center gap-4">
+                          <Store className="w-5 h-5 text-primary" />
+                          <span className="font-medium">Store {index + 1}</span>
+                        </div>
+                        <Badge
+                          className={getStatusClassName(
+                            subOrder.deliveryStatus
+                          )}
+                        >
+                          {subOrder.deliveryStatus}
+                        </Badge>
+                      </div>
+                    </AccordionTrigger>
+
+                    <AccordionContent className="px-4 pt-4">
+                      <div className="grid md:grid-cols-2 gap-6 mb-6">
+                        <div className="space-y-2">
+                          <DetailItem
+                            label="Shipping Method"
+                            value={subOrder.shippingMethod?.name!}
+                          />
+                          <DetailItem
+                            label="Tracking Number"
+                            value={subOrder.trackingNumber!}
+                          />
+                          <DetailItem
+                            label="Estimated Delivery"
+                            value={
                               subOrder.deliveryDate
-                            ).toLocaleDateString()}
-                          </p>
-                        )}
+                                ? new Date(
+                                    subOrder.deliveryDate
+                                  ).toLocaleDateString()
+                                : "N/A"
+                            }
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <DetailItem
+                            label="Shipping Cost"
+                            value={formatCurrency(
+                              subOrder.shippingMethod?.price!
+                            )}
+                          />
+                          <DetailItem
+                            label="Delivery Days"
+                            // @ts-ignore
+                            value={
+                              subOrder.shippingMethod?.estimatedDeliveryDays!
+                            }
+                          />
+                          {subOrder.deliveryStatus === "Out for Delivery" && (
+                            <Button
+                              onClick={() =>
+                                updateDeliveryStatus(subOrder._id || "")
+                              }
+                              disabled={submitting}
+                              className="w-full md:w-auto"
+                            >
+                              {submitting ? (
+                                <Loader className="animate-spin mr-2" />
+                              ) : (
+                                "Mark as Delivered"
+                              )}
+                            </Button>
+                          )}
+                        </div>
                       </div>
 
-                      {subOrder.deliveryStatus === "Out for Delivery" && (
-                        <Button
-                          onClick={() =>
-                            updateDeliveryStatus(subOrder._id || "")
-                          }
-                          disabled={submitting}
-                          className="bg-udua-orange-primary/85 hover:bg-udua-orange-primary text-sm"
-                        >
-                          {submitting ? (
-                            <Loader className="animate-spin mr-2" />
-                          ) : (
-                            "Mark as Delivered"
-                          )}
-                        </Button>
-                      )}
-                    </div>
+                      {/* Products Grid */}
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {subOrder.products.map((product, productIndex) => (
+                          <ProductItem
+                            key={`${
+                              product.physicalProducts ||
+                              product.digitalProducts ||
+                              productIndex
+                            }`}
+                            product={product}
+                            onReviewInit={(id) =>
+                              handleReviewInit(id, subOrder._id || "")
+                            }
+                            deliveryStatus={subOrder.deliveryStatus}
+                          />
+                        ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </CardContent>
+          </Card>
 
-                    <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4 lg:gap-3.5 w-full justify-between">
-                      {subOrder.products.map((product, productIndex) => (
-                        <ProductItem
-                          key={`${
-                            product.physicalProducts ||
-                            product.digitalProducts ||
-                            productIndex
-                          }`}
-                          product={product}
-                          onReviewInit={(id) => {
-                            setSelectedProductId(id);
-                            setSelectedSubOrderId(subOrder._id || "");
-                          }}
-                          deliveryStatus={subOrder.deliveryStatus}
-                        />
-                      ))}
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </CardContent>
-        </Card>
-      </main>
+          {/* Review Dialog - unchanged */}
+          <ReviewDialog
+            open={dialogOpen}
+            setOpen={setDialogOpen}
+            rating={rating}
+            setRating={setRating}
+            review={review}
+            setReview={setReview}
+            onSubmit={submitReview}
+            submitting={submitting}
+          />
+        </main>
+      </div>
     </div>
   );
 }
 
+// New DetailItem component
+const DetailItem = ({ label, value }: { label: string; value: string }) => (
+  <div className="flex justify-between items-center py-2 border-b">
+    <span className="text-sm text-muted-foreground">{label}</span>
+    <span className="text-sm font-medium">{value || "N/A"}</span>
+  </div>
+);
+
+/**
+ * Order Summary Component
+ *
+ * Displays a summary of the order including order details,
+ * payment information, and shipping information.
+ *
+ * @component OrderSummary
+ * @param {Object} props - Component props
+ * @param {Order} props.order - The order data to display
+ */
 const OrderSummary = ({ order }: { order: Order }) => (
   <Card>
     <CardHeader>
@@ -348,6 +632,18 @@ const OrderSummary = ({ order }: { order: Order }) => (
   </Card>
 );
 
+/**
+ * Product Item Component
+ *
+ * Displays a single product from an order with its image, details,
+ * and a button to review the product if it has been delivered.
+ *
+ * @component ProductItem
+ * @param {Object} props - Component props
+ * @param {ProductOrder} props.product - The product data to display
+ * @param {Function} props.onReviewInit - Callback when review button is clicked
+ * @param {string} props.deliveryStatus - The delivery status of the product
+ */
 const ProductItem = ({
   product,
   onReviewInit,
@@ -359,11 +655,12 @@ const ProductItem = ({
 }) => {
   if (product.physicalProducts) {
     return (
-      <div className="relative">
-        <div className="aspect-square relative rounded-lg overflow-hidden border-2 border-gray-200">
+      <div className="relative group">
+        <div className="aspect-square relative rounded-lg overflow-hidden border-2 border-gray-200 transition-all duration-200 group-hover:border-udua-orange-primary/70">
           <Image
             src={
               (product.physicalProducts as Product).images?.[0] ||
+              "/placeholder.svg" ||
               "/placeholder.svg"
             }
             alt={(product.physicalProducts as Product).name || "Product"}
@@ -375,18 +672,29 @@ const ProductItem = ({
           />
         </div>
 
-        <div className="space-y-0.5 mt-1 grid grid-cols-1">
+        <div className="space-y-0.5 mt-2 grid grid-cols-1">
           <h3 className="font-medium truncate">
             {(product.physicalProducts as Product).name}
           </h3>
-          <p>Quantity: {product.quantity}</p>
-          <p>Price: ₦{addCommasToNumber(product.price)}</p>
+          <p className="text-sm text-muted-foreground">
+            Quantity: {product.quantity}
+          </p>
+          <p className="text-sm font-medium">
+            ₦{addCommasToNumber(product.price)}
+          </p>
 
           {deliveryStatus === "Delivered" && (
-            <ReviewDialog
-              productId={(product.physicalProducts as Product)._id!}
-              onInit={onReviewInit}
-            />
+            <Button
+              className="mt-2 bg-udua-orange-primary/85 hover:bg-udua-orange-primary w-full text-sm flex items-center gap-2"
+              onClick={() =>
+                onReviewInit((product.physicalProducts as Product)._id!)
+              }
+              aria-label="Review product"
+              size="sm"
+            >
+              <ClipboardEditIcon className="h-4 w-4" />
+              Write Review
+            </Button>
           )}
         </div>
       </div>
@@ -395,13 +703,14 @@ const ProductItem = ({
 
   if (product.digitalProducts) {
     return (
-      <div className="relative">
-        <div className="aspect-square relative rounded-lg overflow-hidden border-2 border-gray-200">
+      <div className="relative group">
+        <div className="aspect-square relative rounded-lg overflow-hidden border-2 border-gray-200 transition-all duration-200 group-hover:border-udua-orange-primary/70">
           {product.digitalProducts !== null &&
             (product.digitalProducts as DigitalProduct).coverIMG !== null && (
               <Image
                 src={
                   (product.digitalProducts as DigitalProduct).coverIMG[0] ||
+                  "/placeholder.svg" ||
                   "/placeholder.svg"
                 }
                 alt={
@@ -417,25 +726,32 @@ const ProductItem = ({
             )}
         </div>
 
-        <div className="mt-1 grid grid-cols-1">
+        <div className="mt-2 grid grid-cols-1">
           <h3 className="font-medium truncate">
             {product.digitalProducts &&
               `${(product.digitalProducts as DigitalProduct).title}`}
           </h3>
-          <p className="font-medium">
-            Quantity {product.quantity && product.quantity}
+          <p className="text-sm text-muted-foreground">
+            Quantity: {product.quantity}
           </p>
           {product.price && (
-            <p className="font-medium">
-              &#8358; {addCommasToNumber(product.price)}{" "}
+            <p className="text-sm font-medium">
+              ₦{addCommasToNumber(product.price)}
             </p>
           )}
 
           {deliveryStatus === "Delivered" && (
-            <ReviewDialog
-              productId={(product.digitalProducts as DigitalProduct)._id!}
-              onInit={onReviewInit}
-            />
+            <Button
+              className="mt-2 bg-udua-orange-primary/85 hover:bg-udua-orange-primary w-full text-sm flex items-center gap-2"
+              onClick={() =>
+                onReviewInit((product.digitalProducts as DigitalProduct)._id!)
+              }
+              aria-label="Review product"
+              size="sm"
+            >
+              <ClipboardEditIcon className="h-4 w-4" />
+              Write Review
+            </Button>
           )}
         </div>
       </div>
@@ -445,71 +761,148 @@ const ProductItem = ({
   return null;
 };
 
+/**
+ * Review Dialog Component
+ *
+ * A modal dialog for submitting product reviews with star rating
+ * and text feedback.
+ *
+ * @component ReviewDialog
+ * @param {Object} props - Component props
+ * @param {boolean} props.open - Whether the dialog is open
+ * @param {Function} props.setOpen - Function to set the open state
+ * @param {number} props.rating - The current rating value
+ * @param {Function} props.setRating - Function to set the rating
+ * @param {string} props.review - The review text
+ * @param {Function} props.setReview - Function to set the review text
+ * @param {Function} props.onSubmit - Function to handle form submission
+ * @param {boolean} props.submitting - Whether the form is currently submitting
+ */
 const ReviewDialog = ({
-  productId,
-  onInit,
+  open,
+  setOpen,
+  rating,
+  setRating,
+  review,
+  setReview,
+  onSubmit,
+  submitting,
 }: {
-  productId: string;
-  onInit: (id: string) => void;
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  rating: number;
+  setRating: (rating: number) => void;
+  review: string;
+  setReview: (review: string) => void;
+  onSubmit: () => Promise<void>;
+  submitting: boolean;
 }) => {
-  const [rating, setRating] = useState(0);
-  const [review, setReview] = useState("");
-
   return (
-    <Dialog>
-      <DialogTrigger asChild className="absolute right-2 top-1">
-        <Button
-          className="bg-udua-orange-primary/85 hover:bg-udua-orange-primary"
-          onClick={() => onInit(productId)}
-          aria-label="Review product"
-          size={"icon"}
-        >
-          <ClipboardEditIcon />
-        </Button>
-      </DialogTrigger>
-
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Product Review</DialogTitle>
+          <DialogTitle>Write a Product Review</DialogTitle>
           <DialogDescription>
-            Share your experience with this product
+            Share your experience with this product to help other shoppers
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
-          <div className="flex justify-center gap-2">
-            {[...Array(5)].map((_, i) => {
-              const value = i + 1;
-              return (
-                <button
-                  key={value}
-                  onClick={() => setRating(value)}
-                  className="focus:outline-none"
-                  aria-label={`Rate ${value} stars`}
-                >
-                  <Star
-                    className={`h-8 w-8 transition-colors ${
-                      value <= rating
-                        ? "text-yellow-500 fill-yellow-500"
-                        : "text-gray-300"
-                    }`}
-                  />
-                </button>
-              );
-            })}
+        <div className="space-y-6 py-2">
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Rating</label>
+            <div className="flex justify-center gap-2">
+              {[...Array(5)].map((_, i) => {
+                const value = i + 1;
+                return (
+                  <button
+                    key={value}
+                    onClick={() => setRating(value)}
+                    className="focus:outline-none transition-transform hover:scale-110"
+                    aria-label={`Rate ${value} stars`}
+                    type="button"
+                  >
+                    <Star
+                      className={`h-8 w-8 transition-colors ${
+                        value <= rating
+                          ? "text-yellow-500 fill-yellow-500"
+                          : "text-gray-300"
+                      }`}
+                    />
+                  </button>
+                );
+              })}
+            </div>
+            {rating > 0 && (
+              <p className="text-center text-sm text-muted-foreground">
+                {rating === 1 && "Poor"}
+                {rating === 2 && "Fair"}
+                {rating === 3 && "Good"}
+                {rating === 4 && "Very Good"}
+                {rating === 5 && "Excellent"}
+              </p>
+            )}
           </div>
 
-          <Textarea
-            value={review}
-            onChange={(e) => setReview(e.target.value)}
-            placeholder="Share your thoughts..."
-            className="min-h-[120px]"
-          />
+          <div className="space-y-2">
+            <label htmlFor="review" className="text-sm font-medium">
+              Your Review
+            </label>
+            <Textarea
+              id="review"
+              value={review}
+              onChange={(e) => setReview(e.target.value)}
+              placeholder="What did you like or dislike? How was your experience with this product?"
+              className="min-h-[120px] resize-none"
+            />
+            <p className="text-xs text-muted-foreground">
+              Your review helps other shoppers make informed decisions
+            </p>
+          </div>
         </div>
+
+        <DialogFooter className="flex gap-2 sm:gap-0">
+          <Button
+            variant="outline"
+            onClick={() => setOpen(false)}
+            disabled={submitting}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            className="bg-udua-orange-primary hover:bg-udua-orange-primary/90"
+            onClick={onSubmit}
+            disabled={submitting || !rating || !review.trim()}
+          >
+            {submitting ? (
+              <>
+                <Loader className="mr-2 h-4 w-4 animate-spin" />
+                Submitting...
+              </>
+            ) : (
+              "Submit Review"
+            )}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 };
+
+// /**
+//  * Order Details Page
+//  *
+//  * This page displays comprehensive information about a user's order including:
+//  * - Order summary (date, status, total amount)
+//  * - Payment information
+//  * - Shipping details
+//  * - Products purchased grouped by store
+//  * - Delivery status for each store's order
+//  * - Functionality to mark orders as delivered
+//  * - Product review submission
+//  *
+//  * @component OrderDetailsPage
+//  */
 
 // "use client";
 
@@ -519,8 +912,12 @@ const ReviewDialog = ({
 // import Link from "next/link";
 // import { useRouter } from "next/navigation";
 // import { ClipboardEditIcon, Loader, Star } from "lucide-react";
-// import { Order } from "@/types";
-// import { addCommasToNumber } from "@/lib/utils";
+// import type { DigitalProduct, Order, Product, ProductOrder } from "@/types";
+// import {
+//   addCommasToNumber,
+//   formatCurrency,
+//   getStatusClassName,
+// } from "@/lib/utils";
 // import { useToast } from "@/components/ui/use-toast";
 // import { Button } from "@/components/ui/button";
 // import { Textarea } from "@/components/ui/textarea";
@@ -535,9 +932,9 @@ const ReviewDialog = ({
 //   Dialog,
 //   DialogContent,
 //   DialogDescription,
+//   DialogFooter,
 //   DialogHeader,
 //   DialogTitle,
-//   DialogTrigger,
 // } from "@/components/ui/dialog";
 // import {
 //   Breadcrumb,
@@ -547,6 +944,13 @@ const ReviewDialog = ({
 //   BreadcrumbPage,
 //   BreadcrumbSeparator,
 // } from "@/components/ui/breadcrumb";
+// import {
+//   Accordion,
+//   AccordionContent,
+//   AccordionItem,
+//   AccordionTrigger,
+// } from "@/components/ui/accordion";
+// import { Badge } from "@/components/ui/badge";
 // import Aside1 from "@/app/(user)/components/aside-1";
 // import OrderDetailsSkeleton from "@/utils/skeleton-loaders/order-details-skeleton";
 
@@ -564,33 +968,40 @@ const ReviewDialog = ({
 //   const { toast } = useToast();
 //   const router = useRouter();
 
+//   // Review state
 //   const [rating, setRating] = useState(0);
 //   const [review, setReview] = useState("");
 //   const [selectedProductId, setSelectedProductId] = useState("");
+//   const [selectedSubOrderId, setSelectedSubOrderId] = useState("");
+//   const [dialogOpen, setDialogOpen] = useState(false);
+
+//   /**
+//    * Fetches order details from the API
+//    */
+//   const fetchOrderData = async () => {
+//     try {
+//       const { data } = await axios.post("/api/user/orderDetails", {
+//         orderID: params.slug,
+//       });
+//       setOrderDetails(data.orderDetail);
+//     } catch (error) {
+//       handleError(error, "Failed to load order details");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
 
 //   useEffect(() => {
 //     const controller = new AbortController();
-
-//     const fetchOrderData = async () => {
-//       try {
-//         const { data } = await axios.post(
-//           "/api/user/orderDetails",
-//           { orderID: params.slug },
-//           { signal: controller.signal }
-//         );
-//         console.log(`data`, data);
-//         setOrderDetails(data.orderDetail);
-//       } catch (error) {
-//         handleError(error, "Failed to load order details");
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
 //     fetchOrderData();
 //     return () => controller.abort();
 //   }, [params.slug]);
 
+//   /**
+//    * Handles API errors with consistent error messaging
+//    * @param error - The error object
+//    * @param context - Context message for the error
+//    */
 //   const handleError = (error: unknown, context: string) => {
 //     const message = axios.isAxiosError(error)
 //       ? error.response?.data?.error || context
@@ -603,13 +1014,18 @@ const ReviewDialog = ({
 //     });
 //   };
 
-//   const updateDeliveryStatus = async () => {
+//   /**
+//    * Updates the delivery status of a sub-order to "Delivered"
+//    * @param subOrderId - The ID of the sub-order to update
+//    */
+//   const updateDeliveryStatus = async (subOrderId: string) => {
 //     if (!orderDetails) return;
 
 //     try {
 //       setSubmitting(true);
 //       await axios.post("/api/store/update-order-delivery-status", {
-//         orderID: orderDetails._id,
+//         mainOrderID: orderDetails._id,
+//         subOrderID: subOrderId,
 //         updatedDeliveryStatus: "Delivered",
 //       });
 
@@ -617,6 +1033,7 @@ const ReviewDialog = ({
 //         title: "Success",
 //         description: "Order status updated to Delivered",
 //       });
+//       fetchOrderData();
 //       router.refresh();
 //     } catch (error) {
 //       handleError(error, "Failed to update status");
@@ -625,12 +1042,15 @@ const ReviewDialog = ({
 //     }
 //   };
 
+//   /**
+//    * Submits a product review to the API
+//    */
 //   const submitReview = async () => {
 //     if (!review.trim() || !rating) {
 //       toast({
 //         variant: "destructive",
 //         title: "Error",
-//         description: "Please complete all required fields",
+//         description: "Please provide both a rating and review",
 //       });
 //       return;
 //     }
@@ -648,11 +1068,32 @@ const ReviewDialog = ({
 //         title: "Success",
 //         description: "Review submitted successfully",
 //       });
+
+//       // Reset form and close dialog
+//       setRating(0);
+//       setReview("");
+//       setDialogOpen(false);
+
+//       // Refresh data to reflect changes
+//       fetchOrderData();
 //     } catch (error) {
 //       handleError(error, "Failed to submit review");
 //     } finally {
 //       setSubmitting(false);
 //     }
+//   };
+
+//   /**
+//    * Initializes the review dialog with product information
+//    * @param productId - The ID of the product being reviewed
+//    * @param subOrderId - The ID of the sub-order containing the product
+//    */
+//   const handleReviewInit = (productId: string, subOrderId: string) => {
+//     setSelectedProductId(productId);
+//     setSelectedSubOrderId(subOrderId);
+//     setRating(0);
+//     setReview("");
+//     setDialogOpen(true);
 //   };
 
 //   if (loading) {
@@ -666,6 +1107,12 @@ const ReviewDialog = ({
 //       </div>
 //     );
 //   }
+
+//   // Count total products across all subOrders
+//   const totalProducts = orderDetails.subOrders.reduce(
+//     (total, subOrder) => total + subOrder.products.length,
+//     0
+//   );
 
 //   return (
 //     <div className="grid min-h-screen max-w-7xl mx-auto md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
@@ -702,45 +1149,125 @@ const ReviewDialog = ({
 //         <OrderSummary order={orderDetails} />
 
 //         <Card>
-//           <CardHeader className="flex flex-col sm:flex-row justify-between gap-4">
+//           <CardHeader>
 //             <CardTitle>
-//               {orderDetails.products.length} Product
-//               {orderDetails.products.length > 1 ? "s" : ""}
+//               {totalProducts} Product{totalProducts > 1 ? "s" : ""} from{" "}
+//               {orderDetails.stores.length} Store
+//               {orderDetails.stores.length > 1 ? "s" : ""}
 //             </CardTitle>
-//             <DeliveryStatus
-//               status={orderDetails.deliveryStatus}
-//               onUpdate={updateDeliveryStatus}
-//               submitting={submitting}
-//             />
 //           </CardHeader>
-//           <CardContent className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4 lg:gap-3.5 w-full justify-between">
-//             {orderDetails.products.map((product) => {
-//               if (product.physicalProducts) {
-//                 return (
-//                   <ProductItem
-//                     key={product.physicalProducts._id}
-//                     product={product}
-//                     onReviewInit={setSelectedProductId}
-//                     deliveryStatus={orderDetails.deliveryStatus}
-//                   />
-//                 );
-//               } else if (product.digitalProducts) {
-//                 return (
-//                   <ProductItem
-//                     key={product.digitalProducts._id}
-//                     product={product}
-//                     onReviewInit={setSelectedProductId}
-//                   />
-//                 );
-//               }
-//             })}
+//           <CardContent>
+//             <Accordion type="single" collapsible className="w-full">
+//               {orderDetails.subOrders.map((subOrder, index) => (
+//                 <AccordionItem
+//                   key={subOrder._id || index}
+//                   value={`store-${index}`}
+//                 >
+//                   <AccordionTrigger className="hover:no-underline">
+//                     <div className="flex justify-between items-center w-full pr-4">
+//                       <span>Store {index + 1}</span>
+//                       <Badge
+//                         className={getStatusClassName(subOrder.deliveryStatus)}
+//                       >
+//                         {subOrder.deliveryStatus}
+//                       </Badge>
+//                     </div>
+//                   </AccordionTrigger>
+//                   <AccordionContent>
+//                     <div className="mb-4 flex justify-between items-center">
+//                       <div>
+//                         <p className="text-sm">
+//                           Shipping Method: {subOrder.shippingMethod?.name}
+//                         </p>
+//                         <p className="text-sm">
+//                           Shipping Price:{" "}
+//                           {formatCurrency(subOrder.shippingMethod?.price!)}
+//                         </p>
+//                         <p className="text-sm">
+//                           Estimated Delivery Days:{" "}
+//                           {subOrder.shippingMethod?.estimatedDeliveryDays}
+//                         </p>
+//                         {subOrder.trackingNumber && (
+//                           <p className="text-sm">
+//                             Tracking: {subOrder.trackingNumber}
+//                           </p>
+//                         )}
+//                         {subOrder.deliveryDate && (
+//                           <p className="text-sm">
+//                             Expected Delivery:{" "}
+//                             {new Date(
+//                               subOrder.deliveryDate
+//                             ).toLocaleDateString()}
+//                           </p>
+//                         )}
+//                       </div>
+
+//                       {subOrder.deliveryStatus === "Out for Delivery" && (
+//                         <Button
+//                           onClick={() =>
+//                             updateDeliveryStatus(subOrder._id || "")
+//                           }
+//                           disabled={submitting}
+//                           className="bg-udua-orange-primary/85 hover:bg-udua-orange-primary text-sm"
+//                         >
+//                           {submitting ? (
+//                             <Loader className="animate-spin mr-2" />
+//                           ) : (
+//                             "Mark as Delivered"
+//                           )}
+//                         </Button>
+//                       )}
+//                     </div>
+
+//                     <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4 lg:gap-3.5 w-full justify-between">
+//                       {subOrder.products.map((product, productIndex) => (
+//                         <ProductItem
+//                           key={`${
+//                             product.physicalProducts ||
+//                             product.digitalProducts ||
+//                             productIndex
+//                           }`}
+//                           product={product}
+//                           onReviewInit={(id) =>
+//                             handleReviewInit(id, subOrder._id || "")
+//                           }
+//                           deliveryStatus={subOrder.deliveryStatus}
+//                         />
+//                       ))}
+//                     </div>
+//                   </AccordionContent>
+//                 </AccordionItem>
+//               ))}
+//             </Accordion>
 //           </CardContent>
 //         </Card>
+
+//         {/* Review Dialog - Moved outside the product item for better state management */}
+//         <ReviewDialog
+//           open={dialogOpen}
+//           setOpen={setDialogOpen}
+//           rating={rating}
+//           setRating={setRating}
+//           review={review}
+//           setReview={setReview}
+//           onSubmit={submitReview}
+//           submitting={submitting}
+//         />
 //       </main>
 //     </div>
 //   );
 // }
 
+// /**
+//  * Order Summary Component
+//  *
+//  * Displays a summary of the order including order details,
+//  * payment information, and shipping information.
+//  *
+//  * @component OrderSummary
+//  * @param {Object} props - Component props
+//  * @param {Order} props.order - The order data to display
+//  */
 // const OrderSummary = ({ order }: { order: Order }) => (
 //   <Card>
 //     <CardHeader>
@@ -766,8 +1293,8 @@ const ReviewDialog = ({
 //           Payment Information
 //         </h1>
 
-//         <p>Payment Method: {order.paymentMethod.toUpperCase()}</p>
-//         <p>Payment Status: {order.paymentStatus.toUpperCase()}</p>
+//         <p>Payment Method: {order.paymentMethod?.toUpperCase()}</p>
+//         <p>Payment Status: {order.paymentStatus?.toUpperCase()}</p>
 //       </div>
 
 //       {/* Shipping information section */}
@@ -777,30 +1304,45 @@ const ReviewDialog = ({
 //         </h1>
 
 //         <p>Shipping Address: {order.shippingAddress}</p>
-//         <p>Shipping Method: {order.shippingMethod}</p>
 //         <p>Postal Code: {order.postalCode}</p>
-//         {/* <p>Tracking Number: {order._id}</p> */}
+//         <p>Stores: {order.stores.length}</p>
 //       </div>
 //     </CardContent>
 //   </Card>
 // );
 
+// /**
+//  * Product Item Component
+//  *
+//  * Displays a single product from an order with its image, details,
+//  * and a button to review the product if it has been delivered.
+//  *
+//  * @component ProductItem
+//  * @param {Object} props - Component props
+//  * @param {ProductOrder} props.product - The product data to display
+//  * @param {Function} props.onReviewInit - Callback when review button is clicked
+//  * @param {string} props.deliveryStatus - The delivery status of the product
+//  */
 // const ProductItem = ({
 //   product,
 //   onReviewInit,
 //   deliveryStatus,
 // }: {
-//   product: Order["products"][number]; // Type annotation indicating 'product' is a single item from the 'products' array in an 'Order'
+//   product: ProductOrder;
 //   onReviewInit: (id: string) => void;
-//   deliveryStatus?: Order["deliveryStatus"];
+//   deliveryStatus?: string;
 // }) => {
 //   if (product.physicalProducts) {
 //     return (
-//       <div className="relative">
-//         <div className="aspect-square relative rounded-lg overflow-hidden border-2 border-gray-200">
+//       <div className="relative group">
+//         <div className="aspect-square relative rounded-lg overflow-hidden border-2 border-gray-200 transition-all duration-200 group-hover:border-udua-orange-primary/70">
 //           <Image
-//             src={product.physicalProducts.images[0]}
-//             alt={product.physicalProducts.name}
+//             src={
+//               (product.physicalProducts as Product).images?.[0] ||
+//               "/placeholder.svg" ||
+//               "/placeholder.svg"
+//             }
+//             alt={(product.physicalProducts as Product).name || "Product"}
 //             fill
 //             className="object-cover"
 //             quality={85}
@@ -809,18 +1351,29 @@ const ReviewDialog = ({
 //           />
 //         </div>
 
-//         <div className="space-y-0.5 mt-1 grid grid-cols-1">
+//         <div className="space-y-0.5 mt-2 grid grid-cols-1">
 //           <h3 className="font-medium truncate">
-//             {product.physicalProducts.name}
+//             {(product.physicalProducts as Product).name}
 //           </h3>
-//           <p>Quantity: {product.quantity}</p>
-//           <p>Price: ₦{addCommasToNumber(product.price)}</p>
+//           <p className="text-sm text-muted-foreground">
+//             Quantity: {product.quantity}
+//           </p>
+//           <p className="text-sm font-medium">
+//             ₦{addCommasToNumber(product.price)}
+//           </p>
 
 //           {deliveryStatus === "Delivered" && (
-//             <ReviewDialog
-//               productId={product.physicalProducts._id!}
-//               onInit={onReviewInit}
-//             />
+//             <Button
+//               className="mt-2 bg-udua-orange-primary/85 hover:bg-udua-orange-primary w-full text-sm flex items-center gap-2"
+//               onClick={() =>
+//                 onReviewInit((product.physicalProducts as Product)._id!)
+//               }
+//               aria-label="Review product"
+//               size="sm"
+//             >
+//               <ClipboardEditIcon className="h-4 w-4" />
+//               Write Review
+//             </Button>
 //           )}
 //         </div>
 //       </div>
@@ -829,13 +1382,20 @@ const ReviewDialog = ({
 
 //   if (product.digitalProducts) {
 //     return (
-//       <div className="relative">
-//         <div className="aspect-square relative rounded-lg overflow-hidden border-2 border-gray-200">
+//       <div className="relative group">
+//         <div className="aspect-square relative rounded-lg overflow-hidden border-2 border-gray-200 transition-all duration-200 group-hover:border-udua-orange-primary/70">
 //           {product.digitalProducts !== null &&
-//             product.digitalProducts.coverIMG !== null && (
+//             (product.digitalProducts as DigitalProduct).coverIMG !== null && (
 //               <Image
-//                 src={product.digitalProducts.coverIMG[0] || "/placeholder.svg"}
-//                 alt={product.digitalProducts.title}
+//                 src={
+//                   (product.digitalProducts as DigitalProduct).coverIMG[0] ||
+//                   "/placeholder.svg" ||
+//                   "/placeholder.svg"
+//                 }
+//                 alt={
+//                   (product.digitalProducts as DigitalProduct).title ||
+//                   "Digital Product"
+//                 }
 //                 fill
 //                 className="object-cover"
 //                 quality={85}
@@ -845,520 +1405,165 @@ const ReviewDialog = ({
 //             )}
 //         </div>
 
-//         <div className="mt-1 grid grid-cols-1">
+//         <div className="mt-2 grid grid-cols-1">
 //           <h3 className="font-medium truncate">
-//             {product.digitalProducts && `${product.digitalProducts.title}`}
+//             {product.digitalProducts &&
+//               `${(product.digitalProducts as DigitalProduct).title}`}
 //           </h3>
-//           <p className="font-medium">
-//             Quantity {product.quantity && product.quantity}
+//           <p className="text-sm text-muted-foreground">
+//             Quantity: {product.quantity}
 //           </p>
 //           {product.price && (
-//             <p className="font-medium">
-//               &#8358; {addCommasToNumber(product.price)}{" "}
+//             <p className="text-sm font-medium">
+//               ₦{addCommasToNumber(product.price)}
 //             </p>
 //           )}
 
-//           <ReviewDialog
-//             productId={product.digitalProducts._id!}
-//             onInit={onReviewInit}
-//           />
+//           {deliveryStatus === "Delivered" && (
+//             <Button
+//               className="mt-2 bg-udua-orange-primary/85 hover:bg-udua-orange-primary w-full text-sm flex items-center gap-2"
+//               onClick={() =>
+//                 onReviewInit((product.digitalProducts as DigitalProduct)._id!)
+//               }
+//               aria-label="Review product"
+//               size="sm"
+//             >
+//               <ClipboardEditIcon className="h-4 w-4" />
+//               Write Review
+//             </Button>
+//           )}
 //         </div>
 //       </div>
 //     );
 //   }
+
+//   return null;
 // };
 
+// /**
+//  * Review Dialog Component
+//  *
+//  * A modal dialog for submitting product reviews with star rating
+//  * and text feedback.
+//  *
+//  * @component ReviewDialog
+//  * @param {Object} props - Component props
+//  * @param {boolean} props.open - Whether the dialog is open
+//  * @param {Function} props.setOpen - Function to set the open state
+//  * @param {number} props.rating - The current rating value
+//  * @param {Function} props.setRating - Function to set the rating
+//  * @param {string} props.review - The review text
+//  * @param {Function} props.setReview - Function to set the review text
+//  * @param {Function} props.onSubmit - Function to handle form submission
+//  * @param {boolean} props.submitting - Whether the form is currently submitting
+//  */
 // const ReviewDialog = ({
-//   productId,
-//   onInit,
+//   open,
+//   setOpen,
+//   rating,
+//   setRating,
+//   review,
+//   setReview,
+//   onSubmit,
+//   submitting,
 // }: {
-//   productId: string;
-//   onInit: (id: string) => void;
+//   open: boolean;
+//   setOpen: (open: boolean) => void;
+//   rating: number;
+//   setRating: (rating: number) => void;
+//   review: string;
+//   setReview: (review: string) => void;
+//   onSubmit: () => Promise<void>;
+//   submitting: boolean;
 // }) => {
-//   const [rating, setRating] = useState(0);
-//   const [review, setReview] = useState("");
-
 //   return (
-//     <Dialog>
-//       <DialogTrigger asChild className="absolute right-2 top-1">
-//         <Button
-//           className="bg-udua-orange-primary/85 hover:bg-udua-orange-primary"
-//           onClick={() => onInit(productId)}
-//           aria-label="Review product"
-//           size={"icon"}
-//         >
-//           <ClipboardEditIcon />
-//         </Button>
-//       </DialogTrigger>
-
+//     <Dialog open={open} onOpenChange={setOpen}>
 //       <DialogContent className="max-w-md">
 //         <DialogHeader>
-//           <DialogTitle>Product Review</DialogTitle>
+//           <DialogTitle>Write a Product Review</DialogTitle>
 //           <DialogDescription>
-//             Share your experience with this product
+//             Share your experience with this product to help other shoppers
 //           </DialogDescription>
 //         </DialogHeader>
 
-//         <div className="space-y-4">
-//           <div className="flex justify-center gap-2">
-//             {[...Array(5)].map((_, i) => {
-//               const value = i + 1;
-//               return (
-//                 <button
-//                   key={value}
-//                   onClick={() => setRating(value)}
-//                   className="focus:outline-none"
-//                   aria-label={`Rate ${value} stars`}
-//                 >
-//                   <Star
-//                     className={`h-8 w-8 transition-colors ${
-//                       value <= rating
-//                         ? "text-yellow-500 fill-yellow-500"
-//                         : "text-gray-300"
-//                     }`}
-//                   />
-//                 </button>
-//               );
-//             })}
+//         <div className="space-y-6 py-2">
+//           <div className="space-y-2">
+//             <label className="text-sm font-medium">Rating</label>
+//             <div className="flex justify-center gap-2">
+//               {[...Array(5)].map((_, i) => {
+//                 const value = i + 1;
+//                 return (
+//                   <button
+//                     key={value}
+//                     onClick={() => setRating(value)}
+//                     className="focus:outline-none transition-transform hover:scale-110"
+//                     aria-label={`Rate ${value} stars`}
+//                     type="button"
+//                   >
+//                     <Star
+//                       className={`h-8 w-8 transition-colors ${
+//                         value <= rating
+//                           ? "text-yellow-500 fill-yellow-500"
+//                           : "text-gray-300"
+//                       }`}
+//                     />
+//                   </button>
+//                 );
+//               })}
+//             </div>
+//             {rating > 0 && (
+//               <p className="text-center text-sm text-muted-foreground">
+//                 {rating === 1 && "Poor"}
+//                 {rating === 2 && "Fair"}
+//                 {rating === 3 && "Good"}
+//                 {rating === 4 && "Very Good"}
+//                 {rating === 5 && "Excellent"}
+//               </p>
+//             )}
 //           </div>
 
-//           <Textarea
-//             value={review}
-//             onChange={(e) => setReview(e.target.value)}
-//             placeholder="Share your thoughts..."
-//             className="min-h-[120px]"
-//           />
+//           <div className="space-y-2">
+//             <label htmlFor="review" className="text-sm font-medium">
+//               Your Review
+//             </label>
+//             <Textarea
+//               id="review"
+//               value={review}
+//               onChange={(e) => setReview(e.target.value)}
+//               placeholder="What did you like or dislike? How was your experience with this product?"
+//               className="min-h-[120px] resize-none"
+//             />
+//             <p className="text-xs text-muted-foreground">
+//               Your review helps other shoppers make informed decisions
+//             </p>
+//           </div>
 //         </div>
+
+//         <DialogFooter className="flex gap-2 sm:gap-0">
+//           <Button
+//             variant="outline"
+//             onClick={() => setOpen(false)}
+//             disabled={submitting}
+//           >
+//             Cancel
+//           </Button>
+//           <Button
+//             type="submit"
+//             className="bg-udua-orange-primary hover:bg-udua-orange-primary/90"
+//             onClick={onSubmit}
+//             disabled={submitting || !rating || !review.trim()}
+//           >
+//             {submitting ? (
+//               <>
+//                 <Loader className="mr-2 h-4 w-4 animate-spin" />
+//                 Submitting...
+//               </>
+//             ) : (
+//               "Submit Review"
+//             )}
+//           </Button>
+//         </DialogFooter>
 //       </DialogContent>
 //     </Dialog>
 //   );
 // };
-
-// const DeliveryStatus = ({
-//   status,
-//   onUpdate,
-//   submitting,
-// }: {
-//   status: string;
-//   onUpdate: () => void;
-//   submitting: boolean;
-// }) => (
-//   <div className="flex flex-col items-end gap-2">
-//     <span className="text-sm">Status: {status}</span>
-//     {status === "Out for Delivery" && (
-//       <Button
-//         onClick={onUpdate}
-//         disabled={submitting}
-//         className="bg-udua-orange-primary/85 hover:bg-udua-orange-primary text-sm"
-//       >
-//         {submitting ? (
-//           <Loader className="animate-spin mr-2" />
-//         ) : (
-//           "Mark as Delivered"
-//         )}
-//       </Button>
-//     )}
-//   </div>
-// );
-
-// "use client";
-
-// import axios from "axios";
-// import { useEffect, useState } from "react";
-// import React from "react";
-// import Image from "next/image";
-// import Link from "next/link";
-// import { addCommasToNumber } from "@/lib/utils";
-
-// import {
-//   Breadcrumb,
-//   BreadcrumbItem,
-//   BreadcrumbLink,
-//   BreadcrumbList,
-//   BreadcrumbPage,
-//   BreadcrumbSeparator,
-// } from "@/components/ui/breadcrumb";
-// import {
-//   Card,
-//   CardContent,
-//   CardDescription,
-//   CardHeader,
-//   CardTitle,
-// } from "@/components/ui/card";
-// import {
-//   Dialog,
-//   DialogContent,
-//   DialogDescription,
-//   DialogHeader,
-//   DialogTitle,
-//   DialogTrigger,
-// } from "@/components/ui/dialog";
-// import { useToast } from "@/components/ui/use-toast";
-// import { useRouter } from "next/navigation";
-// import Aside1 from "@/app/(user)/components/aside-1";
-// import { ClipboardEditIcon, Loader, Star } from "lucide-react";
-// import { Order } from "@/types";
-// import { Button } from "@/components/ui/button";
-// import Rating from "@/lib/helpers/rating";
-// import { Textarea } from "@/components/ui/textarea";
-
-// export default function Page({ params }: { params: { slug: string } }) {
-//   const [orderDetails, setOrderDetails] = useState<Order>();
-//   const router = useRouter();
-//   const { toast } = useToast();
-//   const [deliveryStatus, setDeliverStatus] = useState({
-//     status: "Delivered",
-//   });
-//   const [rating, setRating] = useState<number | null>(null);
-//   const [hover, setHover] = useState<number | null>(null);
-//   const [reviewWriteUp, setReviewWriteUp] = useState("");
-//   const [productID, setProductID] = useState<string | undefined>("");
-
-//   useEffect(() => {
-//     const fetchOrderData = async () => {
-//       try {
-//         const response = await axios.post("/api/user/orderDetails", {
-//           orderID: params.slug,
-//         });
-//         setOrderDetails(response.data.orderDetail);
-//         // console.log(`response.data.oederDetail`, response.data.orderDetail);
-//       } catch (error: any) {
-//         console.error("Failed to fetch seller Products", error.message);
-//       }
-//     };
-
-//     fetchOrderData();
-//   }, []);
-
-//   const handleSubmit = async () => {
-//     if (deliveryStatus.status === "") {
-//       toast({
-//         variant: `destructive`,
-//         title: `Error`,
-//         description: `Please select an option`,
-//       });
-//       return;
-//     }
-//     const body = {
-//       orderID: orderDetails !== undefined ? orderDetails._id : params.slug,
-//       updatedDeliveryStatus: deliveryStatus.status,
-//     };
-//     try {
-//       const response = await axios.post(
-//         "/api/store/update-order-delivery-status",
-//         {
-//           body,
-//         }
-//       );
-
-//       if (response.status === 200) {
-//         toast({
-//           title: `Success`,
-//           description: `You have Successfully updated this product order status to ${deliveryStatus.status}.`,
-//         });
-//       } else {
-//         toast({
-//           variant: `destructive`,
-//           title: `Error`,
-//           description: `Failed to update this product order status.`,
-//         });
-//       }
-//       // console.log(`response.data.oederDetail`, response.data.orderDetail);
-//     } catch (error: any) {
-//       console.error(
-//         "Failed to update this product order status",
-//         error.message
-//       );
-//       toast({
-//         variant: `destructive`,
-//         title: `Error`,
-//         description: `Failed to update this product order status.`,
-//       });
-//     } finally {
-//       router.refresh();
-//     }
-//   };
-
-//   const handleSubmitReview = async (type: string) => {
-//     console.log(`productID`, productID);
-//     if (reviewWriteUp === "") {
-//       toast({
-//         variant: `destructive`,
-//         title: `Error`,
-//         description: `Text box cannot be empty`,
-//       });
-//       return;
-//     } else if (rating === null) {
-//       toast({
-//         variant: `destructive`,
-//         title: `Error`,
-//         description: `Please choose a Rate or Star`,
-//       });
-//       return;
-//     } else if (productID === undefined || productID === "") {
-//       toast({
-//         variant: `destructive`,
-//         title: `Error`,
-//         description: `An error occured. Please refresh the page.`,
-//       });
-//       return;
-//     }
-
-//     const body = {
-//       rating: rating,
-//       writeUp: reviewWriteUp,
-//       orderID: orderDetails?._id,
-//       productID: productID,
-//     };
-
-//     if (type === "ProductReview") {
-//       try {
-//         const response = await axios.post("/api/store/product-store-reviews", {
-//           body,
-//         });
-
-//         if (response.status === 200) {
-//           toast({
-//             variant: `default`,
-//             title: `Success`,
-//             description: `You have successfully review this product.`,
-//           });
-//         } else {
-//           toast({
-//             variant: `destructive`,
-//             title: `Error`,
-//             description: `An error occured while submitting your review.`,
-//           });
-//         }
-//       } catch (error: any) {
-//         if (error.code === `ERR_BAD_REQUEST`) {
-//           // console.log(`response`, error);
-//           toast({
-//             variant: `destructive`,
-//             title: `Error`,
-//             description: `${error.response.data.error}`,
-//           });
-//           return;
-//         }
-//         console.error(`An error occured while submitting your review.`, error);
-//         toast({
-//           variant: `destructive`,
-//           title: `Error`,
-//           description: `An error occured while submitting your review.`,
-//         });
-//       }
-//     }
-//   };
-
-//   if (orderDetails === null || orderDetails === undefined) {
-//     return (
-//       <div className="w-full min-h-screen flex items-center justify-center">
-//         <p className="w-full h-full flex items-center justify-center">
-//           <Loader className="animate-spin" /> Loading...
-//         </p>
-//       </div>
-//     );
-//   }
-
-//   if (orderDetails !== undefined) {
-//     return (
-//       <section>
-//         <div className="grid min-h-screen max-w-7xl mx-auto md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-//           <div className="hidden border-r bg-muted/10 md:block">
-//             <div className="flex h-full max-h-screen flex-col gap-2">
-//               <Aside1 />
-//             </div>
-//           </div>
-
-//           <main className="flex flex-col gap-4 p-4 md:py-4">
-//             <div className="flex flex-row justify-between items-center">
-//               <Breadcrumb className="hidden md:flex">
-//                 <BreadcrumbList>
-//                   <BreadcrumbItem>
-//                     <BreadcrumbLink asChild>
-//                       <Link href="#">Dashboard</Link>
-//                     </BreadcrumbLink>
-//                   </BreadcrumbItem>
-//                   <BreadcrumbSeparator />
-//                   <BreadcrumbItem>
-//                     <BreadcrumbLink asChild>
-//                       <Link href="#">Orders</Link>
-//                     </BreadcrumbLink>
-//                   </BreadcrumbItem>
-//                   <BreadcrumbSeparator />
-//                   <BreadcrumbItem>
-//                     <BreadcrumbPage>Order Details</BreadcrumbPage>
-//                   </BreadcrumbItem>
-//                 </BreadcrumbList>
-//               </Breadcrumb>
-
-//               <h1 className=" font-semibold text-xl">Order Details</h1>
-//             </div>
-
-//             <Card>
-//               <CardHeader>
-//                 <CardTitle className="text-sm sm:text-2xl">
-//                   Order ID: {orderDetails._id}
-//                 </CardTitle>
-//                 <CardDescription>
-//                   Here's the summary for this order.
-//                 </CardDescription>
-//               </CardHeader>
-//               <CardContent>
-//                 <div>
-//                   <h2>Order ID: {orderDetails._id}</h2>
-//                   <p>
-//                     Order Date:{" "}
-//                     {new Date(orderDetails.createdAt).toLocaleString()}
-//                   </p>
-//                   <p>Status: {orderDetails.status}</p>
-//                   <p>
-//                     Total Amount: &#8358;
-//                     {addCommasToNumber(orderDetails.totalAmount)}
-//                   </p>
-//                   <p>Shipping Address: {orderDetails.shippingAddress}</p>
-//                   <p>Shipping Method: {orderDetails.shippingMethod}</p>
-//                   {/* <p>Tracking Number: {orderDetails.trackingNumber}</p> */}
-//                   <p>Payment Method: {orderDetails.paymentMethod}</p>
-//                   <p>Payment Status: {orderDetails.paymentStatus}</p>
-//                 </div>
-//               </CardContent>
-//             </Card>
-
-//             <Card>
-//               <CardHeader>
-//                 <div className="flex gap-3 w-full justify-between">
-//                   <CardTitle>
-//                     Product{orderDetails.products.length > 1 && "s"} Purchased
-//                   </CardTitle>
-
-//                   <CardDescription className="flex flex-col gap-2 items-end">
-//                     Delivery Status: {orderDetails.deliveryStatus}
-//                     {orderDetails.deliveryStatus === "Out for Delivery" && (
-//                       <Button
-//                         className="bg-purple-500 hover:bg-purple-600 text-xs w-fit"
-//                         onClick={handleSubmit}
-//                       >
-//                         Mark as Delivered
-//                       </Button>
-//                     )}
-//                   </CardDescription>
-//                 </div>
-//               </CardHeader>
-
-//               <CardContent>
-//                 {orderDetails.products.map((product) => (
-//                   <div
-//                     className="grid sm:grid-cols-2 gap-4 text-sm w-full relative"
-//                     key={product.product.name}
-//                   >
-//                     {orderDetails.deliveryStatus === "Delivered" && (
-//                       <Dialog>
-//                         <DialogTrigger
-//                           asChild
-//                           className="absolute flex gap-2 text-xs right-2 top-1 sm:bottom-2 sm:left-1 w-fit"
-//                         >
-//                           <Button
-//                             className="bg-purple-500 hover:bg-purple-600"
-//                             onClick={() => setProductID(product.product._id)}
-//                           >
-//                             <ClipboardEditIcon /> <span>Review Product</span>
-//                           </Button>
-//                         </DialogTrigger>
-//                         <DialogContent className="sm:max-w-lg">
-//                           <DialogHeader>
-//                             <DialogTitle>Rate this product</DialogTitle>
-//                             <DialogDescription>
-//                               Share your feedback on this product. Click
-//                               "Submit" when you're ready to submit.
-//                             </DialogDescription>
-//                             <div className="flex flex-col gap-2 items-center justify-center w-full h-fit py-5">
-//                               <div className="flex items-center justify-center gap-2 w-full">
-//                                 {Array.from({ length: 5 }, (_, i) => {
-//                                   const currentRating = i + 1;
-//                                   return (
-//                                     <label key={i}>
-//                                       <Star
-//                                         width={25}
-//                                         height={25}
-//                                         className={`cursor-pointer ${
-//                                           currentRating <=
-//                                           (hover ?? rating ?? 0)
-//                                             ? `text-yellow-500 fill-yellow-500`
-//                                             : `dark:text-white dark:fill-white fill-gray-500 text-gray-500`
-//                                         }`}
-//                                         onMouseEnter={() =>
-//                                           setHover(currentRating)
-//                                         }
-//                                         onMouseLeave={() => setHover(null)}
-//                                       />
-//                                       <input
-//                                         type="radio"
-//                                         name="rating"
-//                                         value={currentRating}
-//                                         onClick={() => setRating(currentRating)}
-//                                         className="hidden"
-//                                       />
-//                                     </label>
-//                                   );
-//                                 })}
-//                               </div>
-
-//                               <div className="w-full p-4">
-//                                 <Textarea
-//                                   className="block w-full  mt-5 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:text-slate-200 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
-//                                   onChange={(e) =>
-//                                     setReviewWriteUp(e.target.value)
-//                                   }
-//                                 />
-//                               </div>
-//                             </div>
-
-//                             <Button
-//                               onClick={() =>
-//                                 handleSubmitReview("ProductReview")
-//                               }
-//                             >
-//                               Submit
-//                             </Button>
-//                           </DialogHeader>
-//                         </DialogContent>
-//                       </Dialog>
-//                     )}
-//                     <div className="aspect-square w-full overflow-hidden rounded-lg border-2 border-gray-200 bg-gray-100 group-hover:opacity-75 dark:border-gray-800">
-//                       {product.product !== null && product.product !== null && (
-//                         <Image
-//                           src={product.product.images[0]}
-//                           alt={product.product.name}
-//                           width={300}
-//                           height={150}
-//                           className="h-full w-full object-cover object-center"
-//                           quality={90}
-//                         />
-//                       )}
-//                     </div>
-
-//                     <div className="">
-//                       <h3 className="mt-4 font-medium">
-//                         Product Name:
-//                         {product.product && product.product.name}
-//                       </h3>
-//                       <p className="mt-2 font-medium">
-//                         Quantity Bought: {product.quantity && product.quantity}
-//                       </p>
-//                       {product.price && (
-//                         <p className="mt-2 font-medium">
-//                           At Price: &#8358; {addCommasToNumber(product.price)}{" "}
-//                         </p>
-//                       )}
-//                     </div>
-//                   </div>
-//                 ))}
-//               </CardContent>
-//             </Card>
-//           </main>
-//         </div>
-//       </section>
-//     );
-//   }
-// }

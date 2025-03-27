@@ -1,5 +1,7 @@
 import mongoose, { Schema } from "mongoose";
-
+/*
+ *  All monetary values are stored in kobo so as to avoid Floating-Point Errors in JavaScript.
+ */
 const eBookSchema = new Schema(
   {
     storeID: { type: String, required: true },

@@ -302,8 +302,10 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-8">Checkout</h1>
+    <div className="lg:max-w-7xl md:max-w-5xl mx-auto py-6 pt-3 px-4">
+      <h1 className="mb-4 text-xl font-bold tracking-tight sm:text-2xl">
+        Checkout
+      </h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">

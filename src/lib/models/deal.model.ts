@@ -1,6 +1,8 @@
 // models/Deal.ts
 import mongoose, { Schema, Document } from "mongoose";
-
+/*
+ *  All monetary values are stored in kobo so as to avoid Floating-Point Errors in JavaScript.
+ */
 interface IDeal extends Document {
   storeID: string;
   dealType: "percentage" | "fixed" | "free_shipping" | "flash_sale";

@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const tokenData = verifyAdminToken(adminToken);
+    const tokenData = await verifyAdminToken(adminToken);
     if (!tokenData) {
       return NextResponse.json(
         { error: "Invalid or expired token" },

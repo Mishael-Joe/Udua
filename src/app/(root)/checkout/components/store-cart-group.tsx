@@ -70,7 +70,7 @@ export default function StoreCartGroup({
   );
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden border-udua-orange-primary/30">
       <CardHeader className="bg-muted/30">
         <CardTitle className="text-xl">{storeName}</CardTitle>
       </CardHeader>
@@ -81,7 +81,7 @@ export default function StoreCartGroup({
           ))}
         </div>
 
-        <Separator className="my-6" />
+        <Separator className="my-6 border border-udua-orange-primary/30" />
 
         <Accordion type="single" collapsible defaultValue="shipping-methods">
           <AccordionItem value="shipping-methods" className="border-none">
@@ -109,7 +109,7 @@ export default function StoreCartGroup({
                   {storeGroup.shippingMethods.map((method: ShippingMethod) => (
                     <div
                       key={method.name}
-                      className="flex items-center space-x-2 rounded-md border p-3"
+                      className="flex items-center space-x-2 rounded-md border p-3 hover:border-udua-orange-primary/30"
                     >
                       <RadioGroupItem
                         value={method.name}

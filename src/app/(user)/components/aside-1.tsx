@@ -40,8 +40,8 @@ const NavLink = ({ href, icon, label, pathMatch }: NavLinkProps) => {
       href={href}
       className={`flex items-center gap-2 rounded py-2 px-3 transition-colors ${
         isActive
-          ? "bg-blue-500/20 text-blue-600 font-semibold" // Blue for active state
-          : "text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-white" // Gray for inactive state
+          ? "bg-orange-100 text-udua-orange-primary font-semibold" // Orange for active state
+          : "text-gray-700 dark:text-gray-300 hover:text-udua-orange-primary dark:hover:text-white" // Gray for inactive state
       }`}
     >
       {icon}
@@ -63,7 +63,7 @@ const StoreCard = () => (
       <Link href="/partner-with-udua">
         <Button
           size="sm"
-          className="w-full bg-blue-600 text-white hover:bg-blue-700 font-semibold" // Blue for primary CTA
+          className="w-full bg-udua-orange-primary hover:bg-orange-400 text-white font-semibold" // Blue for primary CTA
         >
           Partner
         </Button>

@@ -6,6 +6,8 @@ import jwt from "jsonwebtoken";
 
 interface storeData {
   id: string;
+  storeName: string;
+  storeEmail: string;
 }
 
 export async function POST(request: NextRequest) {
@@ -34,16 +36,21 @@ export async function POST(request: NextRequest) {
     // create tokenData
     const stoteTokenData: storeData = {
       id: store._id,
-      // userFirstName: user.firstName,
+      storeName: store.name,
+      storeEmail: store.storeEmail,
     };
 
     // One Day in seconds
     const oneDayInSeconds = 24 * 60 * 60;
 
     // create token
-    const storeToken = await jwt.sign(stoteTokenData, process.env.JWT_SECRET_KEY!, {
-      expiresIn: oneDayInSeconds,
-    });
+    const storeToken = await jwt.sign(
+      stoteTokenData,
+      process.env.JWT_SECRET_KEY!,
+      {
+        expiresIn: oneDayInSeconds,
+      }
+    );
 
     const response = NextResponse.json(
       { message: "Login successful", success: true, stoteTokenData },
@@ -54,7 +61,7 @@ export async function POST(request: NextRequest) {
       httpOnly: true,
       maxAge: oneDayInSeconds,
     });
-    
+
     return response;
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

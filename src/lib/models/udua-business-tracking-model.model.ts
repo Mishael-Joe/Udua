@@ -1,5 +1,7 @@
 import { Schema, model } from "mongoose";
-
+/*
+ *  All monetary values are stored in kobo so as to avoid Floating-Point Errors in JavaScript.
+ */
 // Udua Business Tracking Model
 const UduaStatsSchema = new Schema(
   {

@@ -7,8 +7,7 @@ import { SiteBlob } from "@/components/site-blob";
 import { Toaster } from "@/components/ui/toaster";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { ThemeProvider } from "@/components/theme-provider";
-
-import { SiteFooter } from "@/components/site-footer";
+import jwt from "jsonwebtoken";
 import StoreAside from "./component/store-aside";
 import { StoreHeader } from "./component/store-header";
 
@@ -43,8 +42,15 @@ export default async function RootLayout(props: {
 }) {
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
-  const userName = cookieStore.get("userName")?.value || "User";
+  const storeName = cookieStore.get("storeToken")?.value || "User";
   const params = await props.params;
+
+  // Verify and decode the token
+  const decoded = jwt.verify(storeName, process.env.JWT_SECRET_KEY!) as {
+    id: string;
+    storeName: string;
+    storeEmail: string;
+  };
 
   const { children } = props;
 
@@ -56,7 +62,7 @@ export default async function RootLayout(props: {
           <SiteBlob />
           <Toaster />
           <SidebarProvider defaultOpen={defaultOpen}>
-            <AppSidebar userName={userName} params={params} />
+            <AppSidebar storeName={decoded.storeName} params={params} />
             <SidebarInset>
               <main className="relative">
                 <SidebarTrigger className=" fixed top-16" />

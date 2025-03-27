@@ -9,6 +9,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { addCommasToNumber } from "@/lib/utils";
 import { shimmer, toBase64 } from "@/lib/image";
+import { RecentProductsSection } from "@/components/recently-viewed-products";
 
 // Reusable Product Card Component
 const ProductCard = ({ product }: { product: CombinedProduct }) => {
@@ -104,18 +105,11 @@ export default function Page() {
           <CartSummary />
         </form>
 
+        {/* Recently Viewed Products */}
         {recentlyViewedProducts.length > 0 && (
-          <section className="mt-6 border p-4 rounded-md shadow-lg">
-            <h2 className="text-xl font-semibold mb-4">
-              Recently Viewed Products
-            </h2>
-
-            <div className="flex gap-4 overflow-x-auto pb-4">
-              {recentlyViewedProducts.map((product) => (
-                <ProductCard key={product._id} product={product} />
-              ))}
-            </div>
-          </section>
+          <div className="mt-8">
+            <RecentProductsSection products={recentlyViewedProducts} />
+          </div>
         )}
       </main>
     </div>

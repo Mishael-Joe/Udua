@@ -1,6 +1,8 @@
 import mongoose, { Schema, Document } from "mongoose";
 import type { Role } from "../rbac/permissions";
-
+/*
+ *  All monetary values are stored in kobo so as to avoid Floating-Point Errors in JavaScript.
+ */
 interface IAdmin extends Document {
   name: string;
   email: string;

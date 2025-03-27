@@ -8,6 +8,9 @@
  * - SEO-optimized structure
  */
 
+/*
+ *  All monetary values are stored in kobo so as to avoid Floating-Point Errors in JavaScript.
+ */
 import { Suspense } from "react";
 import { fetchProductsAndEBooks } from "@/lib/actions/product.action";
 import SkeletonLoader from "@/lib/loaders/skeletonLoader";

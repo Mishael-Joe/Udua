@@ -1,5 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
-
+/*
+ *  All monetary values are stored in kobo so as to avoid Floating-Point Errors in JavaScript.
+ */
 interface IUser extends Document {
   firstName: string;
   lastName: string;
@@ -14,6 +16,7 @@ interface IUser extends Document {
   postalCode: string;
   isVerified: boolean;
   isAdmin: boolean;
+  followingStores: mongoose.Schema.Types.ObjectId[];
   store: mongoose.Schema.Types.ObjectId;
   forgotpasswordToken?: string;
   forgotpasswordTokenExpiry?: Date;
@@ -35,8 +38,10 @@ const userSchema = new Schema<IUser>(
     stateOfResidence: { type: String, required: true },
     postalCode: { type: String, required: true },
     isVerified: { type: Boolean, default: false },
+    followingStores: [{ type: mongoose.Schema.Types.ObjectId, ref: "stores" }],
     isAdmin: { type: Boolean, default: false },
-    store: { type: mongoose.Schema.Types.ObjectId, ref: "Store" },
+    store: { type: mongoose.Schema.Types.ObjectId, ref: "stores" },
+    // store: { type: mongoose.Schema.Types.ObjectId, ref: "Store" },
     forgotpasswordToken: String,
     forgotpasswordTokenExpiry: Date,
     verifyToken: String,

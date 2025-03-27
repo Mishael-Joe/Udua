@@ -1,5 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
-
+/*
+ *  All monetary values are stored in kobo so as to avoid Floating-Point Errors in JavaScript.
+ */
 interface IStoreReview extends Document {
   store: mongoose.Schema.Types.ObjectId;
   buyer: mongoose.Schema.Types.ObjectId;

@@ -28,11 +28,10 @@ export async function POST(request: NextRequest) {
       .populate({
         path: "physicalProducts",
         match: { isVerifiedProduct: true },
-        select: "_id name images price productType", // Replace with the fields you want to include
+        select: "_id name images sizes price productType", // Replace with the fields you want to include
       })
       .populate({
         path: "digitalProducts",
-        // match: { isVerifiedProduct: true },
         select: "_id title coverIMG price productType", // Replace with the fields you want to include
       })
       .exec();

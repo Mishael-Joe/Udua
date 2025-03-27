@@ -2,11 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectToDB } from "@/lib/mongoose";
 import { getUserDataFromToken } from "@/lib/helpers/getUserDataFromToken";
 import ProductReview from "@/lib/models/product-review.model";
+import { CombinedProduct } from "@/types";
+import Product from "@/lib/models/product.model";
+import EBook from "@/lib/models/digital-product.model";
 
 export async function POST(request: NextRequest) {
   const requestBody = await request.json();
-  const { rating, writeUp, orderID, productID } = requestBody.body;
-  // console.log('requestBody', requestBody)
+  const { rating, writeUp, orderID, productID } = requestBody;
+  // console.log("requestBody", requestBody);
   try {
     // Connect to the database
     await connectToDB();
@@ -29,9 +32,43 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Declare productData with CombinedProduct | null
+    let productData: CombinedProduct | null = null;
+
+    // First, attempt to find the product by ID in the Product schema
+    const foundProduct = await Product.findById(productID).select(
+      "productType"
+    );
+
+    // console.log("foundProduct", foundProduct);
+
+    if (foundProduct) {
+      productData = foundProduct;
+    }
+
+    // If no product is found, attempt to find it in the EBook schema
+    if (!productData) {
+      const foundEBook = await EBook.findById(productID).select("productType");
+
+      // console.log("foundEBook", foundEBook);
+
+      if (foundEBook) {
+        productData = foundEBook; // Convert Mongoose Document to plain object
+      }
+    }
+
+    // If neither product nor eBook is found, throw an error
+    if (!productData) {
+      return NextResponse.json(
+        { message: "Product or eBook not found" },
+        { status: 400 }
+      );
+    }
+
     // Create a new review
     const review = new ProductReview({
       product: productID,
+      productType: productData.productType,
       buyer: userID,
       rating: rating,
       reviewText: writeUp,
