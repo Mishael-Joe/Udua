@@ -2,8 +2,134 @@ import axios from "axios";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+/**
+ * Currency utility using currency.js
+ *
+ * This file provides a configured instance of currency.js for handling
+ * Nigerian Naira (₦) monetary values with proper formatting and precision.
+ *
+ * Values are stored in kobo (smallest unit) and converted for display.
+ */
+
+import currency from "currency.js";
+
+/**
+ * Converts kobo (smallest unit) to Naira for display
+ * 1 Naira = 100 kobo
+ */
+export const koboToNaira = (kobo: number): number => {
+  return kobo / 100;
+};
+
+/**
+ * Converts Naira to kobo (smallest unit) for storage
+ */
+export const nairaToKobo = (naira: number): number => {
+  return Math.round(naira * 100);
+};
+
+/**
+ * Creates a currency.js instance configured for Naira
+ * @param koboValue - The monetary value in kobo
+ */
+export const naira = (koboValue: number) =>
+  currency(koboToNaira(koboValue), {
+    symbol: "₦",
+    precision: 2,
+    separator: ",",
+    decimal: ".",
+    pattern: "! #",
+    negativePattern: "-! #",
+  });
+
+/**
+ * Formats a kobo value as Nigerian Naira
+ * @param koboValue - The monetary value in kobo
+ * @param options - Optional formatting options
+ */
+export const formatNaira = (
+  koboValue: number,
+  options?: {
+    /** Whether to include the currency symbol */
+    symbol?: boolean;
+    /** Whether to include decimal places */
+    showDecimals?: boolean;
+  }
+) => {
+  const { symbol = true, showDecimals = false } = options || {};
+
+  const config: currency.Options = {
+    symbol: symbol ? "₦" : "",
+    precision: showDecimals ? 2 : 0,
+    separator: ",",
+    decimal: ".",
+    pattern: "! #",
+    negativePattern: "-! #",
+  };
+
+  return currency(koboToNaira(koboValue), config).format();
+};
+
+/**
+ * Performs currency operations with proper precision
+ * All values are in kobo
+ */
+export const currencyOperations = {
+  /**
+   * Add two or more monetary values (in kobo)
+   */
+  add: (a: number, b: number, ...rest: number[]): number => {
+    let result = a + b;
+    rest.forEach((value) => {
+      result += value;
+    });
+    return result;
+  },
+
+  /**
+   * Subtract one or more monetary values (in kobo)
+   */
+  subtract: (a: number, b: number, ...rest: number[]): number => {
+    let result = a - b;
+    rest.forEach((value) => {
+      result -= value;
+    });
+    return result;
+  },
+
+  /**
+   * Multiply a monetary value (in kobo) by a factor
+   */
+  multiply: (koboValue: number, factor: number): number => {
+    return Math.round(koboValue * factor);
+  },
+
+  /**
+   * Divide a monetary value (in kobo) by a divisor
+   */
+  divide: (koboValue: number, divisor: number): number => {
+    return Math.round(koboValue / divisor);
+  },
+
+  /**
+   * Calculate percentage of a monetary value (in kobo)
+   */
+  percentage: (koboValue: number, percent: number): number => {
+    return Math.round(koboValue * (percent / 100));
+  },
+};
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+export function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: "NGN", // Change currency to NGN for Naira
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
 }
 
 export function addCommasToNumber(number: number) {
@@ -38,6 +164,31 @@ export function getSizeName(value: string) {
       return "One Size";
   }
 }
+
+export const getStatusClassName = (status: string) => {
+  switch (status) {
+    case "Order Placed":
+      return "bg-secondary text-secondary-foreground hover:bg-secondary/80";
+    case "Processing":
+      return "bg-muted text-muted-foreground hover:bg-muted/80";
+    case "Shipped":
+      return "bg-blue-500 text-white hover:bg-blue-600";
+    case "Out for Delivery":
+      return "bg-amber-500 text-white hover:bg-amber-600";
+    case "Delivered":
+      return "bg-green-500 text-white hover:bg-green-600";
+    case "Canceled":
+      return "bg-destructive text-destructive-foreground hover:bg-destructive/80";
+    case "Returned":
+      return "bg-red-500 text-white hover:bg-red-600";
+    case "Failed Delivery":
+      return "bg-red-500 text-white hover:bg-red-600";
+    case "Refunded":
+      return "bg-yellow-500 text-white hover:bg-yellow-600";
+    default:
+      return "bg-muted text-muted-foreground hover:bg-muted/80";
+  }
+};
 
 export const uploadImagesToCloudinary = async (images: File[]) => {
   try {

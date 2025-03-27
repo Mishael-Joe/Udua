@@ -23,13 +23,13 @@ function Deals({ params }: { params: { slug: string } }) {
     const fetchData = async () => {
       try {
         const response = await axios.post("/api/store/deals/analytics");
-        console.log("response", response);
+        // console.log("response", response);
         const formattedData = response.data.data.map((deal: any) => ({
           title: deal.title,
           redemptionCount: deal.redemptionCount,
           revenueGenerated: deal.revenueGenerated,
         }));
-        console.log("formattedData", formattedData);
+        // console.log("formattedData", formattedData);
         setData(formattedData);
       } catch (error) {
         toast({

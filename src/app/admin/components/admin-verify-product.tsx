@@ -8,7 +8,6 @@ import {
   TableBody,
   TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -26,15 +25,18 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
+import { withAdminAuth } from "./auth/with-admin-auth";
+import { PERMISSIONS } from "@/lib/rbac/permissions";
+import { addCommasToNumber } from "@/lib/utils";
 
 type UnverifiedProducts = Products & {
   createdAt: Date;
 };
 
-export default function AllUnverifiedProduct() {
+function UnverifiedProducts() {
   const [allUnverifiedProduct, setAllUnverifiedProduct] = useState<
     UnverifiedProducts[] | null
-  >(null);
+  >([]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -42,7 +44,6 @@ export default function AllUnverifiedProduct() {
         const response = await axios.post<{
           UnverifiedProducts: UnverifiedProducts[];
         }>("/api/admin/fetch-unverified-products");
-        // console.log("sellerdata", response);
         // console.log("response.data.UnverifiedProducts", response.data.UnverifiedProducts);
         setAllUnverifiedProduct(response.data.UnverifiedProducts);
       } catch (error: any) {
@@ -66,7 +67,7 @@ export default function AllUnverifiedProduct() {
   // Calculate total revenue and total sales
   if (allUnverifiedProduct !== null) {
     return (
-      <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
+      <main className="flex flex-col gap-4 py-4 md:py-0 px-6 md:gap-8">
         <h1 className="text-2xl font-semibold ">
           Products submitted for verification
         </h1>
@@ -98,7 +99,9 @@ export default function AllUnverifiedProduct() {
                 </TableCaption>
                 <TableHeader>
                   <TableRow className=" text-[12.8px]">
-                    <TableHead>Image</TableHead>
+                    <TableHead className="hidden lg:flex items-center justify-center ">
+                      Image
+                    </TableHead>
                     <TableHead>Product Name</TableHead>
                     <TableHead>Product ID</TableHead>
                     <TableHead>Product Price</TableHead>
@@ -110,7 +113,7 @@ export default function AllUnverifiedProduct() {
                 <TableBody>
                   {allUnverifiedProduct!.map((product) => (
                     <TableRow key={product._id}>
-                      <TableCell className="font-medium">
+                      <TableCell className="hidden lg:inline">
                         <Image
                           src={product.images[0]}
                           className=" rounded-md object-fill h-20 w-20"
@@ -129,15 +132,22 @@ export default function AllUnverifiedProduct() {
                       </TableCell>
 
                       <TableCell className="font-medium">
-                        {product.price}
+                        {product.productType === "physicalproducts" ? (
+                          <p>{addCommasToNumber(product.price!)}</p>
+                        ) : (
+                          <p>Size Base</p>
+                        )}
                       </TableCell>
 
                       {/* <TableCell>
-                        {new Date(product.createdAt).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
+                        {new Date(product.createdAt).toLocaleDateString(
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          }
+                        )}
                       </TableCell> */}
 
                       <TableCell>
@@ -163,14 +173,6 @@ export default function AllUnverifiedProduct() {
                     </TableRow>
                   ))}
                 </TableBody>
-                {/* <TableFooter>
-                  <TableRow>
-                    <TableCell colSpan={4}>Total</TableCell>
-                    <TableCell className="text-right">
-                      &#8358;{addCommasToNumber(totalRevenue)}
-                    </TableCell>
-                  </TableRow>
-                </TableFooter> */}
               </Table>
             </CardContent>
           </Card>
@@ -183,3 +185,7 @@ export default function AllUnverifiedProduct() {
     );
   }
 }
+
+export const AllUnverifiedProduct = withAdminAuth(UnverifiedProducts, {
+  requiredPermissions: [PERMISSIONS.VERIFY_PRODUCT],
+});

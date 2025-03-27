@@ -1,11 +1,14 @@
 "use client";
 
 import axios from "axios";
-import { ChangeEvent, useEffect, useState } from "react";
-import React from "react";
+import { type ChangeEvent, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { addCommasToNumber } from "@/lib/utils";
+import {
+  addCommasToNumber,
+  formatCurrency,
+  getStatusClassName,
+} from "@/lib/utils";
 
 import {
   Breadcrumb,
@@ -25,49 +28,79 @@ import {
 } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader } from "lucide-react";
-import { Order, Settlement } from "@/types";
-import { useRouter } from "next/navigation";
+import type { DigitalProduct, Order, Product, Settlement } from "@/types";
 import { Button } from "@/components/ui/button";
-import PayoutDialog from "./payout-dialog-component";
+import { PayoutDialog } from "./payout-dialog-component";
 import { calculateCommission } from "@/constant/constant";
+import { Badge } from "@/components/ui/badge";
 
+/**
+ * Available order status options for updating delivery status
+ * These represent the stages an order can progress through before delivery
+ */
 const orderStatus = ["Processing", "Shipped", "Out for Delivery"];
 
+/**
+ * OrderDetails Component
+ *
+ * Displays comprehensive information about a specific order including:
+ * - Order metadata (ID, date, status)
+ * - Payment information
+ * - Shipping details
+ * - Products purchased
+ * - Delivery status management
+ * - Payout information for sellers
+ *
+ * @param params - Object containing the orderID from the route parameters
+ */
 export default function OrderDetails({
   params,
 }: {
-  params: { orderID: string };
+  params: { orderID: string; slug: string };
 }) {
   const { toast } = useToast();
-  const router = useRouter();
+
+  // State for managing the delivery status update
   const [deliveryStatus, setDeliverStatus] = useState({
     status: "",
   });
-  const [payoutStatus, setPayoutStatus] = useState<string | null>(null);
+
+  // Track the payout status for delivered orders
+  const [payoutStatus, setPayoutStatus] = useState<
+    Settlement["payoutStatus"] | null
+  >(null);
+
+  // Main order data
   const [orderDetails, setOrderDetails] = useState<Order>();
+
+  // UI state management
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
+  /**
+   * Fetch order details from the API
+   * Includes error handling and timeout logic for better UX
+   */
+  const fetchOrderData = async () => {
+    try {
+      const response = await axios.post("/api/store/order-details", {
+        orderID: params.orderID,
+      });
+      setOrderDetails(response.data.orderDetail);
+      // console.log(`response.data.oederDetail`, response.data.orderDetail);
+      setLoading(false); // Stop loading when data is fetched
+    } catch (error: any) {
+      setError(true);
+      setLoading(false);
+      console.error("Failed to fetch seller Products", error.message);
+    }
+  };
   useEffect(() => {
-    const fetchOrderData = async () => {
-      try {
-        const response = await axios.post("/api/store/order-details", {
-          orderID: params.orderID,
-        });
-        setOrderDetails(response.data.orderDetail);
-        // console.log(`response.data.oederDetail`, response.data.orderDetail);
-        setLoading(false); // Stop loading when data is fetched
-      } catch (error: any) {
-        setError(true);
-        setLoading(false);
-        console.error("Failed to fetch seller Products", error.message);
-      }
-    };
-
     // Fetch data when component mounts
     fetchOrderData();
 
     // Set a timeout to show error message if data isn't fetched within 10 seconds
+    // This improves UX by not leaving users in an indefinite loading state
     const timeoutId = setTimeout(() => {
       if (loading) {
         setError(true);
@@ -79,28 +112,38 @@ export default function OrderDetails({
     return () => clearTimeout(timeoutId);
   }, [loading]);
 
+  /**
+   * Fetch settlement/payout status for this order
+   * This is separate from the main order details to handle different data concerns
+   */
   useEffect(() => {
     const fetchSettlementStatus = async () => {
+      if (orderDetails === undefined) return;
       try {
         const response = await axios.post<{ settlement: Settlement }>(
           "/api/store/fetch-settlement-status",
           {
-            orderID: params.orderID,
+            mainOrderID:
+              orderDetails !== undefined ? orderDetails._id : params.orderID,
+            subOrderID:
+              orderDetails !== undefined && orderDetails.subOrders[0]._id, // order id for this particular store. Each store in the substore arr has a unique order id
           }
         );
         if (response.status === 200) {
           setPayoutStatus(response.data.settlement.payoutStatus);
         }
-        // setOrderDetails(response.data.orderDetail);
-        // console.log(`response.data.oederDetail`, response.data.orderDetail);
       } catch (error: any) {
         console.error("Failed to fetch seller Products", error.message);
       }
     };
 
     fetchSettlementStatus();
-  }, []);
+  }, [orderDetails]);
 
+  /**
+   * Handle delivery status dropdown change
+   * Updates local state when seller selects a new delivery status
+   */
   const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
     e.preventDefault();
 
@@ -112,10 +155,14 @@ export default function OrderDetails({
         [name]: value,
       };
     });
-    // console.log(product);
   };
 
+  /**
+   * Submit the updated delivery status to the API
+   * Includes validation and user feedback via toast notifications
+   */
   const handleSubmit = async () => {
+    // Validate that a status is selected before submission
     if (deliveryStatus.status === "") {
       toast({
         variant: `destructive`,
@@ -124,19 +171,29 @@ export default function OrderDetails({
       });
       return;
     }
-    const body = {
-      orderID: orderDetails !== undefined ? orderDetails._id : params.orderID,
-      updatedDeliveryStatus: deliveryStatus.status,
-    };
+
+    // const body = {
+    //   mainOrderID:
+    //     orderDetails !== undefined ? orderDetails._id : params.orderID,
+    //   subOrderID: orderDetails !== undefined && orderDetails.subOrders[0]._id, // order id for this particular store. Each store in the substore arr has a unique order id
+    //   updatedDeliveryStatus: deliveryStatus.status,
+    // };
+
     try {
       const response = await axios.post(
         "/api/store/update-order-delivery-status",
         {
-          body,
+          mainOrderID:
+            orderDetails !== undefined ? orderDetails._id : params.orderID,
+          subOrderID:
+            orderDetails !== undefined && orderDetails.subOrders[0]._id, // order id for this particular store. Each store in the substore arr has a unique order id
+          updatedDeliveryStatus: deliveryStatus.status,
         }
       );
 
       if (response.status === 200) {
+        // Refresh the page to show updated data
+        fetchOrderData();
         toast({
           title: `Success`,
           description: `You have Successfully updated this product order status to ${deliveryStatus.status}.`,
@@ -148,7 +205,6 @@ export default function OrderDetails({
           description: `Failed to update this product order status.`,
         });
       }
-      // console.log(`response.data.oederDetail`, response.data.orderDetail);
     } catch (error: any) {
       console.error(
         "`Failed to update this product order status",
@@ -159,11 +215,10 @@ export default function OrderDetails({
         title: `Error`,
         description: `Failed to update this product order status.`,
       });
-    } finally {
-      router.refresh();
     }
   };
 
+  // Loading state UI
   if (loading && !error) {
     return (
       <div className="w-full min-h-screen flex items-center justify-center">
@@ -174,6 +229,7 @@ export default function OrderDetails({
     );
   }
 
+  // Error state UI
   if (error) {
     return (
       <div className="w-full min-h-screen flex items-center justify-center">
@@ -184,6 +240,7 @@ export default function OrderDetails({
     );
   }
 
+  // Fallback loading state if order details are null/undefined
   if (orderDetails === null || orderDetails === undefined) {
     return (
       <div className="w-full min-h-screen flex items-center justify-center">
@@ -194,14 +251,23 @@ export default function OrderDetails({
     );
   }
 
-  const totalAvailablePayout = orderDetails.products.reduce((total, order) => {
-    // Sum the prices of all products in order
-    return total + calculateCommission(order.price).settleAmount;
-  }, 0);
+  /**
+   * Calculate the total payout amount available to the seller
+   * Uses the commission calculation utility to determine the settlement amount
+   * after platform fees are deducted
+   */
+  const totalAvailablePayout = orderDetails.subOrders[0].products.reduce(
+    (total, order) => {
+      // Sum the prices of all products in order
+      return total + calculateCommission(order.price).settleAmount;
+    },
+    0
+  );
 
   if (orderDetails !== undefined) {
     return (
       <main className="flex flex-col gap-4 p-4 md:py-4">
+        {/* Breadcrumb navigation and page title */}
         <div className="flex flex-row justify-between items-center">
           <Breadcrumb className="hidden md:flex">
             <BreadcrumbList>
@@ -226,6 +292,7 @@ export default function OrderDetails({
           <h1 className=" font-semibold text-xl">Order Details</h1>
         </div>
 
+        {/* Order summary card */}
         <Card>
           <CardHeader>
             <CardTitle className="text-sm sm:text-2xl">
@@ -235,130 +302,266 @@ export default function OrderDetails({
               Here's the summary for this order.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="sm:grid grid-cols-2 gap-4">
+            {/* Order metadata section */}
             <div>
-              <h2>Order ID: {orderDetails._id}</h2>
+              <h1 className="mb-2 font-semibold text-xl">Order Details</h1>
+
               <p>
                 Order Date: {new Date(orderDetails.createdAt).toLocaleString()}
               </p>
               <p>Order Status: {orderDetails.status}</p>
-              {/* <p>
+              <p>
                 Total Amount: &#8358;
                 {addCommasToNumber(orderDetails.totalAmount)}
               </p>
-              <p>Shipping Address: {orderDetails.shippingAddress}</p>
-              <p>Shipping Method: {orderDetails.shippingMethod}</p>
-              <p>Tracking Number: {orderDetails.trackingNumber}</p> */}
-              <p>Customer Payment Method: {orderDetails.paymentMethod}</p>
-              <p>Customer Payment Status: {orderDetails.paymentStatus}</p>
-              {orderDetails.deliveryStatus === "Delivered" && (
+            </div>
+
+            {/* Payment information section */}
+            <div>
+              <h1 className="mb-2 font-semibold text-xl mt-2 sm:mt-0">
+                Payment Information
+              </h1>
+
+              <p>
+                Customer Payment Method:{" "}
+                {orderDetails.paymentMethod?.toUpperCase()}
+              </p>
+              <p>
+                Customer Payment Status:{" "}
+                {orderDetails.paymentStatus?.toUpperCase()}
+              </p>
+
+              {/* Payout information - only shown for delivered orders */}
+              {orderDetails.subOrders[0].deliveryStatus === "Delivered" && (
                 <p>
                   Payout Amount: &#8358;{" "}
                   {addCommasToNumber(totalAvailablePayout)}
                 </p>
               )}
             </div>
+
+            {/* Shipping information section */}
+            <div className="col-span-2">
+              <h1 className="mb-2 font-semibold text-xl mt-2 sm:mt-0">
+                Shipping Information
+              </h1>
+
+              <p>Shipping Address: {orderDetails.shippingAddress}</p>
+              <p className="text-sm">
+                Shipping Method:{" "}
+                {orderDetails.subOrders[0].shippingMethod?.name}
+              </p>
+              <p className="text-sm">
+                Shipping Price:{" "}
+                {formatCurrency(
+                  orderDetails.subOrders[0].shippingMethod?.price!
+                )}
+              </p>
+              <p className="text-sm">
+                Estimated Delivery Days:{" "}
+                {
+                  orderDetails.subOrders[0].shippingMethod
+                    ?.estimatedDeliveryDays
+                }
+              </p>
+              <p>Postal Code: {orderDetails.postalCode}</p>
+              {/* <p>Tracking Number: {orderDetails._id}</p> */}
+            </div>
           </CardContent>
 
+          {/* Payout action section - conditional rendering based on delivery and payout status */}
           <CardFooter className="float-right">
-            {orderDetails.deliveryStatus === "Delivered" && (
+            {orderDetails.subOrders[0].deliveryStatus === "Delivered" && (
               <>
                 {payoutStatus === null ? (
                   <PayoutDialog
                     payableAmount={totalAvailablePayout}
-                    orderID={orderDetails._id}
+                    mainOrderID={orderDetails._id}
+                    subOrderID={orderDetails.subOrders[0]._id}
                   />
-                ) : payoutStatus === "requested" ? (
+                ) : payoutStatus === "Requested" ? (
                   <p>Payout Requested</p>
-                ) : payoutStatus === "paid" ? (
+                ) : payoutStatus === "Paid" ? (
                   <p>Payout Paid</p>
                 ) : (
                   <p>Unknown Payout Status. Please, contact Udua</p>
                 )}
-                {/* Fallback for other possible statuses */}
               </>
             )}
           </CardFooter>
         </Card>
 
+        {/* Products purchased card */}
         <Card>
           <CardHeader>
             <div className="flex gap-3 w-full justify-between">
-              <CardTitle>
-                Product{orderDetails.products.length > 1 && "s"} Purchased
+              <CardTitle className="text-lg sm:text-2xl">
+                Product{orderDetails.subOrders[0].products.length > 1 && "s"}{" "}
+                Purchased
               </CardTitle>
 
+              {/* Delivery status management section */}
               <CardDescription className="flex flex-col gap-2 items-end">
-                Delivery Status: {orderDetails.deliveryStatus}
-                {orderDetails.deliveryStatus !== "Delivered" &&
-                  orderDetails.deliveryStatus !== "Canceled" &&
-                  orderDetails.deliveryStatus !== "Returned" &&
-                  orderDetails.deliveryStatus !== "Failed Delivery" &&
-                  orderDetails.deliveryStatus !== "Refunded" && (
-                    <>
-                      <select
-                        aria-label="Select Delivery Status"
-                        name="status"
-                        value={deliveryStatus.status}
-                        onChange={handleChange}
-                        className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:text-slate-200 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+                {orderDetails.stores.length === 1 ? (
+                  <>
+                    <p>
+                      Order Status:{" "}
+                      <Badge
+                        className={getStatusClassName(
+                          orderDetails.subOrders[0].deliveryStatus
+                        )}
                       >
-                        <option value="" disabled>
-                          Mark as
-                        </option>
-                        {orderStatus.map((status) => (
-                          <option key={status} value={status}>
-                            {status}
-                          </option>
-                        ))}
-                      </select>
-                      <Button
-                        className="bg-purple-500 hover:bg-purple-600 text-xs w-fit"
-                        onClick={handleSubmit}
-                      >
-                        Update
-                      </Button>
-                    </>
-                  )}
+                        {orderDetails.subOrders[0].deliveryStatus}
+                      </Badge>
+                    </p>
+                    {/* Only show status update controls for orders that are not in a final state */}
+                    {orderDetails.subOrders[0].deliveryStatus !== "Delivered" &&
+                      orderDetails.subOrders[0].deliveryStatus !== "Canceled" &&
+                      orderDetails.subOrders[0].deliveryStatus !== "Returned" &&
+                      orderDetails.subOrders[0].deliveryStatus !==
+                        "Failed Delivery" &&
+                      orderDetails.subOrders[0].deliveryStatus !==
+                        "Refunded" && (
+                        <>
+                          <select
+                            aria-label="Select Delivery Status"
+                            name="status"
+                            value={deliveryStatus.status}
+                            onChange={handleChange}
+                            className="block w-full px-2 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:text-slate-200 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+                          >
+                            <option value="" disabled>
+                              Mark as
+                            </option>
+                            {orderStatus.map((status) => (
+                              <option key={status} value={status}>
+                                {status}
+                              </option>
+                            ))}
+                          </select>
+                          <Button
+                            className="bg-udua-orange-primary/85 hover:bg-udua-orange-primary text-xs w-fit"
+                            onClick={handleSubmit}
+                          >
+                            Update
+                          </Button>
+                        </>
+                      )}
+                  </>
+                ) : (
+                  <Button
+                    variant={"link"}
+                    className="underline hover:text-udua-orange-primary text-sm w-fit"
+                  >
+                    <Link
+                      href={`/store/${params.slug}/track-an-order/${params.orderID}`}
+                    >
+                      Track Order
+                    </Link>
+                  </Button>
+                )}
               </CardDescription>
             </div>
           </CardHeader>
 
-          <CardContent>
-            {orderDetails.products.map((product) => (
-              <div
-                className="grid sm:grid-cols-2 gap-4 text-sm w-full relative"
-                key={product.product.name}
-              >
-                <div className="aspect-square w-full overflow-hidden rounded-lg border-2 border-gray-200 bg-gray-100 group-hover:opacity-75 dark:border-gray-800">
-                  {product.product !== null && product.product !== null && (
-                    <Image
-                      src={product.product.images[0]}
-                      alt={product.product.name}
-                      width={300}
-                      height={150}
-                      className="h-full w-full object-cover object-center"
-                      quality={90}
-                    />
-                  )}
-                </div>
+          {/* Product grid - displays all products in the order */}
+          <CardContent className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4 lg:gap-3.5 w-full justify-between">
+            {orderDetails.subOrders[0].products.map((product) => {
+              // Handle physical products
+              if (product.physicalProducts) {
+                return (
+                  <div
+                    className="gri sm:grid-cols-2 gap-4 text-sm w-full relative"
+                    key={(product.physicalProducts as Product).name}
+                  >
+                    {/* Product image */}
+                    <div className="aspect-square w-full overflow-hidden rounded-lg border-2 border-gray-200 bg-gray-100 group-hover:opacity-75 dark:border-gray-800">
+                      {product.physicalProducts !== null &&
+                        (product.physicalProducts as Product).images !==
+                          null && (
+                          <Image
+                            src={
+                              (product.physicalProducts as Product).images[0] ||
+                              "/placeholder.svg"
+                            }
+                            alt={(product.physicalProducts as Product).name}
+                            width={300}
+                            height={150}
+                            className="h-full w-full object-cover object-center"
+                            quality={90}
+                          />
+                        )}
+                    </div>
 
-                <div className="">
-                  <h3 className="mt-4 font-medium">
-                    Product Name:
-                    {product.product && product.product.name}
-                  </h3>
-                  <p className="mt-2 font-medium">
-                    Quantity Bought: {product.quantity && product.quantity}
-                  </p>
-                  {product.price && (
-                    <p className="mt-2 font-medium">
-                      At Price: &#8358; {addCommasToNumber(product.price)}{" "}
-                    </p>
-                  )}
-                </div>
-              </div>
-            ))}
+                    {/* Product details */}
+                    <div className="">
+                      <h3 className="mt-4 font-medium truncate">
+                        {product.physicalProducts &&
+                          ` ${(product.physicalProducts as Product).name}`}
+                      </h3>
+                      <p className="mt-2 font-medium">
+                        Quantity Bought: {product.quantity && product.quantity}
+                      </p>
+                      {product.price && (
+                        <p className="mt-2 font-medium">
+                          At Price: &#8358; {addCommasToNumber(product.price)}{" "}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                );
+              }
+
+              // Handle digital products
+              if (product.digitalProducts) {
+                return (
+                  <div
+                    className="gri sm:grid-cols-2 gap-4 text-sm w-full relative"
+                    key={(product.digitalProducts as DigitalProduct).title}
+                  >
+                    {/* Product image */}
+                    <div className="aspect-square w-full overflow-hidden rounded-lg border-2 border-gray-200 bg-gray-100 group-hover:opacity-75 dark:border-gray-800">
+                      {product.physicalProducts !== null &&
+                        (product.digitalProducts as DigitalProduct).coverIMG !==
+                          null && (
+                          <Image
+                            src={
+                              (product.digitalProducts as DigitalProduct)
+                                .coverIMG[0] || "/placeholder.svg"
+                            }
+                            alt={
+                              (product.digitalProducts as DigitalProduct).title
+                            }
+                            width={300}
+                            height={150}
+                            className="h-full w-full object-cover object-center"
+                            quality={90}
+                          />
+                        )}
+                    </div>
+
+                    {/* Product details */}
+                    <div className="">
+                      <h3 className="mt-4 font-medium truncate">
+                        {product.digitalProducts &&
+                          ` ${
+                            (product.digitalProducts as DigitalProduct).title
+                          }`}
+                      </h3>
+                      <p className="mt-2 font-medium">
+                        Quantity Bought: {product.quantity && product.quantity}
+                      </p>
+                      {product.price && (
+                        <p className="mt-2 font-medium">
+                          At Price: &#8358; {addCommasToNumber(product.price)}{" "}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                );
+              }
+            })}
           </CardContent>
         </Card>
       </main>

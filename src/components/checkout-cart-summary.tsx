@@ -9,12 +9,14 @@ import { addCommasToNumber } from "@/lib/utils";
 import { User } from "@/types";
 import { Loader2 } from "lucide-react";
 import { useState, FormEvent } from "react";
+import { useToast } from "./ui/use-toast";
 
 type userData = {
   userData: User;
 };
 
 export function CheckoutSummary({ userData }: userData) {
+  const { toast } = useToast();
   const { cartItems, totalPrice } = useStateContext();
   const [shippingMethod, setShippingMethod] = useState("standard");
   const [isLoading, setIsLoading] = useState(false);
@@ -27,7 +29,7 @@ export function CheckoutSummary({ userData }: userData) {
       : "Udua Swift Delivery (1-2 business days)";
 
   const config = {
-    amount: 0,
+    amount: Number(totalPrice) + shippingFee,
     customer: {
       name: `${userData.firstName} ${userData.lastName}`,
       email: userData.email,
@@ -61,12 +63,24 @@ export function CheckoutSummary({ userData }: userData) {
       const data = await response.json();
 
       if (response.status === 200) {
+        // console.log(data);
         window.location.href = data.data.authorization_url; // Redirect to the payment link
       } else {
-        console.error(data.message);
+        toast({
+          variant: "default",
+          title: "Error",
+          description: data.error,
+        });
+        console.error("data", data);
       }
     } catch (error) {
-      console.error("Error submitting form:", error);
+      toast({
+        variant: "default",
+        title: "Error",
+        description:
+          "An error occurred while processing your payment. Please try again later. If this error still persists, please contact our support team.",
+      });
+      console.error("An error occurred while processing your payment:", error);
     }
 
     setIsLoading(false);

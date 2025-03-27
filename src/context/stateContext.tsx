@@ -83,7 +83,7 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
       // const response = await axios.post("/api/user/cart");
       const { data } = await axios.post("/api/user/cart");
 
-      console.log("data:", data);
+      // console.log("data:", data);
       setCartItems(data.items || []);
       setTotalPrice(data.totalPrice || 0);
       setTotalQuantity(data.totalQuantity || 0);
@@ -101,14 +101,21 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
 
   const addToCart = async (
     product: CombinedProduct,
+    storeID: string,
     quantity: number,
     selectedSize: { size: string; price: number; quantity: number } | null,
     selectedColor: string | null
   ) => {
+    // console.log("product", product);
+    // console.log("storeID", storeID);
+    // console.log("quantity", quantity);
+    // console.log("selectedSize", selectedSize);
+    // console.log("selectedColor", selectedColor);
     try {
       // Build the payload to send to the server.
       const payload = {
         productID: product._id, // Assumes your product has an _id property
+        storeID,
         productType: product.productType, // e.g., "Physical Product" or "Digital Product"
         quantity,
         selectedSize, // For size-based products; can be null if not applicable
@@ -184,7 +191,7 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
         fetchCartItems();
       }
 
-      console.log("Item removed from cart:", response.data);
+      // console.log("Item removed from cart:", response.data);
     } catch (error: any) {
       if (error.response) {
         console.error("Failed to remove from cart:", error.response.data);

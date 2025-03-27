@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     const UnverifiedProducts = await Product.find({
       isVerifiedProduct: false,
     })
-      .select("_id name images price")
+      .select("_id name images price createdAt")
       .exec();
     // console.log(`UnverifiedProducts`, UnverifiedProducts)
 

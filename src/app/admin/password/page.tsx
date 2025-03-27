@@ -1,11 +1,11 @@
 import { Suspense } from "react";
-import ResetAdminPassword from "../components/admin-manage-password";
+import { UpdateAdminPassword } from "../components/admin-manage-password";
 
-export default async function Page() {
+export default function AdminPassword() {
   return (
     <div className="py-4">
       <Suspense fallback={"Admin dashboard"}>
-        <ResetAdminPassword />
+        <UpdateAdminPassword />
       </Suspense>
     </div>
   );

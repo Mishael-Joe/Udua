@@ -1,4 +1,44 @@
 import mongoose, { Schema, Document } from "mongoose";
+/*
+ *  All monetary values are stored in kobo so as to avoid Floating-Point Errors in JavaScript.
+ */
+// Define Shipping Method schema
+const ShippingMethodSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
+    estimatedDeliveryDays: {
+      type: Number,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    description: {
+      type: String,
+    },
+    // For international shipping or region-specific rates
+    applicableRegions: [
+      {
+        type: String,
+      },
+    ],
+    // For weight-based or price-based shipping rates
+    conditions: {
+      minOrderValue: { type: Number },
+      maxOrderValue: { type: Number },
+      minWeight: { type: Number },
+      maxWeight: { type: Number },
+    },
+  },
+  { _id: false }
+);
 
 // Define Payout Account schema
 const PayoutAccountSchema = new Schema(
@@ -15,7 +55,7 @@ const PayoutAccountSchema = new Schema(
           validator: function (this: any) {
             // If payout method is 'bank transfer', bankName is required
             return (
-              this.payoutMethod !== "bank transfer" ||
+              this.payoutMethod !== "Bank Transfer" ||
               !!this.bankDetails.bankName
             );
           },
@@ -28,7 +68,7 @@ const PayoutAccountSchema = new Schema(
           validator: function (this: any) {
             // If payout method is 'bank transfer', accountNumber is required
             return (
-              this.payoutMethod !== "bank transfer" ||
+              this.payoutMethod !== "Bank Transfer" ||
               !!this.bankDetails.accountNumber
             );
           },
@@ -41,13 +81,15 @@ const PayoutAccountSchema = new Schema(
           validator: function (this: any) {
             // If payout method is 'bank transfer', accountHolderName is required
             return (
-              this.payoutMethod !== "bank transfer" ||
+              this.payoutMethod !== "Bank Transfer" ||
               !!this.bankDetails.accountHolderName
             );
           },
           message: "Account holder name is required for bank transfer",
         },
       },
+      bankCode: { type: Number, required: true },
+      bankId: Number,
     },
     totalEarnings: {
       type: Number,
@@ -72,6 +114,7 @@ const StoreSchema = new mongoose.Schema(
       required: true,
     },
     storeEmail: { type: String, required: true, unique: true }, // use to contact this store
+    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     physicalProducts: [
       { type: mongoose.Schema.Types.ObjectId, ref: "physicalproducts" },
     ], // Array of Products for stores that deals with physical products
@@ -79,6 +122,7 @@ const StoreSchema = new mongoose.Schema(
       { type: mongoose.Schema.Types.ObjectId, ref: "digitalproducts" },
     ], // Array of E-books for stores that deals with digital products like e-books
     uniqueId: { type: String, unique: true, required: true }, // Unique store link ID
+    recipientCode: { type: String }, // Recommended by PayStack. visit @ `https://paystack.com/docs/transfers/creating-transfer-recipients/#save-the-recipient-code` for more details.
     description: { type: String },
     forgotpasswordToken: String,
     forgotpasswordTokenExpiry: Date,
@@ -101,11 +145,11 @@ const StoreSchema = new mongoose.Schema(
     totalEarnings: {
       type: Number,
       default: 0,
-    }, // TODO: update this model in the DB
-
+    },
+    // Add shipping methods
+    shippingMethods: [ShippingMethodSchema],
     // Payout accounts associated with the store
     payoutAccounts: [PayoutAccountSchema],
-
     // Array of payout history entries
     // TODO: Add orderID associated with a payoutHistory
     payoutHistory: [

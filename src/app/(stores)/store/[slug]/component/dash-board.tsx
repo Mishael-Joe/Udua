@@ -56,15 +56,15 @@ export default function SellerDashboard() {
       (total, order) => total + order.totalAmount,
       0
     );
-    const totalSales = orders.reduce(
-      (count, order) =>
-        count +
-        order.products.reduce(
-          (productCount, productOrder) => productCount + productOrder.quantity,
-          0
-        ),
-      0
-    );
+    // const totalSales = orders.reduce(
+    //   (count, order) =>
+    //     count +
+    //     order.products.reduce(
+    //       (productCount, productOrder) => productCount + productOrder.quantity,
+    //       0
+    //     ),
+    //   0
+    // );
 
     return (
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
@@ -93,7 +93,7 @@ export default function SellerDashboard() {
               <CreditCard className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">+{totalSales}</div>
+              {/* <div className="text-2xl font-bold">+{totalSales}</div> */}
               {/* <p className="text-xs text-muted-foreground">
                           +19% from last month
                         </p>  */}
@@ -120,7 +120,7 @@ export default function SellerDashboard() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {orders!.map((order) => (
+                  {/* {orders!.map((order) => (
                     <TableRow key={order._id}>
                       <TableCell className="font-medium">{order._id}</TableCell>
                       <TableCell>
@@ -172,7 +172,7 @@ export default function SellerDashboard() {
                       </TableCell>
                       <TableCell>{order.status}</TableCell>
                     </TableRow>
-                  ))}
+                  ))} */}
                 </TableBody>
                 <TableFooter>
                   <TableRow>

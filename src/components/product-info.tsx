@@ -49,8 +49,11 @@ export function ProductInfo({ product }: ForProductInfo) {
 
   // Unified add to cart handler
   const handleAddToCart = useCallback(() => {
+    const storeID = product.storeID;
+    // console.log("storeID", storeID);
     addToCart(
       product,
+      storeID,
       quantity,
       isPhysicalProduct ? selectedSize : null,
       isPhysicalProduct ? selectedColor : null
@@ -196,10 +199,10 @@ export function ProductInfo({ product }: ForProductInfo) {
         )}
       </div>
 
-      <div className="mt-6 hidden md:block">
+      <div className="mt-6 hidde md:block">
         <h3 className="sr-only">Description</h3>
         <div
-          className="line-clamp-3"
+          // className="line-clamp-3"
           dangerouslySetInnerHTML={{ __html: sanitizedContent }}
         />
 

@@ -14,7 +14,6 @@ import {
 import { Order } from "@/types";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { addCommasToNumber } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,6 +38,7 @@ export default function StoreDashboard({
           "/api/store/orders"
         );
         setOrders(data.orders);
+        // console.log("data.orders", data.orders);
       } catch (error) {
         console.error("Failed to fetch orders:", error);
       }
@@ -59,7 +59,7 @@ export default function StoreDashboard({
   const totalSales = orders.reduce(
     (count, order) =>
       count +
-      order.products.reduce(
+      order.subOrders[0].products.reduce(
         (productCount, productOrder) => productCount + productOrder.quantity,
         0
       ),
@@ -98,9 +98,7 @@ export default function StoreDashboard({
               <TableHeader>
                 <TableRow className="text-[12.8px]">
                   <TableHead>Order Status</TableHead>
-                  <TableHead>Product Name</TableHead>
-                  <TableHead>Quantity</TableHead>
-                  <TableHead>Price</TableHead>
+                  <TableHead>Total Quantity</TableHead>
                   <TableHead>Payment Status</TableHead>
                   <TableHead>Order Date</TableHead>
                   <TableHead>Actions</TableHead>
@@ -110,30 +108,10 @@ export default function StoreDashboard({
                 {orders.map((order) => (
                   <TableRow key={order._id}>
                     <TableCell className="font-medium">
-                      {order.deliveryStatus}
+                      {order.subOrders[0].deliveryStatus}
                     </TableCell>
-                    <TableCell>
-                      {order.products.map((productOrder) => (
-                        <div key={productOrder.product?._id}>
-                          {productOrder.product?.name || "Deleted Product"}
-                        </div>
-                      ))}
-                    </TableCell>
-                    <TableCell>
-                      {order.products.map((productOrder) => (
-                        <div key={productOrder.product?._id}>
-                          {productOrder.quantity}
-                        </div>
-                      ))}
-                    </TableCell>
-                    <TableCell>
-                      {order.products.map((productOrder) => (
-                        <div key={productOrder.product?._id}>
-                          &#8358;{addCommasToNumber(productOrder.price)}
-                        </div>
-                      ))}
-                    </TableCell>
-                    <TableCell>{order.paymentStatus}</TableCell>
+                    <TableCell>{order.subOrders[0].products.length}</TableCell>
+                    <TableCell>{order.paymentStatus?.toUpperCase()}</TableCell>
                     <TableCell>
                       {new Date(order.createdAt).toLocaleDateString("en-US", {
                         year: "numeric",

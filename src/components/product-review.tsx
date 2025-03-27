@@ -18,7 +18,11 @@ type ProductReviews = {
   order: string;
 };
 
-const ProductReviewComponent = ({ product }: { product: { _id: string } }) => {
+const ProductReviewComponent = ({
+  product,
+}: {
+  product: { _id: string; productType: string };
+}) => {
   const elementRef = useRef<HTMLDivElement | null>(null);
   const [hasBeenVisible, setHasBeenVisible] = useState(false);
   const [productReviews, setProductReviews] = useState<ProductReviews[] | null>(
@@ -35,6 +39,7 @@ const ProductReviewComponent = ({ product }: { product: { _id: string } }) => {
     total4Star: 0,
     total5Star: 0,
   });
+  console.log("product", product);
 
   // Intersection Observer and data fetching logic remains the same...
 
@@ -67,6 +72,7 @@ const ProductReviewComponent = ({ product }: { product: { _id: string } }) => {
       try {
         const response = await axios.post("/api/fetch-product-reviews", {
           productID: product._id,
+          productType: product.productType,
           page: currentPage, // Pagination control
           limit: 5, // 5 reviews per page
         });
@@ -82,6 +88,7 @@ const ProductReviewComponent = ({ product }: { product: { _id: string } }) => {
           total4Star,
           total5Star,
         } = response.data;
+        // console.log("Product Reviews:", reviews);
 
         setProductReviews(reviews);
         setTotalPages(totalPages);

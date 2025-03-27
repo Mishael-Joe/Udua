@@ -3,12 +3,15 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import axios from "axios";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
 import {
   Table,
@@ -20,11 +23,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { calculateCommission, security } from "@/constant/constant";
-import { Order } from "@/types";
+import { Order, Settlement } from "@/types";
 import {
   ArrowUpRightFromSquare,
-  Loader,
+  Loader2,
   MoreHorizontalIcon,
+  Wallet,
+  Clock,
+  ShieldCheck,
 } from "lucide-react";
 import { addCommasToNumber } from "@/lib/utils";
 import {
@@ -35,6 +41,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+// import { Progress } from "@/components/ui/progress";
 
 interface SecurityCardProps {
   item: (typeof security)[number];
@@ -47,54 +54,68 @@ const SecurityCard = ({
   slug,
   totalAvailablePayout,
 }: SecurityCardProps) => {
-  if (item.link) {
-    return (
-      <Link href={`/store/${slug}/payout-history`} className="h-full">
-        <Card className="h-full hover:shadow-md transition-shadow">
-          <CardHeader>
-            <div className="flex items-center justify-between pb-2">
-              <CardTitle className="text-lg">{item.title}</CardTitle>
-              <ArrowUpRightFromSquare className="w-5 h-5" />
-            </div>
-            <CardDescription>{item.desc}</CardDescription>
-          </CardHeader>
-        </Card>
-      </Link>
-    );
-  }
+  const getIcon = () => {
+    switch (item.title) {
+      case "Available Payout":
+        return <Wallet className="h-6 w-6 text-green-600" />;
+      case "Security":
+        return <ShieldCheck className="h-6 w-6 text-blue-600" />;
+      case "Pending Settlement":
+        return <Clock className="h-6 w-6 text-orange-600" />;
+      default:
+        return <Wallet className="h-6 w-6" />;
+    }
+  };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between pb-2">
+    <Card className="hover:shadow-lg transition-shadow h-full">
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between">
           <CardTitle className="text-lg">{item.title}</CardTitle>
-          <span className="text-lg">&#8358;</span>
+          {getIcon()}
         </div>
-        <CardDescription>{item.desc}</CardDescription>
+        <CardDescription className="pt-2">{item.desc}</CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">
-          &#8358;{" "}
-          {item.title === "Available Payout"
-            ? addCommasToNumber(totalAvailablePayout || 0)
-            : item.content}
-        </div>
-      </CardContent>
+      {item.link ? (
+        <CardFooter className="mt-auto">
+          <Link href={`/store/${slug}/payout-history`} className="w-full">
+            <Button variant="outline" className="w-full flex justify-between">
+              View History
+              <ArrowUpRightFromSquare className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
+        </CardFooter>
+      ) : (
+        <CardContent>
+          <div className="text-3xl font-bold">
+            ₦{addCommasToNumber(totalAvailablePayout || 0)}
+          </div>
+          {/* {item.title === 'Security' && (
+            <Progress value={75} className="h-2 mt-4" />
+          )} */}
+        </CardContent>
+      )}
     </Card>
   );
 };
 
 export default function Payout({ params }: { params: { slug: string } }) {
   const [fulfilledOrders, setFulfilledOrders] = useState<Order[]>([]);
+  const [pendingSettlements, setPendingSettlements] = useState<Settlement[]>(
+    []
+  );
   const [loading, setLoading] = useState(true);
+
+  // ... existing data fetching logic ...
 
   useEffect(() => {
     const fetchFulfilledOrders = async () => {
       try {
-        const { data } = await axios.post<{ fulfiliedOrders: Order[] }>(
+        const { data } = await axios.post<{ fulfilledOrders: Order[] }>(
           "/api/store/fulfilied-orders"
         );
-        setFulfilledOrders(data.fulfiliedOrders);
+        // console.log("data.fulfiliedOrders", data.fulfilledOrders);
+        setFulfilledOrders(data.fulfilledOrders);
       } catch (error) {
         console.error("Failed to fetch fulfilled orders:", error);
       } finally {
@@ -105,29 +126,64 @@ export default function Payout({ params }: { params: { slug: string } }) {
     fetchFulfilledOrders();
   }, []);
 
+  useEffect(() => {
+    const fetchPendingSettlements = async () => {
+      try {
+        const { data } = await axios.post<{ pendingSettlements: Settlement[] }>(
+          "/api/store/settlement/fetch-settlement"
+        );
+        // console.log("data.pendingSettlement", data.pendingSettlements);
+        setPendingSettlements(data.pendingSettlements);
+      } catch (error) {
+        console.error("Failed to fetch fulfilled orders:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPendingSettlements();
+  }, []);
+
   const totalAvailablePayout = fulfilledOrders.reduce((total, order) => {
     return (
       total +
-      order.products.reduce(
+      order.subOrders[0].products.reduce(
         (sum, product) => sum + calculateCommission(product.price).settleAmount,
         0
       )
     );
   }, 0);
 
+  // const totalAvailablePayout = fulfilledOrders.reduce((total, order) => {
+  //   return (
+  //     total +
+  //     order.products.reduce(
+  //       (sum, product) => sum + calculateCommission(product.price).settleAmount,
+  //       0
+  //     )
+  //   );
+  // }, 0);
+
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-3">
-        <Loader className="animate-spin w-8 h-8" />
-        <p className="text-gray-600">Loading payout data...</p>
+      <div className="p-8 space-y-6">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {[...Array(3)].map((_, i) => (
+            <Skeleton key={i} className="h-[180px] rounded-xl" />
+          ))}
+        </div>
+        <div className="space-y-4">
+          <Skeleton className="h-[400px] rounded-xl" />
+          <Skeleton className="h-[400px] rounded-xl" />
+        </div>
       </div>
     );
   }
 
   return (
-    <main className="flex flex-col gap-6 p-4 md:p-8">
+    <main className="p-4 md:p-8 space-y-8">
       <div className="space-y-4">
-        <h1 className="text-2xl font-semibold">Balance Overview</h1>
+        <h1 className="text-2xl font-bold">Payout Dashboard</h1>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {security.map((item, i) => (
             <SecurityCard
@@ -140,68 +196,53 @@ export default function Payout({ params }: { params: { slug: string } }) {
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Fulfilled Orders</CardTitle>
-            <CardDescription>Sales available for payout</CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Fulfilled Orders</CardTitle>
+                <CardDescription>Sales available for payout</CardDescription>
+              </div>
+              <Badge variant="outline" className="text-sm">
+                {fulfilledOrders.length} Orders
+              </Badge>
+            </div>
           </CardHeader>
           <CardContent>
             <Table>
-              <TableCaption>A list of your available payouts</TableCaption>
-              <TableHeader>
+              <TableHeader className="bg-muted">
                 <TableRow>
                   <TableHead>Status</TableHead>
-                  <TableHead>Product</TableHead>
-                  <TableHead>Quantity</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead>Payout</TableHead>
+                  <TableHead>Order ID</TableHead>
+                  <TableHead>Amount</TableHead>
                   <TableHead>Date</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {fulfilledOrders.map((order) => (
-                  <TableRow key={order._id}>
-                    <TableCell className="font-medium text-green-600">
-                      {order.deliveryStatus}
-                    </TableCell>
-
+                  <TableRow key={order._id} className="hover:bg-muted/50">
                     <TableCell>
-                      {order.products.map((productOrder) => (
-                        <div key={productOrder.product?._id}>
-                          {productOrder.product?.name || "Deleted Product"}
-                        </div>
-                      ))}
+                      <Badge className="bg-green-500">
+                        {order.subOrders[0].deliveryStatus}
+                      </Badge>
                     </TableCell>
-
+                    <TableCell className="font-medium">
+                      {order._id.slice(-8)}
+                    </TableCell>
                     <TableCell>
-                      {order.products.map((productOrder) => (
-                        <div key={productOrder.product?._id}>
-                          {productOrder.quantity}
-                        </div>
-                      ))}
+                      ₦
+                      {addCommasToNumber(
+                        order.subOrders[0].products.reduce(
+                          (sum, product) =>
+                            sum +
+                            calculateCommission(product.price).settleAmount *
+                              product.quantity,
+                          0
+                        )
+                      )}
                     </TableCell>
-
-                    <TableCell>
-                      {order.products.map((productOrder) => (
-                        <div key={productOrder.product?._id}>
-                          &#8358;{addCommasToNumber(productOrder.price)}
-                        </div>
-                      ))}
-                    </TableCell>
-
-                    <TableCell>
-                      {order.products.map((productOrder) => (
-                        <div key={productOrder.product?._id}>
-                          &#8358;
-                          {addCommasToNumber(
-                            calculateCommission(productOrder.price).settleAmount
-                          )}
-                        </div>
-                      ))}
-                    </TableCell>
-
                     <TableCell>
                       {new Date(order.createdAt).toLocaleDateString("en-US", {
                         year: "numeric",
@@ -209,26 +250,93 @@ export default function Payout({ params }: { params: { slug: string } }) {
                         day: "numeric",
                       })}
                     </TableCell>
-
-                    <TableCell>
+                    <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            aria-label="Order actions"
-                          >
-                            <MoreHorizontalIcon className="w-5 h-5" />
+                          <Button variant="ghost" size="sm">
+                            <MoreHorizontalIcon className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuLabel>Order Actions</DropdownMenuLabel>
                           <Link
                             href={`/store/${params.slug}/order-details/${order._id}`}
-                            legacyBehavior
                           >
-                            <DropdownMenuItem asChild>
-                              <a className="cursor-pointer">View Details</a>
+                            <DropdownMenuItem className="cursor-pointer">
+                              View Details
+                            </DropdownMenuItem>
+                          </Link>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Pending Settlements</CardTitle>
+                <CardDescription>Awaiting payment processing</CardDescription>
+              </div>
+              <Badge variant="outline" className="text-sm">
+                {pendingSettlements.length} Requests
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader className="bg-muted">
+                <TableRow>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Order ID</TableHead>
+                  <TableHead>Amount</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pendingSettlements.map((settlement) => (
+                  <TableRow key={settlement._id} className="hover:bg-muted/50">
+                    <TableCell>
+                      <Badge className="bg-yellow-500">
+                        {settlement.payoutStatus}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{settlement.mainOrderID.slice(-8)}</TableCell>
+                    <TableCell>
+                      ₦{addCommasToNumber(settlement.settlementAmount)}
+                    </TableCell>
+                    <TableCell>
+                      {new Date(settlement.createdAt).toLocaleDateString(
+                        "en-US",
+                        {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        }
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            <MoreHorizontalIcon className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>
+                            Settlement Actions
+                          </DropdownMenuLabel>
+                          <Link
+                            href={`/store/${params.slug}/order-details/${settlement.mainOrderID}`}
+                          >
+                            <DropdownMenuItem className="cursor-pointer">
+                              View Details
                             </DropdownMenuItem>
                           </Link>
                         </DropdownMenuContent>
@@ -244,3 +352,360 @@ export default function Payout({ params }: { params: { slug: string } }) {
     </main>
   );
 }
+
+// "use client";
+
+// import { useState, useEffect } from "react";
+// import Link from "next/link";
+// import axios from "axios";
+// import {
+//   Card,
+//   CardContent,
+//   CardDescription,
+//   CardHeader,
+//   CardTitle,
+// } from "@/components/ui/card";
+// import {
+//   Table,
+//   TableBody,
+//   TableCaption,
+//   TableCell,
+//   TableHead,
+//   TableHeader,
+//   TableRow,
+// } from "@/components/ui/table";
+// import { calculateCommission, security } from "@/constant/constant";
+// import { Order, Settlement } from "@/types";
+// import {
+//   ArrowUpRightFromSquare,
+//   Loader,
+//   MoreHorizontalIcon,
+// } from "lucide-react";
+// import { addCommasToNumber } from "@/lib/utils";
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuLabel,
+//   DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu";
+// import { Button } from "@/components/ui/button";
+
+// interface SecurityCardProps {
+//   item: (typeof security)[number];
+//   slug: string;
+//   totalAvailablePayout?: number;
+// }
+
+// const SecurityCard = ({
+//   item,
+//   slug,
+//   totalAvailablePayout,
+// }: SecurityCardProps) => {
+//   if (item.link) {
+//     return (
+//       <Link href={`/store/${slug}/payout-history`} className="h-full">
+//         <Card className="h-full hover:shadow-md transition-shadow">
+//           <CardHeader>
+//             <div className="flex items-center justify-between pb-2">
+//               <CardTitle className="text-lg">{item.title}</CardTitle>
+//               <ArrowUpRightFromSquare className="w-5 h-5" />
+//             </div>
+//             <CardDescription>{item.desc}</CardDescription>
+//           </CardHeader>
+//         </Card>
+//       </Link>
+//     );
+//   }
+
+//   return (
+//     <Card>
+//       <CardHeader>
+//         <div className="flex items-center justify-between pb-2">
+//           <CardTitle className="text-lg">{item.title}</CardTitle>
+//           <span className="text-lg">&#8358;</span>
+//         </div>
+//         <CardDescription>{item.desc}</CardDescription>
+//       </CardHeader>
+//       <CardContent>
+//         <div className="text-2xl font-bold">
+//           &#8358;{" "}
+//           {item.title === "Available Payout"
+//             ? addCommasToNumber(totalAvailablePayout || 0)
+//             : item.content}
+//         </div>
+//       </CardContent>
+//     </Card>
+//   );
+// };
+
+// export default function Payout({ params }: { params: { slug: string } }) {
+//   const [fulfilledOrders, setFulfilledOrders] = useState<Order[]>([]);
+//   const [pendingSettlements, setPendingSettlements] = useState<Settlement[]>(
+//     []
+//   );
+//   const [loading, setLoading] = useState(true);
+
+//   useEffect(() => {
+//     const fetchFulfilledOrders = async () => {
+//       try {
+//         const { data } = await axios.post<{ fulfilledOrders: Order[] }>(
+//           "/api/store/fulfilied-orders"
+//         );
+//         // console.log("data.fulfiliedOrders", data.fulfilledOrders);
+//         setFulfilledOrders(data.fulfilledOrders);
+//       } catch (error) {
+//         console.error("Failed to fetch fulfilled orders:", error);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchFulfilledOrders();
+//   }, []);
+
+//   useEffect(() => {
+//     const fetchPendingSettlements = async () => {
+//       try {
+//         const { data } = await axios.post<{ pendingSettlements: Settlement[] }>(
+//           "/api/store/settlement/fetch-settlement"
+//         );
+//         // console.log("data.pendingSettlement", data.pendingSettlements);
+//         setPendingSettlements(data.pendingSettlements);
+//       } catch (error) {
+//         console.error("Failed to fetch fulfilled orders:", error);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchPendingSettlements();
+//   }, []);
+
+//   const totalAvailablePayout = fulfilledOrders.reduce((total, order) => {
+//     return (
+//       total +
+//       order.subOrders[0].products.reduce(
+//         (sum, product) => sum + calculateCommission(product.price).settleAmount,
+//         0
+//       )
+//     );
+//   }, 0);
+
+//   // const totalAvailablePayout = fulfilledOrders.reduce((total, order) => {
+//   //   return (
+//   //     total +
+//   //     order.products.reduce(
+//   //       (sum, product) => sum + calculateCommission(product.price).settleAmount,
+//   //       0
+//   //     )
+//   //   );
+//   // }, 0);
+
+//   if (loading) {
+//     return (
+//       <div className="min-h-screen flex flex-col items-center justify-center gap-3">
+//         <Loader className="animate-spin w-8 h-8" />
+//         <p className="text-gray-600">Loading payout data...</p>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <main className="flex flex-col gap-6 p-4 md:p-8">
+//       <div className="space-y-4">
+//         <h1 className="text-2xl font-semibold">Balance Overview</h1>
+//         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+//           {security.map((item, i) => (
+//             <SecurityCard
+//               key={i}
+//               item={item}
+//               slug={params.slug}
+//               totalAvailablePayout={totalAvailablePayout}
+//             />
+//           ))}
+//         </div>
+//       </div>
+
+//       <div className="space-y-4">
+//         <Card>
+//           <CardHeader>
+//             <CardTitle>Fulfilled Orders</CardTitle>
+//             <CardDescription>Sales available for payout</CardDescription>
+//           </CardHeader>
+//           <CardContent>
+//             <Table>
+//               <TableCaption>A list of your available payouts</TableCaption>
+//               <TableHeader>
+//                 <TableRow>
+//                   <TableHead>Status</TableHead>
+//                   <TableHead>Order ID</TableHead>
+//                   {/* <TableHead>Quantity</TableHead>
+//                   <TableHead>Price</TableHead> */}
+//                   <TableHead>Payout</TableHead>
+//                   <TableHead>Date</TableHead>
+//                   <TableHead>Actions</TableHead>
+//                 </TableRow>
+//               </TableHeader>
+//               <TableBody>
+//                 {fulfilledOrders.map((order) => (
+//                   <TableRow key={order._id}>
+//                     <TableCell className="font-medium text-green-600">
+//                       {order.subOrders[0].deliveryStatus}
+//                     </TableCell>
+
+//                     <TableCell>
+//                       {order._id}
+//                       {/* {order.products.map((productOrder) => (
+//                         <div key={productOrder.product?._id}>
+//                           {productOrder.product?.name || "Deleted Product"}
+//                         </div>
+//                       ))} */}
+//                     </TableCell>
+
+//                     <TableCell>
+//                       &#8358;
+//                       {addCommasToNumber(
+//                         order.subOrders[0].products.reduce(
+//                           (sum, product) =>
+//                             sum +
+//                             calculateCommission(product.price).settleAmount *
+//                               product.quantity,
+//                           0
+//                         )
+//                       )}
+//                       {/* {order.products.map((productOrder) => (
+//                         <div key={productOrder.product?._id}>
+//                           &#8358;
+//                           {addCommasToNumber(
+//                             calculateCommission(productOrder.price).settleAmount
+//                           )}
+//                         </div>
+//                       ))} */}
+//                     </TableCell>
+
+//                     <TableCell>
+//                       {new Date(order.createdAt).toLocaleDateString("en-US", {
+//                         year: "numeric",
+//                         month: "short",
+//                         day: "numeric",
+//                       })}
+//                     </TableCell>
+
+//                     <TableCell>
+//                       <DropdownMenu>
+//                         <DropdownMenuTrigger asChild>
+//                           <Button
+//                             variant="ghost"
+//                             size="icon"
+//                             aria-label="Order actions"
+//                           >
+//                             <MoreHorizontalIcon className="w-5 h-5" />
+//                           </Button>
+//                         </DropdownMenuTrigger>
+//                         <DropdownMenuContent align="end">
+//                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
+//                           <Link
+//                             href={`/store/${params.slug}/order-details/${order._id}`}
+//                             legacyBehavior
+//                           >
+//                             <DropdownMenuItem asChild>
+//                               <a className="cursor-pointer">View Details</a>
+//                             </DropdownMenuItem>
+//                           </Link>
+//                         </DropdownMenuContent>
+//                       </DropdownMenu>
+//                     </TableCell>
+//                   </TableRow>
+//                 ))}
+//               </TableBody>
+//             </Table>
+//           </CardContent>
+//         </Card>
+//       </div>
+
+//       <div className="space-y-4">
+//         <Card>
+//           <CardHeader>
+//             <CardTitle>Orders Awaiting Settlement</CardTitle>
+//             <CardDescription>
+//               Orders that settlement has been requested for and is pending
+//               completion.
+//             </CardDescription>
+//           </CardHeader>
+//           <CardContent>
+//             <Table>
+//               <TableCaption>
+//                 A list of your orders that are in the process of being settled.
+//               </TableCaption>
+//               <TableHeader>
+//                 <TableRow>
+//                   <TableHead>Settlement Status</TableHead>
+
+//                   <TableHead>Order ID</TableHead>
+//                   {/* <TableHead>Quantity</TableHead>
+//                    */}
+//                   <TableHead>Payout</TableHead>
+//                   <TableHead>Date</TableHead>
+//                   <TableHead>Actions</TableHead>
+//                 </TableRow>
+//               </TableHeader>
+//               <TableBody>
+//                 {pendingSettlements.map((settlement) => (
+//                   <TableRow key={settlement._id}>
+//                     <TableCell className="font-medium text-udua-orange-primary">
+//                       {settlement.payoutStatus}
+//                     </TableCell>
+
+//                     <TableCell>{settlement.mainOrderID}</TableCell>
+
+//                     <TableCell>
+//                       &#8358;
+//                       {addCommasToNumber(settlement.settlementAmount)}
+//                     </TableCell>
+
+//                     <TableCell>
+//                       {new Date(settlement.createdAt).toLocaleDateString(
+//                         "en-US",
+//                         {
+//                           year: "numeric",
+//                           month: "short",
+//                           day: "numeric",
+//                         }
+//                       )}
+//                     </TableCell>
+
+//                     <TableCell>
+//                       <DropdownMenu>
+//                         <DropdownMenuTrigger asChild>
+//                           <Button
+//                             variant="ghost"
+//                             size="icon"
+//                             aria-label="Order actions"
+//                           >
+//                             <MoreHorizontalIcon className="w-5 h-5" />
+//                           </Button>
+//                         </DropdownMenuTrigger>
+//                         <DropdownMenuContent align="end">
+//                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
+//                           <Link
+//                             href={`/store/${params.slug}/order-details/${settlement.mainOrderID}`}
+//                             legacyBehavior
+//                           >
+//                             <DropdownMenuItem asChild>
+//                               <a className="cursor-pointer">View Details</a>
+//                             </DropdownMenuItem>
+//                           </Link>
+//                         </DropdownMenuContent>
+//                       </DropdownMenu>
+//                     </TableCell>
+//                   </TableRow>
+//                 ))}
+//               </TableBody>
+//             </Table>
+//           </CardContent>
+//         </Card>
+//       </div>
+//     </main>
+//   );
+// }

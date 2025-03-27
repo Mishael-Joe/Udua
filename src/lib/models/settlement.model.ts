@@ -1,40 +1,44 @@
-import mongoose, { Schema, Document } from "mongoose";
-
-// In your settlement schema or payout history
+import mongoose, { Schema } from "mongoose";
+/*
+ *  All monetary values are stored in kobo so as to avoid Floating-Point Errors in JavaScript.
+ */
+// Settlement Schema
 const settlementSchema = new Schema(
   {
-    // storeID: {
-    //     type: String,
-    //     required: true,
-    // },
-    // orderID: {
-    //   type: String,
-    //   required: true,
-    // },
     storeID: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Store",
+      ref: "stores",
       required: true,
     },
-    orderID: {
+    mainOrderID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Order",
       required: true,
     },
-    settlementAmount: { type: Number, required: true },
+    subOrderID: {
+      type: String, // SubOrder ID or index within the main order (could be a string or identifier)
+      required: true, // Required to identify the specific sub-order
+    },
+    settlementAmount: {
+      type: Number,
+      required: true,
+      min: [0, "Settlement amount must be positive"], // Ensure settlement amount is positive
+    },
     payoutAccount: {
       type: new Schema({
         // payoutMethod: String,
-        bankName: String,
-        accountNumber: String,
-        accountHolderName: String,
+        bankName: { type: String, required: true }, // Ensure all fields are required
+        accountNumber: { type: String, required: true },
+        accountHolderName: { type: String, required: true },
+        bankCode: { type: Number, required: true },
+        bankId: Number,
       }),
       required: true,
     },
     payoutStatus: {
       type: String,
-      enum: ["requested", "processing", "paid", "failed"],
-      default: "requested",
+      enum: ["Requested", "Processing", "Paid", "Failed"],
+      default: "Requested",
     },
   },
   { timestamps: true }

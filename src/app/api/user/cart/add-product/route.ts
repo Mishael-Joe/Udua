@@ -18,13 +18,16 @@ import { getUserDataFromToken } from "@/lib/helpers/getUserDataFromToken";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { productID, productType, quantity, selectedSize } = body;
+    const { productID, productType, quantity, selectedSize, storeID } = body;
 
     const userId = await getUserDataFromToken(request);
 
-    if (!userId || !productID || !productType || !quantity) {
+    if (!userId || !productID || !productType || !quantity || !storeID) {
       return NextResponse.json(
-        { error: "userId, productID, productType and quantity are required" },
+        {
+          error:
+            "userId, productID, productType, quantity and storeID are required",
+        },
         { status: 400 }
       );
     }
@@ -42,7 +45,7 @@ export async function POST(request: NextRequest) {
     let itemIndex = cart.items.findIndex((item: any) => {
       if (item.product.toString() !== productID) return false;
       if (item.productType !== productType) return false;
-      if (productType === "physicalproducts" && selectedSize) {
+      if (productType === "Physical Product" && selectedSize) {
         return (
           item.selectedSize && item.selectedSize.size === selectedSize.size
         );
@@ -51,15 +54,13 @@ export async function POST(request: NextRequest) {
     });
 
     if (itemIndex > -1) {
-      // Update the quantity (and optionally the selectedSize) if item exists.
+      // Update the quantity for the existing item.
       cart.items[itemIndex].quantity += quantity;
-      if (selectedSize) {
-        cart.items[itemIndex].selectedSize = selectedSize;
-      }
     } else {
-      // Add a new item to the cart.
+      // Add the item to the cart as a new entry.
       cart.items.push({
         product: productID,
+        storeID,
         productType,
         quantity,
         selectedSize: selectedSize || undefined,

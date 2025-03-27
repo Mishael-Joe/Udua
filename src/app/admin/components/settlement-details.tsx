@@ -1,155 +1,454 @@
 "use client";
 
-import { Settlement } from "@/types";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import axios from "axios";
-import { Loader, MoreHorizontalIcon } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
+  ArrowLeft,
+  Banknote,
+  Truck,
+  Package,
+  Building,
+  AlertCircle,
+  Loader,
+  Clipboard,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
+import { withAdminAuth } from "./auth/with-admin-auth";
+import { PERMISSIONS } from "@/lib/rbac/permissions";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+/**
+ * Interface representing payout account details
+ */
+interface PayoutAccount {
+  bankName: string;
+  accountNumber: string;
+  accountHolderName: string;
+  bankCode: Number;
+}
 
-import { addCommasToNumber } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+/**
+ * Interface representing shipping method details
+ */
+interface ShippingMethod {
+  name: string;
+  price: number;
+  estimatedDeliveryDays: number;
+  description: string;
+}
 
-function SettlementDetails({ params }: { params: { slug: string } }) {
+/**
+ * Interface representing product details in a sub-order
+ */
+interface Product {
+  _id: string;
+  physicalProducts?: string;
+  digitalProducts?: string;
+  price: number;
+  quantity: number;
+}
+
+/**
+ * Interface representing sub-order details
+ */
+interface SubOrder {
+  _id: string;
+  products: Product[];
+  totalAmount: number;
+  shippingMethod: ShippingMethod;
+  deliveryStatus: string;
+  payoutStatus: string;
+}
+
+/**
+ * Interface representing main order details
+ */
+interface MainOrder {
+  _id: string;
+  totalAmount: number;
+  createdAt: string;
+  subOrders: SubOrder[];
+}
+
+/**
+ * Interface representing store information
+ */
+interface Store {
+  _id: string;
+  name: string;
+  storeEmail: string;
+}
+
+/**
+ * Interface representing full settlement details
+ */
+interface Settlement {
+  storeID: Store;
+  mainOrderID: MainOrder;
+  subOrderID: string;
+  settlementAmount: number;
+  payoutAccount: PayoutAccount;
+  payoutStatus: string;
+}
+
+/**
+ * SettlementDetails component displays detailed information about a specific settlement
+ * @param params - Object containing route parameters (slug: settlement ID)
+ */
+function SettlementDetailsPage({ params }: { params: { slug: string } }) {
+  const [settlement, setSettlement] = useState<Settlement | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  const [settlementDetails, setSettlementDetails] = useState<Settlement | null>(
-    null
-  );
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const [countdown, setCountdown] = useState(5);
+  const [showRedirectMessage, setShowRedirectMessage] = useState(false);
 
+  // Fetch settlement details on component mount
   useEffect(() => {
-    const body = {
-      settlementID: params.slug,
-    };
-    const FetchPendingPayout = async () => {
+    const fetchSettlementDetails = async () => {
       try {
         const response = await axios.post(
           "/api/admin/fetch-settlement-details",
-          body
+          {
+            settlementID: params.slug,
+          }
         );
-        //   console.log("FetchPendingPayout", response);
-        // console.log("sellerdata.data.orders", response.data.orders);
-        setSettlementDetails(response.data.settlement);
-        setLoading(false); // Stop loading when data is fetched
-      } catch (error: any) {
-        console.error("Failed to fetch settlement details", error.message);
-        setError(true);
+        setSettlement(response.data.settlement);
+        setLoading(false);
+      } catch (err) {
+        setError("Failed to load settlement details");
         setLoading(false);
       }
     };
 
-    FetchPendingPayout();
-
-    // Set a timeout to show error message if data isn't fetched within 10 seconds
+    fetchSettlementDetails();
     const timeoutId = setTimeout(() => {
       if (loading) {
-        setError(true);
+        setError("Request timed out. Please try again.");
         setLoading(false);
       }
-    }, 10000); // 10 seconds timeout
+    }, 10000);
 
-    // Cleanup the timeout when the component unmounts or fetch is successful
     return () => clearTimeout(timeoutId);
-  }, [loading]);
+  }, [params.slug, loading]);
 
-  if (loading && !error) {
+  const handleCreateTransferRecipient = async () => {
+    if (!settlement) return;
+    const config = {
+      accountNumber: settlement.payoutAccount.accountNumber,
+      bankCode: settlement.payoutAccount.bankCode,
+      accountName: settlement.payoutAccount.accountHolderName,
+      storeId: settlement.storeID._id,
+      bankName: settlement.payoutAccount.bankName,
+    };
+    try {
+      setIsLoading(true);
+      const response = await axios.post(
+        `/api/admin/create-transfer-recipient`,
+        { config }
+      );
+      // console.log("response", response.data);
+
+      if (response.data.status) {
+        // Start the countdown
+        setShowRedirectMessage(true);
+        const countdownInterval = setInterval(() => {
+          setCountdown((prev) => prev - 1);
+        }, 1000);
+
+        // After 5 seconds, redirect to the new page
+        const redirectTimeout = setTimeout(() => {
+          router.push(
+            `/admin/complete-the-payout?amount=${settlement.settlementAmount}&recipient=${response.data.data.recipient_code}`
+          );
+        }, 5000);
+
+        // Cleanup on component unmount
+        return () => {
+          clearInterval(countdownInterval);
+          clearTimeout(redirectTimeout);
+        };
+      }
+    } catch (error) {
+      console.log("Erorr Creating Transfer Recipient", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle loading and error states
+  if (loading) {
     return (
-      <div className="w-full min-h-screen flex items-center justify-center">
-        <p className="w-full h-full flex items-center justify-center">
-          <Loader className="animate-spin" /> Loading...
-        </p>
+      <div className="container mx-auto p-6 space-y-6">
+        <Skeleton className="h-9 w-48" />
+        {[...Array(5)].map((_, i) => (
+          <Skeleton key={i} className="h-[200px] w-full" />
+        ))}
       </div>
     );
   }
 
-  if (error) {
+  if (error || !settlement) {
     return (
-      <div className="w-full min-h-screen flex items-center justify-center">
-        <p className="text-center text-red-600">
-          An error occurred. Please check your internet connection.
-        </p>
+      <div className="container mx-auto p-6">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+          <Button className="mt-4" onClick={() => window.location.reload()}>
+            Retry
+          </Button>
+        </Alert>
       </div>
     );
   }
 
-  if (settlementDetails === null) {
-    return (
-      <div className="w-full min-h-screen flex items-center justify-center">
-        <p className="w-full h-full flex items-center justify-center">
-          <Loader className="animate-spin" /> Loading...
-        </p>
-      </div>
-    );
-  }
+  // Find the specific sub-order
+  const subOrder = settlement.mainOrderID.subOrders.find(
+    (order) => order._id === settlement.subOrderID
+  );
+
   return (
-    <>
-      <h1>SettlementDetails</h1>
-      <div>
-        <h2>Settlement Information</h2>
-        <ul>
-          <li>
-            <strong>Settlement ID:</strong> 673379232c993083a24611af
-          </li>
-          <li>
-            <strong>Store ID:</strong> 66fbae5615b9fec5eac1b9bb
-          </li>
-          <li>
-            <strong>Order ID:</strong> 67007b3e0d87b0b2b62ad1bf
-          </li>
-          <li>
-            <strong>Settlement Amount:</strong> 4846.25
-          </li>
-          <li>
-            <strong>Payout Status:</strong> Requested
-          </li>
-          <li>
-            <strong>Created At:</strong> 2024-11-12T15:49:55.232Z
-          </li>
-        </ul>
-
-        <h2>Payout Account Information</h2>
-        <ul>
-          <li>
-            <strong>Bank Name:</strong> PalmPay
-          </li>
-          <li>
-            <strong>Account Number:</strong> 8148600290
-          </li>
-          <li>
-            <strong>Account Holder Name:</strong> MISHAEL JOSEPH ETUKUDO
-          </li>
-          <li>
-            <strong>Payout Account ID:</strong> 673379232c993083a24611b0
-          </li>
-        </ul>
+    <div className="container mx-auto p-6 space-y-6">
+      {/* Header Section */}
+      <div className="flex items-center justify-between">
+        <Button asChild variant="ghost">
+          <Link href="/admin/settlement">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Settlements
+          </Link>
+        </Button>
+        <Badge
+          className={cn(
+            "text-sm uppercase",
+            settlement.payoutStatus === "completed"
+              ? "bg-green-100 text-green-800"
+              : "bg-yellow-100 text-yellow-800"
+          )}
+        >
+          {settlement.payoutStatus}
+        </Badge>
       </div>
-    </>
+
+      {/* Main Content Grid */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Store & Order Information */}
+        <div className="space-y-6">
+          <Card>
+            <CardHeader className="border-b">
+              <CardTitle className="flex items-center gap-2">
+                <Building className="h-5 w-5" />
+                Store Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4 space-y-3">
+              <DetailItem label="Store Name" value={settlement.storeID.name} />
+              <DetailItem
+                label="Store Email"
+                value={settlement.storeID.storeEmail}
+              />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="border-b">
+              <CardTitle className="flex items-center gap-2">
+                <Package className="h-5 w-5" />
+                Order Overview
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4 space-y-3">
+              <DetailItem label="Order ID" value={settlement.mainOrderID._id} />
+              <DetailItem
+                label="Order Date"
+                value={new Date(
+                  settlement.mainOrderID.createdAt
+                ).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              />
+              <DetailItem
+                label="Total Amount"
+                value={`₦${settlement.mainOrderID.totalAmount.toLocaleString()}`}
+              />
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Settlement & Shipping Info */}
+        <div className="space-y-6">
+          <Card>
+            <CardHeader className="border-b">
+              <CardTitle className="flex justify-between items-center gap-x-2">
+                <div className="flex items-center gap-2">
+                  <Banknote className="h-5 w-5" />
+                  Settlement Details
+                </div>
+
+                {/* <div>
+                  {showRedirectMessage && (
+                    <p className="text-xs">Redirecting in {countdown}...</p>
+                  )}
+                  {!showRedirectMessage && (
+                    <Button
+                      className="bg-transparent hover:bg-transparent hover:underline text-black"
+                      onClick={handleCreateTransferRecipient}
+                      disabled={isLoading}
+                    >
+                      <p className="hover:underline text-xs">
+                        {isLoading && (
+                          <p>
+                            <Loader className="h-4 w-4 animate-spin" />
+                          </p>
+                        )}
+                        {!isLoading && <p>Create Recipient</p>}
+                      </p>
+                    </Button>
+                  )}
+                </div> */}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4 space-y-3">
+              <DetailItem
+                label="Settlement Amount"
+                value={`₦${settlement.settlementAmount.toLocaleString()}`}
+              />
+              <DetailItem
+                label="Payout Method"
+                value={settlement.payoutAccount.bankName}
+              />
+              <DetailItem
+                label="Account Number"
+                value={settlement.payoutAccount.accountNumber}
+              />
+              <DetailItem
+                label="Account Holder"
+                value={settlement.payoutAccount.accountHolderName}
+              />
+            </CardContent>
+          </Card>
+
+          {subOrder && (
+            <Card>
+              <CardHeader className="border-b">
+                <CardTitle className="flex items-center gap-2">
+                  <Truck className="h-5 w-5" />
+                  Shipping Details
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-4 space-y-3">
+                <DetailItem
+                  label="Shipping Method"
+                  value={subOrder.shippingMethod.name}
+                />
+                <DetailItem
+                  label="Shipping Cost"
+                  value={`₦${subOrder.shippingMethod.price.toLocaleString()}`}
+                />
+                <DetailItem
+                  label="Delivery Status"
+                  value={
+                    <Badge
+                      variant="outline"
+                      className={cn(
+                        "uppercase",
+                        subOrder.deliveryStatus === "delivered"
+                          ? "border-green-200 bg-green-50 text-green-700"
+                          : "border-yellow-200 bg-yellow-50 text-yellow-700"
+                      )}
+                    >
+                      {subOrder.deliveryStatus}
+                    </Badge>
+                  }
+                />
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
+
+      {/* Products Table */}
+      {subOrder && (
+        <Card>
+          <CardHeader className="border-b">
+            <CardTitle className="flex items-center gap-2">
+              <Package className="h-5 w-5" />
+              Products ({subOrder.products.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-4">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Product Type</TableHead>
+                  <TableHead>ID</TableHead>
+                  <TableHead className="text-right">Price</TableHead>
+                  <TableHead className="text-right">Quantity</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {subOrder.products.map((product) => (
+                  <TableRow key={product._id}>
+                    <TableCell>
+                      {product.physicalProducts ? "Physical" : "Digital"}
+                    </TableCell>
+                    <TableCell className="font-mono">
+                      {product.physicalProducts || product.digitalProducts}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      ₦{product.price.toLocaleString()}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {product.quantity}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 }
 
-export default SettlementDetails;
+/**
+ * Reusable component for displaying key-value pairs
+ * @param label - Label for the detail item
+ * @param value - Value to display (can be string or JSX element)
+ */
+function DetailItem({
+  label,
+  value,
+}: {
+  label: string;
+  value: string | React.ReactNode;
+}) {
+  return (
+    <div className="flex justify-between items-center">
+      <span className="text-sm text-muted-foreground">{label}</span>
+      <span className="text-sm font-medium">{value}</span>
+    </div>
+  );
+}
+
+export default withAdminAuth(SettlementDetailsPage, {
+  requiredPermissions: [PERMISSIONS.PROCESS_SETTLEMENT],
+});

@@ -588,3 +588,21 @@ export const shoeSizes: ShoeSize[] = [
     footLengthRange: "30.0 - 30.4",
   },
 ];
+
+export const quillModules = {
+  toolbar: [
+    ["bold", "italic", "underline", "strike", "blockquote"],
+    [{ list: "ordered" }, { list: "bullet" }],
+    ["clean"],
+  ],
+};
+
+export const quillFormats = [
+  "bold",
+  "italic",
+  "underline",
+  "strike",
+  "blockquote",
+  "list",
+  "bullet",
+];

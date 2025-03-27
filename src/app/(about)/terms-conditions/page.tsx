@@ -1,3 +1,1163 @@
+// /**
+//  * Terms and Conditions Page
+//  *
+//  * This page displays the legal terms and conditions for using the platform.
+//  * It features a structured layout with a table of contents, organized sections,
+//  * and responsive design elements for better readability.
+//  */
+
+// import { siteConfig } from "@/config/site";
+
+// // Reusable section container component for consistent spacing
+// const SectionContainer = ({
+//   id,
+//   title,
+//   children,
+//   className = "",
+// }: {
+//   id: string;
+//   title: string;
+//   children: React.ReactNode;
+//   className?: string;
+// }) => (
+//   <section id={id} className={`scroll-mt-24 pt-12 ${className}`}>
+//     <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6">
+//       {title}
+//     </h2>
+//     <div className="space-y-6">{children}</div>
+//   </section>
+// );
+
+// // Reusable highlight box component for important notes
+// const HighlightBox = ({
+//   title,
+//   color = "blue",
+//   children,
+// }: {
+//   title: string;
+//   color?: "blue" | "yellow" | "green";
+//   children: React.ReactNode;
+// }) => {
+//   const colors = {
+//     blue: "bg-blue-50 dark:bg-blue-900/20 border-blue-200",
+//     yellow: "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200",
+//     green: "bg-green-50 dark:bg-green-900/20 border-green-200",
+//   };
+
+//   return (
+//     <div className={`${colors[color]} p-6 rounded-lg border-l-4 mb-6`}>
+//       <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-4">
+//         {title}
+//       </h3>
+//       {children}
+//     </div>
+//   );
+// };
+
+// function TermsPage() {
+//   // Format current date for last updated display
+//   const formattedDate = new Date().toLocaleDateString("en-US", {
+//     year: "numeric",
+//     month: "long",
+//     day: "numeric",
+//   });
+
+//   // Table of contents configuration
+//   const sections = [
+//     { id: "introduction", title: "1. Introduction" },
+//     { id: "registration", title: "2. Registration and Account" },
+//     { id: "terms-sale", title: "3. Terms and Conditions of Sale" },
+//     { id: "returns", title: "4. Returns and Refunds" },
+//     { id: "payments", title: "5. Payments" },
+//     { id: "content", title: "6. Rules About Your Content" },
+//     { id: "rights", title: "7. Our Rights to Use Your Content" },
+//     { id: "usage", title: "8. Use of Website and Mobile Applications" },
+//     { id: "copyright", title: "9. Copyright and Trademarks" },
+//     { id: "privacy", title: "10. Data Privacy" },
+//     { id: "audit", title: "11. Due Diligence and Audit Rights" },
+//     { id: "marketplace", title: "12. Udua's Role as a Marketplace" },
+//     { id: "liability", title: "13. Limitations and Exclusions of Liability" },
+//     { id: "indemnification", title: "14. Indemnification" },
+//     { id: "breaches", title: "15. Breaches of Terms" },
+//     { id: "agreement", title: "16. Entire Agreement" },
+//     { id: "changes", title: "17. Changes to Terms" },
+//     { id: "contact", title: "18. Contact Us" },
+//   ];
+
+//   return (
+//     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+//       {/* Page Header */}
+//       <header className="mb-12 text-center border-b pb-8">
+//         <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+//           Terms and Conditions
+//         </h1>
+//         <p className="text-lg text-gray-600 dark:text-gray-400">
+//           Effective Date: {formattedDate}
+//         </p>
+//       </header>
+
+//       {/* Main Content Container */}
+//       <div className="lg:flex lg:gap-12">
+//         {/* Table of Contents - Side Navigation */}
+//         <nav className="lg:w-80 xl:w-96 mb-12 lg:mb-0 lg:sticky lg:top-20 lg:self-start">
+//           <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-sm">
+//             <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+//               Table of Contents
+//             </h2>
+//             <ul className="space-y-2">
+//               {sections.map((section) => (
+//                 <li key={section.id}>
+//                   <a
+//                     href={`#${section.id}`}
+//                     className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors block py-2 text-sm"
+//                   >
+//                     {section.title}
+//                   </a>
+//                 </li>
+//               ))}
+//             </ul>
+//           </div>
+//         </nav>
+
+//         {/* Legal Content Sections */}
+//         <main className="flex-1 prose prose-gray dark:prose-invert max-w-none">
+//           <SectionContainer id="introduction" title="1. Introduction">
+//             <p className="text-gray-600 dark:text-gray-400">
+//               1.1. “Udua” is the trading name for Udua, an e-commerce platform
+//               that operates through a website and mobile application
+//               (“marketplace”) along with supporting IT logistics and payment
+//               infrastructure...
+//             </p>
+
+//             <HighlightBox title="Key Points:" color="blue">
+//               <ul className="list-disc pl-6 space-y-2 text-gray-700 dark:text-gray-300">
+//                 <li>
+//                   By using our marketplace, you accept these terms in full
+//                 </li>
+//                 <li>Business users must have proper authority to agree</li>
+//                 <li>Terms apply to both individual and organizational use</li>
+//               </ul>
+//             </HighlightBox>
+//           </SectionContainer>
+
+//           <SectionContainer
+//             id="registration"
+//             title="2. Registration and Account"
+//           >
+//             <p className="text-gray-600 dark:text-gray-400">
+//               2.1. You may not register with our marketplace if you are under 18
+//               years of age...
+//             </p>
+
+//             <HighlightBox title="Important Account Guidelines:" color="yellow">
+//               <ul className="list-disc pl-6 space-y-2 text-gray-700 dark:text-gray-300">
+//                 <li>Keep your password confidential</li>
+//                 <li>Account transfers to third parties are prohibited</li>
+//                 <li>We reserve the right to suspend accounts</li>
+//               </ul>
+//             </HighlightBox>
+//           </SectionContainer>
+
+//           <SectionContainer
+//             id="terms-sale"
+//             title="3. Terms and Conditions of Sale"
+//           >
+//             <HighlightBox title="3.1 Marketplace Understanding" color="blue">
+//               <p className="mb-4 text-gray-700 dark:text-gray-300">
+//                 You acknowledge and agree that:
+//               </p>
+//               <ul className="list-disc pl-6 space-y-3">
+//                 <li>
+//                   The marketplace provides an online platform for sellers to
+//                   sell and buyers to purchase products
+//                 </li>
+//                 <li>
+//                   We accept binding sales on behalf of sellers, but Udua is not
+//                   a party to transactions unless indicated as the seller
+//                 </li>
+//                 <li>
+//                   A purchase confirmation creates a binding contract between
+//                   buyer and seller
+//                 </li>
+//               </ul>
+//             </HighlightBox>
+
+//             <HighlightBox title="3.2 Contractual Provisions" color="green">
+//               <div className="space-y-6">
+//                 <div>
+//                   <h4 className="font-medium mb-2">Pricing & Compliance</h4>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>
+//                       Listed prices are binding and inclusive of all taxes
+//                     </li>
+//                     <li>
+//                       All charges must be clearly disclosed in product listings
+//                     </li>
+//                     <li>Products must meet quality and safety standards</li>
+//                   </ul>
+//                 </div>
+
+//                 <div>
+//                   <h4 className="font-medium mb-2">Ownership Rights</h4>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>
+//                       Physical products require clear ownership documentation
+//                     </li>
+//                     <li>Digital products require distribution authorization</li>
+//                     <li>No third-party rights or restrictions permitted</li>
+//                   </ul>
+//                 </div>
+//               </div>
+//             </HighlightBox>
+//           </SectionContainer>
+
+//           <SectionContainer id="returns" title="4. Returns and Refunds">
+//             <HighlightBox title="4.1 Return Process" color="blue">
+//               <div className="space-y-4">
+//                 <p>
+//                   Managed through our dedicated{" "}
+//                   <a
+//                     href="/returns"
+//                     className="text-blue-600 dark:text-blue-400 hover:underline"
+//                   >
+//                     Returns Portal
+//                   </a>
+//                   , subject to:
+//                 </p>
+//                 <ul className="list-disc pl-6 space-y-2">
+//                   <li>Current marketplace policies</li>
+//                   <li>Applicable regional laws</li>
+//                   <li>Product condition requirements</li>
+//                 </ul>
+//               </div>
+//             </HighlightBox>
+
+//             <HighlightBox title="4.2 Refund Policy" color="green">
+//               <div className="grid md:grid-cols-2 gap-6">
+//                 <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+//                   <h4 className="font-medium mb-2">Refund Components</h4>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>Full product price</li>
+//                     <li>Shipping costs (where applicable)</li>
+//                   </ul>
+//                 </div>
+//                 <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+//                   <h4 className="font-medium mb-2">Processing Methods</h4>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>Original payment method</li>
+//                     <li>Bank transfer</li>
+//                     <li>E-wallet options</li>
+//                   </ul>
+//                 </div>
+//               </div>
+//             </HighlightBox>
+
+//             <HighlightBox title="4.3 Digital Products Exception" color="yellow">
+//               <div className="space-y-3">
+//                 <p className="font-medium">Special Conditions:</p>
+//                 <ul className="list-disc pl-6 space-y-2">
+//                   <li>Refunds only for delivery failures</li>
+//                   <li>Subject to seller's individual policy</li>
+//                 </ul>
+//                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-3">
+//                   Policy updates effective immediately upon publication
+//                 </p>
+//               </div>
+//             </HighlightBox>
+//           </SectionContainer>
+
+//           <SectionContainer id="payments" title="5. Payment Methods">
+//             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+//               <h3 className="text-lg font-semibold mb-6">
+//                 Accepted Payment Options
+//               </h3>
+
+//               <div className="grid md:grid-cols-2 gap-8">
+//                 <div className="border-l-4 border-blue-500 pl-5">
+//                   <h4 className="font-medium mb-3">Card Payments</h4>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>All major credit/debit cards accepted</li>
+//                     <li>SSL encrypted transactions</li>
+//                     <li>Instant payment confirmation</li>
+//                   </ul>
+//                 </div>
+
+//                 <div className="border-l-4 border-green-500 pl-5">
+//                   <h4 className="font-medium mb-3">Bank Transfers</h4>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>Direct bank-to-bank transactions</li>
+//                     <li>1-3 business day processing</li>
+//                     <li>Digital receipts provided</li>
+//                   </ul>
+//                 </div>
+//               </div>
+
+//               <div className="mt-8 bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
+//                 <p className="flex items-center gap-2 text-sm">
+//                   <svg
+//                     className="w-5 h-5"
+//                     fill="currentColor"
+//                     viewBox="0 0 20 20"
+//                   >
+//                     <path
+//                       fillRule="evenodd"
+//                       d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+//                       clipRule="evenodd"
+//                     />
+//                   </svg>
+//                   All transactions protected by our{" "}
+//                   <a
+//                     href="/security"
+//                     className="text-blue-600 dark:text-blue-400 hover:underline"
+//                   >
+//                     Security Protocol
+//                   </a>
+//                 </p>
+//               </div>
+//             </div>
+
+//             <HighlightBox
+//               title="Payment Management"
+//               color="purple"
+//               className="mt-8"
+//             >
+//               <div className="space-y-4">
+//                 <p>Manage payment methods through your account dashboard:</p>
+//                 <ul className="list-disc pl-6 space-y-2">
+//                   <li>Add new payment options</li>
+//                   <li>Set default payment method</li>
+//                   <li>View transaction history</li>
+//                 </ul>
+//                 <a
+//                   href="/account/payments"
+//                   className="inline-flex items-center mt-4 px-5 py-2.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+//                 >
+//                   Manage Payments
+//                   <svg
+//                     className="w-4 h-4 ml-2"
+//                     fill="none"
+//                     stroke="currentColor"
+//                     viewBox="0 0 24 24"
+//                   >
+//                     <path
+//                       strokeLinecap="round"
+//                       strokeLinejoin="round"
+//                       strokeWidth={2}
+//                       d="M9 5l7 7-7 7"
+//                     />
+//                   </svg>
+//                 </a>
+//               </div>
+//             </HighlightBox>
+//           </SectionContainer>
+
+//           {/*
+//   Content Guidelines Section
+//   Details user responsibilities and restrictions regarding submitted content
+// */}
+//           <SectionContainer id="content" title="6. Rules About Your Content">
+//             {/* Content Definition */}
+//             <HighlightBox title="6.1 Content Definition" color="blue">
+//               <p className="text-gray-700 dark:text-gray-300 mb-4">
+//                 "Your content" includes all materials submitted to our platform:
+//               </p>
+//               <ul className="list-disc pl-6 space-y-3">
+//                 <li>
+//                   All digital assets (text, images, videos, software files)
+//                 </li>
+//                 <li>
+//                   User-generated communications (reviews, feedback, comments)
+//                 </li>
+//               </ul>
+//             </HighlightBox>
+
+//             {/* Content Standards */}
+//             <HighlightBox title="6.2-6.4 Content Standards" color="yellow">
+//               <div className="space-y-6">
+//                 <div>
+//                   <h4 className="font-medium mb-2">Basic Requirements</h4>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>Must be accurate and truthful</li>
+//                     <li>Must maintain civil discourse</li>
+//                     <li>Must comply with internet etiquette standards</li>
+//                   </ul>
+//                 </div>
+
+//                 <div>
+//                   <h4 className="font-medium mb-2">Prohibited Content</h4>
+//                   <div className="grid md:grid-cols-2 gap-6">
+//                     <div>
+//                       <p className="text-sm font-medium mb-2">
+//                         Content Restrictions:
+//                       </p>
+//                       <ul className="list-disc pl-6 space-y-2">
+//                         <li>Explicit or offensive material</li>
+//                         <li>Violent or graphic content</li>
+//                         <li>Discriminatory or hate speech</li>
+//                       </ul>
+//                     </div>
+//                     <div>
+//                       <p className="text-sm font-medium mb-2">
+//                         Legal Restrictions:
+//                       </p>
+//                       <ul className="list-disc pl-6 space-y-2">
+//                         <li>No copyright infringement</li>
+//                         <li>No privacy violations</li>
+//                         <li>No contractual breaches</li>
+//                       </ul>
+//                     </div>
+//                   </div>
+//                 </div>
+//               </div>
+//             </HighlightBox>
+
+//             {/* Platform Conduct */}
+//             <HighlightBox title="6.5-6.8 Platform Conduct" color="red">
+//               <div className="space-y-6">
+//                 <div>
+//                   <h4 className="font-medium mb-2">Prohibited Activities</h4>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>Posting unauthorized external links</li>
+//                     <li>Submitting legally contested material</li>
+//                     <li>Creating fake or misleading reviews</li>
+//                   </ul>
+//                 </div>
+
+//                 <div>
+//                   <h4 className="font-medium mb-2">Transaction Integrity</h4>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>No off-platform transaction solicitation</li>
+//                     <li>No interference with active transactions</li>
+//                     <li>No unauthorized payment collection</li>
+//                   </ul>
+//                 </div>
+//               </div>
+//             </HighlightBox>
+
+//             {/* User Responsibilities */}
+//             <HighlightBox title="6.9-6.11 User Responsibilities" color="green">
+//               <div className="space-y-4">
+//                 <div>
+//                   <h4 className="font-medium mb-2">Interaction Guidelines</h4>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>Protect personal and financial information</li>
+//                     <li>Exercise caution in user communications</li>
+//                     <li>Report suspicious activities immediately</li>
+//                   </ul>
+//                 </div>
+
+//                 <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
+//                   <p className="text-sm flex items-center gap-2">
+//                     <svg
+//                       className="w-4 h-4"
+//                       fill="currentColor"
+//                       viewBox="0 0 20 20"
+//                     >
+//                       <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+//                     </svg>
+//                     We reserve the right to remove content at our discretion
+//                   </p>
+//                 </div>
+
+//                 <a
+//                   href="#contact"
+//                   className="inline-flex items-center text-blue-600 dark:text-blue-400 hover:underline"
+//                 >
+//                   Report Policy Violations
+//                   <svg
+//                     className="w-4 h-4 ml-1"
+//                     fill="none"
+//                     stroke="currentColor"
+//                     viewBox="0 0 24 24"
+//                   >
+//                     <path
+//                       strokeLinecap="round"
+//                       strokeLinejoin="round"
+//                       strokeWidth={2}
+//                       d="M9 5l7 7-7 7"
+//                     />
+//                   </svg>
+//                 </a>
+//               </div>
+//             </HighlightBox>
+//           </SectionContainer>
+
+//           {/* Content Licensing Section */}
+//           <SectionContainer id="rights" title="7. Content Usage Rights">
+//             <HighlightBox title="7.1-7.3 License Grants" color="blue">
+//               <div className="grid md:grid-cols-2 gap-6">
+//                 <div>
+//                   <h4 className="font-medium mb-2">Granted Rights</h4>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>Worldwide content usage rights</li>
+//                     <li>Right to modify and distribute</li>
+//                     <li>Sub-licensing authorization</li>
+//                   </ul>
+//                 </div>
+//                 <div>
+//                   <h4 className="font-medium mb-2">Legal Protections</h4>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>Infringement litigation rights</li>
+//                     <li>Moral rights waiver</li>
+//                     <li>Content moderation authority</li>
+//                   </ul>
+//                 </div>
+//               </div>
+//             </HighlightBox>
+
+//             <HighlightBox title="7.4-7.5 Content Moderation" color="yellow">
+//               <div className="space-y-4">
+//                 <div className="flex items-start gap-3">
+//                   <svg
+//                     className="w-5 h-5 flex-shrink-0 text-yellow-600 dark:text-yellow-400"
+//                     fill="currentColor"
+//                     viewBox="0 0 20 20"
+//                   >
+//                     <path
+//                       fillRule="evenodd"
+//                       d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+//                       clipRule="evenodd"
+//                     />
+//                   </svg>
+//                   <div>
+//                     <p className="font-medium">Moderation Policy:</p>
+//                     <p>
+//                       We reserve the right to remove content that violates our
+//                       policies
+//                     </p>
+//                   </div>
+//                 </div>
+//               </div>
+//             </HighlightBox>
+//           </SectionContainer>
+
+//           {/* Platform Usage Section */}
+//           <SectionContainer id="usage" title="8. Platform Usage Guidelines">
+//             <HighlightBox title="8.1-8.5 Permitted Usage" color="green">
+//               <div className="grid md:grid-cols-2 gap-6">
+//                 <div>
+//                   <h4 className="font-medium mb-2">Allowed Actions</h4>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>Browser-based viewing</li>
+//                     <li>Limited caching/printing</li>
+//                     <li>Media streaming</li>
+//                   </ul>
+//                 </div>
+//                 <div>
+//                   <h4 className="font-medium mb-2">Restrictions</h4>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>No unauthorized downloads</li>
+//                     <li>No content modification</li>
+//                     <li>Commercial use limitations</li>
+//                   </ul>
+//                 </div>
+//               </div>
+//             </HighlightBox>
+
+//             <HighlightBox title="8.6-8.9 Prohibited Activities" color="red">
+//               <div className="space-y-6">
+//                 <div>
+//                   <h4 className="font-medium mb-2">Content Restrictions</h4>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>No republication of platform content</li>
+//                     <li>No commercial exploitation</li>
+//                     <li>No unauthorized redistribution</li>
+//                   </ul>
+//                 </div>
+
+//                 <div>
+//                   <h4 className="font-medium mb-2">Security & Conduct</h4>
+//                   <div className="grid md:grid-cols-2 gap-6">
+//                     <div>
+//                       <ul className="list-disc pl-6 space-y-2">
+//                         <li>No hacking or tampering</li>
+//                         <li>No vulnerability testing</li>
+//                         <li>No unauthorized access</li>
+//                       </ul>
+//                     </div>
+//                     <div>
+//                       <ul className="list-disc pl-6 space-y-2">
+//                         <li>No malicious software</li>
+//                         <li>No resource overloading</li>
+//                         <li>No automated scraping</li>
+//                       </ul>
+//                     </div>
+//                   </div>
+//                 </div>
+//               </div>
+//             </HighlightBox>
+
+//             <div className="mt-8 bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg">
+//               <div className="flex items-center gap-4">
+//                 <svg
+//                   className="w-8 h-8 text-blue-600 dark:text-blue-400"
+//                   fill="currentColor"
+//                   viewBox="0 0 20 20"
+//                 >
+//                   <path
+//                     fillRule="evenodd"
+//                     d="M2.94 6.412A2 2 0 002 8.108V16a2 2 0 002 2h12a2 2 0 002-2V8.108a2 2 0 00-.94-1.696l-6-3.75a2 2 0 00-2.12 0l-6 3.75zm2.615 7.423a1 1 0 10-1.11 1.664l5 3.333a1 1 0 001.11 0l5-3.333a1 1 0 00-1.11-1.664L10 16.798l-4.445-2.963z"
+//                     clipRule="evenodd"
+//                   />
+//                 </svg>
+//                 <div>
+//                   <h4 className="font-medium">System Integrity</h4>
+//                   <p className="text-sm mt-1">
+//                     We maintain the right to suspend access for maintenance or
+//                     security purposes
+//                   </p>
+//                 </div>
+//               </div>
+//             </div>
+//           </SectionContainer>
+
+//           {/* Intellectual Property Section */}
+//           <SectionContainer
+//             id="copyright"
+//             title="9. Intellectual Property Rights"
+//           >
+//             {/* Ownership Section */}
+//             <HighlightBox title="9.1 Ownership Declaration" color="blue">
+//               <div className="grid md:grid-cols-2 gap-6">
+//                 <div>
+//                   <h4 className="font-medium mb-2">Platform Rights</h4>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>Full copyright ownership of website content</li>
+//                     <li>Exclusive control of intellectual property</li>
+//                   </ul>
+//                 </div>
+//                 <div>
+//                   <h4 className="font-medium mb-2">Reserved Rights</h4>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>All IP rights strictly maintained</li>
+//                     <li>No implicit usage licenses granted</li>
+//                   </ul>
+//                 </div>
+//               </div>
+//             </HighlightBox>
+
+//             {/* Trademark Section */}
+//             <HighlightBox title="9.2-9.3 Trademark Policy" color="purple">
+//               <div className="grid md:grid-cols-2 gap-6">
+//                 <div>
+//                   <div className="flex items-center gap-3 mb-3">
+//                     <svg
+//                       className="w-6 h-6 text-purple-600"
+//                       fill="none"
+//                       stroke="currentColor"
+//                       viewBox="0 0 24 24"
+//                     >
+//                       <path
+//                         strokeLinecap="round"
+//                         strokeLinejoin="round"
+//                         strokeWidth={2}
+//                         d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+//                       />
+//                     </svg>
+//                     <h4 className="font-medium">Udua Trademarks</h4>
+//                   </div>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>Logo and brand marks protected</li>
+//                     <li>Unauthorized use prohibited</li>
+//                   </ul>
+//                 </div>
+//                 <div>
+//                   <div className="flex items-center gap-3 mb-3">
+//                     <svg
+//                       className="w-6 h-6 text-gray-600"
+//                       fill="none"
+//                       stroke="currentColor"
+//                       viewBox="0 0 24 24"
+//                     >
+//                       <path
+//                         strokeLinecap="round"
+//                         strokeLinejoin="round"
+//                         strokeWidth={2}
+//                         d="M13 10V3L4 14h7v7l9-11h-7z"
+//                       />
+//                     </svg>
+//                     <h4 className="font-medium">Third-Party Marks</h4>
+//                   </div>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>Respect for external IP rights</li>
+//                     <li>No endorsement implied</li>
+//                   </ul>
+//                 </div>
+//               </div>
+//             </HighlightBox>
+//           </SectionContainer>
+
+//           {/* Data Privacy Section */}
+//           <SectionContainer id="privacy" title="10. Data Protection">
+//             <HighlightBox title="10.1-10.3 Data Handling" color="green">
+//               <div className="grid md:grid-cols-2 gap-8">
+//                 <div>
+//                   <div className="flex items-center gap-3 mb-3">
+//                     <svg
+//                       className="w-6 h-6 text-green-600"
+//                       fill="currentColor"
+//                       viewBox="0 0 20 20"
+//                     >
+//                       <path
+//                         fillRule="evenodd"
+//                         d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+//                         clipRule="evenodd"
+//                       />
+//                     </svg>
+//                     <h4 className="font-medium">Data Processing</h4>
+//                   </div>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>Compliance with privacy policy</li>
+//                     <li>Secure data handling practices</li>
+//                   </ul>
+//                 </div>
+//                 <div>
+//                   <div className="flex items-center gap-3 mb-3">
+//                     <svg
+//                       className="w-6 h-6 text-red-600"
+//                       fill="currentColor"
+//                       viewBox="0 0 20 20"
+//                     >
+//                       <path
+//                         fillRule="evenodd"
+//                         d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+//                         clipRule="evenodd"
+//                       />
+//                     </svg>
+//                     <h4 className="font-medium">Liability Notice</h4>
+//                   </div>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>Seller responsibility for data misuse</li>
+//                     <li>No platform liability for third-party actions</li>
+//                   </ul>
+//                 </div>
+//               </div>
+//             </HighlightBox>
+//           </SectionContainer>
+
+//           {/* Compliance Section */}
+//           <SectionContainer id="audit" title="11. Compliance & Audits">
+//             <HighlightBox title="11.1-11.2 Verification Rights" color="yellow">
+//               <div className="space-y-6">
+//                 <div className="flex items-start gap-4">
+//                   <svg
+//                     className="w-6 h-6 text-yellow-600 flex-shrink-0"
+//                     fill="currentColor"
+//                     viewBox="0 0 20 20"
+//                   >
+//                     <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zm0 16a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+//                   </svg>
+//                   <div>
+//                     <h4 className="font-medium mb-2">Anti-Fraud Measures</h4>
+//                     <p>We maintain rigorous compliance programs including:</p>
+//                     <ul className="list-disc pl-6 mt-2 space-y-2">
+//                       <li>Regular user verification checks</li>
+//                       <li>AML/KYC procedures</li>
+//                       <li>Transaction monitoring systems</li>
+//                     </ul>
+//                   </div>
+//                 </div>
+
+//                 <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+//                   <h4 className="font-medium mb-3">User Obligations</h4>
+//                   <div className="grid md:grid-cols-2 gap-6">
+//                     <div>
+//                       <p className="text-sm font-medium mb-2">Must Provide:</p>
+//                       <ul className="list-disc pl-6 space-y-2">
+//                         <li>Business documentation</li>
+//                         <li>Operational access</li>
+//                         <li>Compliance evidence</li>
+//                       </ul>
+//                     </div>
+//                     <div>
+//                       <p className="text-sm font-medium mb-2">Legal Basis:</p>
+//                       <ul className="list-disc pl-6 space-y-2">
+//                         <li>Court orders</li>
+//                         <li>Regulatory requirements</li>
+//                         <li>Contractual verification</li>
+//                       </ul>
+//                     </div>
+//                   </div>
+//                 </div>
+//               </div>
+//             </HighlightBox>
+//           </SectionContainer>
+
+//           {/* Marketplace Role Section */}
+//           <SectionContainer
+//             id="marketplace"
+//             title="12. Platform Responsibilities"
+//           >
+//             <HighlightBox title="12.1 Marketplace Structure" color="blue">
+//               <div className="grid md:grid-cols-2 gap-6">
+//                 <div>
+//                   <h4 className="font-medium mb-2">Platform Function</h4>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>Facilitates buyer-seller transactions</li>
+//                     <li>Third-party seller marketplace</li>
+//                     <li>Dispute resolution protocols</li>
+//                   </ul>
+//                 </div>
+//                 <div>
+//                   <h4 className="font-medium mb-2">Liability Framework</h4>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>Seller responsibility for products</li>
+//                     <li>Direct recourse requirements</li>
+//                     <li>Transaction-specific accountability</li>
+//                   </ul>
+//                 </div>
+//               </div>
+//             </HighlightBox>
+
+//             <HighlightBox title="12.2-12.3 Content Assurance" color="green">
+//               <div className="space-y-6">
+//                 <div className="flex items-start gap-4">
+//                   <svg
+//                     className="w-6 h-6 text-green-600 flex-shrink-0"
+//                     fill="currentColor"
+//                     viewBox="0 0 20 20"
+//                   >
+//                     <path
+//                       fillRule="evenodd"
+//                       d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+//                       clipRule="evenodd"
+//                     />
+//                   </svg>
+//                   <div>
+//                     <h4 className="font-medium mb-2">Seller Obligations</h4>
+//                     <ul className="list-disc pl-6 space-y-2">
+//                       <li>Accurate product representations</li>
+//                       <li>Timely information updates</li>
+//                       <li>Compliance with listing standards</li>
+//                     </ul>
+//                   </div>
+//                 </div>
+
+//                 <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg">
+//                   <p className="flex items-center gap-2 text-sm">
+//                     <svg
+//                       className="w-5 h-5"
+//                       fill="currentColor"
+//                       viewBox="0 0 20 20"
+//                     >
+//                       <path
+//                         fillRule="evenodd"
+//                         d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+//                         clipRule="evenodd"
+//                       />
+//                     </svg>
+//                     Service availability subject to force majeure events
+//                   </p>
+//                 </div>
+//               </div>
+//             </HighlightBox>
+
+//             <HighlightBox title="12.4-12.6 Service Continuity" color="purple">
+//               <div className="grid md:grid-cols-2 gap-6">
+//                 <div>
+//                   <h4 className="font-medium mb-2">Modification Rights</h4>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>Unilateral service changes</li>
+//                     <li>No compensation guarantees</li>
+//                     <li>15-day notice for non-emergency changes</li>
+//                   </ul>
+//                 </div>
+//                 <div>
+//                   <h4 className="font-medium mb-2">Performance Disclaimer</h4>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>No commercial outcome guarantees</li>
+//                     <li>Best-effort service provision</li>
+//                     <li>Exclusion of implied warranties</li>
+//                   </ul>
+//                 </div>
+//               </div>
+//             </HighlightBox>
+//           </SectionContainer>
+
+//           {/* Liability Section */}
+//           <SectionContainer id="liability" title="13. Liability Framework">
+//             <HighlightBox title="13.1-13.2 Legal Boundaries" color="red">
+//               <div className="grid md:grid-cols-2 gap-6">
+//                 <div>
+//                   <h4 className="font-medium mb-2">
+//                     Jurisdictional Compliance
+//                   </h4>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>Adherence to applicable laws</li>
+//                     <li>Non-exclusion of statutory rights</li>
+//                     <li>Local legal requirements</li>
+//                   </ul>
+//                 </div>
+//                 <div>
+//                   <h4 className="font-medium mb-2">Scope of Limitations</h4>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>Contractual liabilities</li>
+//                     <li>Tort liabilities</li>
+//                     <li>Regulatory compliance</li>
+//                   </ul>
+//                 </div>
+//               </div>
+//             </HighlightBox>
+
+//             <HighlightBox title="13.3-13.5 Financial Caps" color="yellow">
+//               <div className="space-y-6">
+//                 <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+//                   <h4 className="font-medium mb-4">Liability Structure</h4>
+//                   <div className="grid md:grid-cols-2 gap-6">
+//                     <div>
+//                       <p className="text-sm font-medium mb-2">Free Services:</p>
+//                       <p className="text-gray-600 dark:text-gray-400">
+//                         No liability for complimentary offerings
+//                       </p>
+//                     </div>
+//                     <div>
+//                       <p className="text-sm font-medium mb-2">Paid Services:</p>
+//                       <p className="text-gray-600 dark:text-gray-400">
+//                         Limited to transaction value
+//                       </p>
+//                     </div>
+//                   </div>
+//                 </div>
+
+//                 <div>
+//                   <h4 className="font-medium mb-2">Excluded Damages</h4>
+//                   <div className="grid md:grid-cols-2 gap-6">
+//                     <div>
+//                       <ul className="list-disc pl-6 space-y-2">
+//                         <li>Business interruption losses</li>
+//                         <li>Data corruption</li>
+//                         <li>Reputational damage</li>
+//                       </ul>
+//                     </div>
+//                     <div>
+//                       <ul className="list-disc pl-6 space-y-2">
+//                         <li>Consequential damages</li>
+//                         <li>Lost opportunities</li>
+//                         <li>Force majeure impacts</li>
+//                       </ul>
+//                     </div>
+//                   </div>
+//                 </div>
+//               </div>
+//             </HighlightBox>
+
+//             <HighlightBox title="13.6 Legal Entity Protection" color="blue">
+//               <div className="flex items-start gap-4">
+//                 <svg
+//                   className="w-6 h-6 text-blue-600 flex-shrink-0"
+//                   fill="currentColor"
+//                   viewBox="0 0 20 20"
+//                 >
+//                   <path
+//                     fillRule="evenodd"
+//                     d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"
+//                     clipRule="evenodd"
+//                   />
+//                 </svg>
+//                 <div>
+//                   <p className="text-sm text-gray-600 dark:text-gray-400">
+//                     Legal claims must be directed to the corporate entity.
+//                     Individual employees and officers are protected from
+//                     personal liability under this agreement.
+//                   </p>
+//                 </div>
+//               </div>
+//             </HighlightBox>
+//           </SectionContainer>
+
+//           {/* Indemnification Section */}
+//           <SectionContainer
+//             id="indemnification"
+//             title="14. Financial Responsibilities"
+//           >
+//             <HighlightBox title="14.1 Indemnity Obligations" color="red">
+//               <div className="grid md:grid-cols-2 gap-6">
+//                 <div>
+//                   <h4 className="font-medium mb-2">
+//                     Legal & Financial Coverage
+//                   </h4>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>Legal fee reimbursement</li>
+//                     <li>Third-party settlement costs</li>
+//                     <li>Operational damages recovery</li>
+//                   </ul>
+//                 </div>
+//                 <div>
+//                   <h4 className="font-medium mb-2">Tax Compliance</h4>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>VAT obligations</li>
+//                     <li>Withholding tax liabilities</li>
+//                     <li>Cross-border tax compliance</li>
+//                   </ul>
+//                 </div>
+//               </div>
+//             </HighlightBox>
+//           </SectionContainer>
+
+//           {/* Breach Consequences Section */}
+//           <SectionContainer id="breaches" title="15. Policy Enforcement">
+//             <HighlightBox title="15.1-15.3 Account Management" color="yellow">
+//               <div className="grid md:grid-cols-2 gap-8">
+//                 <div>
+//                   <div className="flex items-center gap-3 mb-3">
+//                     <svg
+//                       className="w-6 h-6 text-yellow-600"
+//                       fill="none"
+//                       stroke="currentColor"
+//                       viewBox="0 0 24 24"
+//                     >
+//                       <path
+//                         strokeLinecap="round"
+//                         strokeLinejoin="round"
+//                         strokeWidth={2}
+//                         d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+//                       />
+//                     </svg>
+//                     <h4 className="font-medium">Account Restrictions</h4>
+//                   </div>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>Temporary access suspension</li>
+//                     <li>Permanent platform ban</li>
+//                     <li>IP-based restrictions</li>
+//                   </ul>
+//                 </div>
+//                 <div>
+//                   <div className="flex items-center gap-3 mb-3">
+//                     <svg
+//                       className="w-6 h-6 text-red-600"
+//                       fill="none"
+//                       stroke="currentColor"
+//                       viewBox="0 0 24 24"
+//                     >
+//                       <path
+//                         strokeLinecap="round"
+//                         strokeLinejoin="round"
+//                         strokeWidth={2}
+//                         d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+//                       />
+//                     </svg>
+//                     <h4 className="font-medium">Legal Recourse</h4>
+//                   </div>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>Civil litigation</li>
+//                     <li>Contract breach claims</li>
+//                     <li>ISP collaboration</li>
+//                   </ul>
+//                 </div>
+//               </div>
+//             </HighlightBox>
+//           </SectionContainer>
+
+//           {/* Agreement Section */}
+//           <SectionContainer
+//             id="agreement"
+//             title="16. Contractual Understanding"
+//           >
+//             <HighlightBox title="16.1 Comprehensive Agreement" color="green">
+//               <div className="flex items-start gap-4">
+//                 <svg
+//                   className="w-6 h-6 text-green-600 flex-shrink-0"
+//                   fill="currentColor"
+//                   viewBox="0 0 20 20"
+//                 >
+//                   <path
+//                     fillRule="evenodd"
+//                     d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
+//                     clipRule="evenodd"
+//                   />
+//                 </svg>
+//                 <div>
+//                   <p className="text-gray-700 dark:text-gray-300">
+//                     This agreement supersedes all prior understandings and
+//                     constitutes the complete terms governing platform use. All
+//                     policies and codes are incorporated by reference.
+//                   </p>
+//                 </div>
+//               </div>
+//             </HighlightBox>
+//           </SectionContainer>
+
+//           {/* Terms Modification Section */}
+//           <SectionContainer id="changes" title="17. Policy Updates">
+//             <HighlightBox title="17.1 Amendment Process" color="blue">
+//               <div className="flex items-start gap-4">
+//                 <svg
+//                   className="w-6 h-6 text-blue-600 flex-shrink-0"
+//                   fill="currentColor"
+//                   viewBox="0 0 20 20"
+//                 >
+//                   <path
+//                     fillRule="evenodd"
+//                     d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+//                     clipRule="evenodd"
+//                   />
+//                 </svg>
+//                 <div>
+//                   <div className="mb-3">
+//                     <h4 className="font-medium">Modification Terms</h4>
+//                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+//                       Updated terms become effective immediately upon
+//                       publication
+//                     </p>
+//                   </div>
+//                   <ul className="list-disc pl-6 space-y-2">
+//                     <li>Continuous use implies acceptance</li>
+//                     <li>Version tracking through revision dates</li>
+//                     <li>No individual notification requirement</li>
+//                   </ul>
+//                 </div>
+//               </div>
+//             </HighlightBox>
+//           </SectionContainer>
+
+//           {/* Contact Section */}
+//           <SectionContainer id="contact" title="18. Contact Us">
+//             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+//               <p className="text-gray-600 dark:text-gray-400">
+//                 For any inquiries regarding these Terms and Conditions:
+//               </p>
+//               <div className="mt-4 space-y-2">
+//                 <p className="font-medium">Email:</p>
+//                 <a
+//                   href={`mailto:contact@${siteConfig.name.toLowerCase()}.com`}
+//                   className="text-blue-600 dark:text-blue-400 hover:underline"
+//                 >
+//                   contact@{siteConfig.name.toLowerCase()}.com
+//                 </a>
+//               </div>
+//             </div>
+//           </SectionContainer>
+//         </main>
+//       </div>
+
+//       {/* Back to Top Floating Button */}
+//       <div className="fixed bottom-8 right-8">
+//         <a
+//           href="#top"
+//           className="inline-flex items-center justify-center p-3 rounded-full bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-shadow"
+//           aria-label="Back to top"
+//         >
+//           <svg
+//             className="w-6 h-6 text-gray-600 dark:text-gray-400"
+//             fill="none"
+//             stroke="currentColor"
+//             viewBox="0 0 24 24"
+//           >
+//             <path
+//               strokeLinecap="round"
+//               strokeLinejoin="round"
+//               strokeWidth={2}
+//               d="M5 10l7-7m0 0l7 7m-7-7v18"
+//             />
+//           </svg>
+//         </a>
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default TermsPage;
+
 import { siteConfig } from "@/config/site";
 
 function page() {
@@ -221,13 +1381,13 @@ function page() {
         </ul>
 
         {/* <h4>1.1 Payment on Delivery</h4>
-        <p>
-          You may make payments for your purchases from the Udua marketplace
-          once the goods are delivered to you. You can provide the exact amount
-          of the purchase price to the delivery agent in cash or by paying the
-          exact amount via mobile money to the Udua payment details that will be
-          provided by the delivery agent.
-        </p> */}
+<p>
+  You may make payments for your purchases from the Udua marketplace
+  once the goods are delivered to you. You can provide the exact amount
+  of the purchase price to the delivery agent in cash or by paying the
+  exact amount via mobile money to the Udua payment details that will be
+  provided by the delivery agent.
+</p> */}
 
         <h4>5.1.1 Debit & Credit Cards</h4>
         <p>
@@ -246,20 +1406,20 @@ function page() {
         </p>
 
         {/* <h4>1.4 Mobile Money</h4>
-        <p>
-          You may make payments for your purchases via mobile money transfer.
-          You will be required to input your mobile money account details during
-          the checkout process. For more details on how your information is
-          processed, please refer to Udua’s privacy policy.
-        </p> */}
+<p>
+  You may make payments for your purchases via mobile money transfer.
+  You will be required to input your mobile money account details during
+  the checkout process. For more details on how your information is
+  processed, please refer to Udua’s privacy policy.
+</p> */}
 
         {/* <h4>2. Adding or Changing Payment Methods</h4>
-        <p>
-          You can add a new payment method or change your existing payment
-          method at any time by logging into your Udua account and updating your
-          profile. You may also add or remove payment methods that are linked to
-          your account through UduaPay.
-        </p> */}
+<p>
+  You can add a new payment method or change your existing payment
+  method at any time by logging into your Udua account and updating your
+  profile. You may also add or remove payment methods that are linked to
+  your account through UduaPay.
+</p> */}
 
         <h2>6. Rules About Your Content</h2>
 
@@ -934,7 +2094,7 @@ function page() {
         <p><span className='font-semibold text-lg'>10. Changes to Terms:</span> - We may update these Terms and Conditions from time to time. The <strong>Effective Date</strong> will indicate the most recent revisions. Continued use of our services after changes constitutes acceptance of the modified terms.</p>
 
         <p><span className='font-semibold text-lg'>11. Contact Us:</span> - If you have any questions or concerns about these Terms and Conditions, please contact us at contact{siteConfig.name}@gmail.com. </p>
-        
+
         <p>Thank you for choosing <span className=' font-semibold font-mono'>{siteConfig.name}</span>. We appreciate your adherence to these terms as they contribute to a safe and enjoyable shopping experience for all users.</p> */}
       </div>
     </div>

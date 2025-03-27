@@ -26,7 +26,7 @@ function AdminSignIn() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/"; // Default to '/'
+  const callbackUrl = searchParams.get("callbackUrl") || "/admin/dashboard"; // Default to "/admin/dashboard"
   const { toast } = useToast();
   // console.log("callbackUrl", callbackUrl);
   const form = useForm<z.infer<typeof adminSignInInfoValidation>>({
@@ -65,7 +65,7 @@ function AdminSignIn() {
           description: `You have Successfully signed In.`,
         });
         setIsLoading(false);
-        console.log("callbackUrl", callbackUrl);
+        // console.log("callbackUrl", callbackUrl);
         router.push(callbackUrl);
       } else {
         toast({

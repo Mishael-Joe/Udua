@@ -22,14 +22,18 @@ export async function POST(request: NextRequest) {
     // Fetch the settlement for the store and order
     const pendingSettlements = await Settlement.find({
       storeID: storeID.toString(),
-      payoutStatus: { $in: ["requested", "processing"] },
-    }).select("-updatedAt -storeID").lean();
+      payoutStatus: { $in: ["Requested", "Processing"] },
+    })
+      .select("-updatedAt -storeID")
+      .lean();
 
     // Fetch the settlement for the store and order
     const successfulSettlements = await Settlement.find({
       storeID: storeID.toString(),
-      payoutStatus: { $in: ["paid", "failed"] },
-    }).select("-updatedAt -storeID").lean();
+      payoutStatus: { $in: ["Paid", "Failed"] },
+    })
+      .select("-updatedAt -storeID")
+      .lean();
 
     const pendingSettlementAmount = pendingSettlements.reduce(
       (total, settlement) => total + settlement.settlementAmount,
@@ -37,10 +41,12 @@ export async function POST(request: NextRequest) {
     );
 
     const data = {
-        pendingSettlements,
-        pendingSettlementAmount,
-        successfulSettlements
-    }
+      pendingSettlements,
+      pendingSettlementAmount,
+      successfulSettlements,
+    };
+
+    // console.log(`data`, data);
 
     // Return the settlement details
     return NextResponse.json(

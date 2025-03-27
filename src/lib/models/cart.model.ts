@@ -1,7 +1,10 @@
 import mongoose, { Schema, Document } from "mongoose";
-
+/*
+ *  All monetary values are stored in kobo so as to avoid Floating-Point Errors in JavaScript.
+ */
 interface CartItem {
   product: mongoose.Schema.Types.ObjectId;
+  storeID: mongoose.Schema.Types.ObjectId; // New field to track store ID
   quantity: number;
   productType: "physicalproducts" | "digitalproducts";
   selectedSize?: {
@@ -23,6 +26,11 @@ const cartItemSchema = new Schema<CartItem>({
     refPath: "items.productType",
     required: true,
   },
+  storeID: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Store",
+    required: true, // Ensures we know which store this product belongs to
+  },
   quantity: { type: Number, required: true },
   productType: {
     type: String,
@@ -36,11 +44,14 @@ const cartItemSchema = new Schema<CartItem>({
   }, // Optional field for size-based products
 });
 
-const cartSchema = new Schema<Cart>({
-  user: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  items: [cartItemSchema],
-  updatedAt: { type: Date, default: Date.now },
-});
+const cartSchema = new Schema<Cart>(
+  {
+    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    items: [cartItemSchema],
+    updatedAt: { type: Date, default: Date.now },
+  },
+  { timestamps: true } // Adds createdAt and updatedAt automatically
+);
 
 const Cart = mongoose.models.Cart || mongoose.model<Cart>("Cart", cartSchema);
 
