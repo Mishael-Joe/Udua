@@ -4,11 +4,7 @@ import axios from "axios";
 import { type ChangeEvent, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  addCommasToNumber,
-  formatCurrency,
-  getStatusClassName,
-} from "@/lib/utils";
+import { formatNaira, getStatusClassName } from "@/lib/utils";
 
 import {
   Breadcrumb,
@@ -31,7 +27,7 @@ import { Loader } from "lucide-react";
 import type { DigitalProduct, Order, Product, Settlement } from "@/types";
 import { Button } from "@/components/ui/button";
 import { PayoutDialog } from "./payout-dialog-component";
-import { calculateCommission } from "@/constant/constant";
+import { calculateCommission } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
 /**
@@ -172,13 +168,6 @@ export default function OrderDetails({
       return;
     }
 
-    // const body = {
-    //   mainOrderID:
-    //     orderDetails !== undefined ? orderDetails._id : params.orderID,
-    //   subOrderID: orderDetails !== undefined && orderDetails.subOrders[0]._id, // order id for this particular store. Each store in the substore arr has a unique order id
-    //   updatedDeliveryStatus: deliveryStatus.status,
-    // };
-
     try {
       const response = await axios.post(
         "/api/store/update-order-delivery-status",
@@ -207,7 +196,7 @@ export default function OrderDetails({
       }
     } catch (error: any) {
       console.error(
-        "`Failed to update this product order status",
+        "Failed to update this product order status",
         error.message
       );
       toast({
@@ -312,8 +301,8 @@ export default function OrderDetails({
               </p>
               <p>Order Status: {orderDetails.status}</p>
               <p>
-                Total Amount: &#8358;
-                {addCommasToNumber(orderDetails.totalAmount)}
+                Total Amount:
+                {formatNaira(orderDetails.totalAmount)}
               </p>
             </div>
 
@@ -335,8 +324,8 @@ export default function OrderDetails({
               {/* Payout information - only shown for delivered orders */}
               {orderDetails.subOrders[0].deliveryStatus === "Delivered" && (
                 <p>
-                  Payout Amount: &#8358;{" "}
-                  {addCommasToNumber(totalAvailablePayout)}
+                  Payout Amount:
+                  {formatNaira(totalAvailablePayout)}
                 </p>
               )}
             </div>
@@ -354,9 +343,7 @@ export default function OrderDetails({
               </p>
               <p className="text-sm">
                 Shipping Price:{" "}
-                {formatCurrency(
-                  orderDetails.subOrders[0].shippingMethod?.price!
-                )}
+                {formatNaira(orderDetails.subOrders[0].shippingMethod?.price!)}
               </p>
               <p className="text-sm">
                 Estimated Delivery Days:{" "}
@@ -505,7 +492,7 @@ export default function OrderDetails({
                       </p>
                       {product.price && (
                         <p className="mt-2 font-medium">
-                          At Price: &#8358; {addCommasToNumber(product.price)}{" "}
+                          At Price: {formatNaira(product.price)}{" "}
                         </p>
                       )}
                     </div>
@@ -554,7 +541,7 @@ export default function OrderDetails({
                       </p>
                       {product.price && (
                         <p className="mt-2 font-medium">
-                          At Price: &#8358; {addCommasToNumber(product.price)}{" "}
+                          At Price: {formatNaira(product.price)}{" "}
                         </p>
                       )}
                     </div>

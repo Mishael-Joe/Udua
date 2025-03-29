@@ -13,12 +13,15 @@ export type User = {
   stateOfResidence: string;
   postalCode: string;
   isVerified: boolean;
-  isAdmin: boolean;
   userProducts: {}[];
   forgotpasswordToken: string;
   forgotpasswordTokenExpiry: Date;
   varifyToken: string;
   varifyTokenExpiry: Date;
+  stores: {
+    _id: string;
+    name: string;
+  }[];
 };
 
 export type Product = {
@@ -26,13 +29,12 @@ export type Product = {
   productType: "physicalproducts" | "digitalproducts" | string;
   name: string;
   price?: number; // Optional, in case the product has sizes
-  // sizes?: string[];
   sizes?: {
     size: string; // E.g., "S", "M", "L" (Optional, in case the product doesn't have sizes)
     price: number; // Size-specific price (Optional, for size-based products)
     quantity: number; // Stock for that size
   }[];
-  productQuantity: string | number;
+  productQuantity: number;
   images: string[];
   description: string;
   specifications: string;
@@ -116,11 +118,13 @@ export type CombinedProduct = {
 };
 
 export type Store = {
+  _id: string;
   name: string;
   password: string;
   storeOwner: string;
   storeEmail: string;
   uniqueId: string;
+  followers: string[];
   description: string;
   createdAt: Date;
   products: CombinedProduct[];

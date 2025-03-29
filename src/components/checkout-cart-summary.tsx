@@ -5,7 +5,7 @@ const { v4: uuidv4 } = require("uuid");
 
 import { useStateContext } from "@/context/stateContext";
 
-import { addCommasToNumber } from "@/lib/utils";
+import { currencyOperations, formatNaira } from "@/lib/utils";
 import { User } from "@/types";
 import { Loader2 } from "lucide-react";
 import { useState, FormEvent } from "react";
@@ -110,7 +110,7 @@ export function CheckoutSummary({ userData }: userData) {
             <span className="text-sm">Udua Swift Delivery</span>
           </label>
           <p className="text-sm mt-1">
-            Fast premium shipping: 1-2 business days at &#8358;3,000.
+            Fast premium shipping: 1-2 business days at ,000.
           </p>
 
           <label className="flex items-center space-x-2 mt-4">
@@ -125,7 +125,7 @@ export function CheckoutSummary({ userData }: userData) {
             <span className="text-sm">Standard Delivery</span>
           </label>
           <p className="text-sm mt-1">
-            Regular shipping: 3-5 business days at &#8358;1,000.
+            Regular shipping: 3-5 business days at ,000.
           </p>
         </div>
       </div>
@@ -134,21 +134,23 @@ export function CheckoutSummary({ userData }: userData) {
         <div className="flex items-center justify-between">
           <dt className="text-sm font-semibold">Subtotal</dt>
           <dd className="text-sm font-medium">
-            &#8358; {addCommasToNumber(Number(totalPrice))}
+            {formatNaira(Number(totalPrice))}
           </dd>
         </div>
 
         <div className="flex items-center justify-between">
           <dt className="text-sm font-semibold">Shipping Estimate</dt>
           <dd className="text-sm font-medium">
-            &#8358; {addCommasToNumber(Number(shippingFee))}
+            {formatNaira(Number(shippingFee))}
           </dd>
         </div>
 
         <div className="flex items-center justify-between">
           <dt className="text-sm font-semibold">Order Total</dt>
           <dd className="text-sm font-medium">
-            &#8358; {addCommasToNumber(Number(totalPrice) + shippingFee)}
+            {formatNaira(
+              currencyOperations.add(Number(totalPrice), shippingFee)
+            )}
           </dd>
         </div>
       </dl>

@@ -4,6 +4,7 @@ import axios from "axios";
 import React, { useRef, useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Loader, Star, UserCircle2Icon } from "lucide-react";
+import { Button } from "./ui/button";
 
 type ProductReviews = {
   _id: string;
@@ -39,7 +40,7 @@ const ProductReviewComponent = ({
     total4Star: 0,
     total5Star: 0,
   });
-  console.log("product", product);
+  // console.log("product", product);
 
   // Intersection Observer and data fetching logic remains the same...
 
@@ -205,17 +206,18 @@ const ProductReviewComponent = ({
 
             <div className="mt-6 flex justify-center gap-2">
               {Array.from({ length: totalPages }, (_, index) => (
-                <button
+                <Button
                   key={index + 1}
                   onClick={() => setCurrentPage(index + 1)}
                   className={`px-3 py-1 rounded-md transition-colors ${
                     currentPage === index + 1
-                      ? "bg-black text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      ? "hover:bg-udua-orange-primary bg-orange-400 text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-udua-orange-primary"
                   }`}
+                  size={`icon`}
                 >
                   {index + 1}
-                </button>
+                </Button>
               ))}
             </div>
           </>

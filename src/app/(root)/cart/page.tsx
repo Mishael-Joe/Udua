@@ -7,7 +7,7 @@ import axios from "axios";
 import { CombinedProduct } from "@/types";
 import Link from "next/link";
 import Image from "next/image";
-import { addCommasToNumber } from "@/lib/utils";
+import { formatNaira } from "@/lib/utils";
 import { shimmer, toBase64 } from "@/lib/image";
 import { RecentProductsSection } from "@/components/recently-viewed-products";
 
@@ -46,9 +46,7 @@ const ProductCard = ({ product }: { product: CombinedProduct }) => {
 
       <h3 className="mt-1 font-medium line-clamp-1 w-40 md:w-52">{title}</h3>
 
-      {price && (
-        <p className="mt-1 font-medium">&#8358; {addCommasToNumber(price)}</p>
-      )}
+      {price && <p className="mt-1 font-medium">{formatNaira(price)}</p>}
     </Link>
   );
 };
@@ -95,13 +93,18 @@ export default function Page() {
         </h1>
 
         <form className="mt-6 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
-          <section aria-labelledby="cart-heading" className="lg:col-span-7">
+          <section
+            aria-labelledby="cart-heading"
+            className="lg:col-span-7 lg:sticky lg:top-16"
+          >
             <h2 id="cart-heading" className="sr-only">
               Items in your shopping cart
             </h2>
             <CartItems />
           </section>
 
+          {/* <section className=" sticky top-16 w-full">
+          </section> */}
           <CartSummary />
         </form>
 

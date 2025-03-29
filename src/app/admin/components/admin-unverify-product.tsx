@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 
 // Utility Imports
 import { Product } from "@/types";
-import { addCommasToNumber } from "@/lib/utils";
+import { formatNaira } from "@/lib/utils";
 import { withAdminAuth } from "./auth/with-admin-auth";
 import { PERMISSIONS } from "@/lib/rbac/permissions";
 
@@ -39,7 +39,7 @@ function UnVerifyProduct() {
     name: "",
     price: 0,
     sizes: [],
-    productQuantity: "",
+    productQuantity: 0,
     images: [],
     description: "",
     specifications: "",
@@ -296,7 +296,7 @@ function UnVerifyProduct() {
                             className="grid grid-cols-3 gap-4 py-2 border-t"
                           >
                             <span>{size.size}</span>
-                            <span>₦{addCommasToNumber(size.price)}</span>
+                            <span>{formatNaira(size.price)}</span>
                             <span>{size.quantity}</span>
                           </div>
                         ))}
@@ -318,7 +318,7 @@ function UnVerifyProduct() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="pt-4">
-                      Product price: ₦{addCommasToNumber(product.price)}
+                      Product price: {formatNaira(product.price)}
                     </CardContent>
                   </Card>
                 )}

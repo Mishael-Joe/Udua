@@ -5,6 +5,7 @@ import Cart from "@/lib/models/cart.model";
 import Product from "@/lib/models/product.model";
 import EBook from "@/lib/models/digital-product.model";
 import { getUserDataFromToken } from "@/lib/helpers/getUserDataFromToken";
+import { currencyOperations } from "@/lib/utils";
 
 /**
  * POST: Fetch the user's cart and calculate the total quantity and price.
@@ -56,7 +57,11 @@ export async function POST(request: NextRequest) {
         itemPrice = product.price;
       }
 
-      totalPrice += itemPrice * item.quantity;
+      // currencyOperations
+      totalPrice = currencyOperations.add(
+        totalPrice,
+        currencyOperations.multiply(itemPrice, item.quantity)
+      );
       totalQuantity += item.quantity;
     }
 

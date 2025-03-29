@@ -4,8 +4,12 @@ import Store from "@/lib/models/store.model";
 import Order from "@/lib/models/order.model";
 import EBook from "@/lib/models/digital-product.model";
 import Cart from "@/lib/models/cart.model";
-import { calculateCommission } from "@/constant/constant";
 import { sendEmail } from "./email.service";
+import {
+  calculateEstimatedDeliveryDays,
+  currencyOperations,
+  calculateCommission,
+} from "../utils";
 
 // Type definitions
 interface ProductData {
@@ -160,7 +164,7 @@ export async function processOrder(orderData: OrderData): Promise<string> {
             physicalProducts: item.product._id,
             store: storeID,
             quantity,
-            price: price * quantity,
+            price: currencyOperations.multiply(price, quantity),
             selectedSize: item.selectedSize
               ? {
                   size: item.selectedSize.size,
@@ -172,7 +176,7 @@ export async function processOrder(orderData: OrderData): Promise<string> {
           // Update store balance and prepare notification
           await updateStoreBalance(
             storeID,
-            price * quantity,
+            currencyOperations.multiply(price, quantity),
             item.product.name || "Unknown Product",
             quantity,
             session,
@@ -193,7 +197,7 @@ export async function processOrder(orderData: OrderData): Promise<string> {
             digitalProducts: item.product._id,
             store: storeID,
             quantity,
-            price: price * quantity,
+            price: currencyOperations.multiply(price, quantity),
           });
 
           // Prepare download link for digital product
@@ -209,7 +213,7 @@ export async function processOrder(orderData: OrderData): Promise<string> {
           // Update store balance and prepare notification
           await updateStoreBalance(
             storeID,
-            price * quantity,
+            currencyOperations.multiply(price, quantity),
             digitalProduct.title,
             quantity,
             session,
@@ -242,11 +246,11 @@ export async function processOrder(orderData: OrderData): Promise<string> {
 
       // Calculate total amount for this store's products
       const productsTotal = products.reduce(
-        (sum, product) => sum + product.price,
+        (sum, product) => currencyOperations.add(sum, product.price),
         0
       );
       const shippingCost = shippingMethod ? Number(shippingMethod.price) : 0;
-      const totalAmount = productsTotal + shippingCost;
+      const totalAmount = currencyOperations.add(productsTotal, shippingCost);
 
       // Create sub-order object with shipping method as an object
       return {
@@ -256,8 +260,8 @@ export async function processOrder(orderData: OrderData): Promise<string> {
         shippingMethod: {
           name: shippingMethod?.name || "Standard Shipping",
           price: Number(shippingMethod?.price || 0),
-          estimatedDeliveryDays: Number(
-            shippingMethod?.estimatedDeliveryDays || 5
+          estimatedDeliveryDays: calculateEstimatedDeliveryDays(
+            Number(shippingMethod?.estimatedDeliveryDays || 5)
           ),
           description: shippingMethod?.description || "",
         },
@@ -267,7 +271,7 @@ export async function processOrder(orderData: OrderData): Promise<string> {
 
     // Calculate the total amount for the entire order
     const orderTotalAmount = subOrders.reduce(
-      (sum, subOrder) => sum + subOrder.totalAmount,
+      (sum, subOrder) => currencyOperations.add(sum, subOrder.totalAmount),
       0
     );
 

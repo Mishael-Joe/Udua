@@ -17,12 +17,12 @@ export async function POST(request: Request) {
       city,
       state,
       postal_code,
-      itemsInCart,
       deliveryMethod,
       userID,
     }: RequestBodyTypes = requestBody.meta;
 
-    const subamount = Number(amount * 100);
+    // const subamount = Number(amount * 100);
+    const subamount = amount; // since amount is in kobo, we do not need to multiply it again
 
     let updatedCartItems;
 
@@ -39,6 +39,7 @@ export async function POST(request: Request) {
         }
       );
     }
+    // console.log("updatedCartItems", updatedCartItems);
 
     // Collect all product IDs
     const productIDs = updatedCartItems!.flatMap(
@@ -69,7 +70,7 @@ export async function POST(request: Request) {
     for (const item of updatedCartItems!) {
       for (const productInCart of item.products) {
         if (productInCart.productType === "physicalproducts") {
-          console.log("productInCart", productInCart);
+          // console.log("productInCart", productInCart);
           const product = productMap.get(productInCart.product._id.toString());
 
           if (!product) {

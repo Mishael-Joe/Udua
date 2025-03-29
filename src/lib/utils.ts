@@ -123,29 +123,111 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("en-NG", {
-    style: "currency",
-    currency: "NGN", // Change currency to NGN for Naira
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
+/**
+ * Calculates transaction commission and settlement amount based on Udua's fee structure.
+ *
+ * This function implements the following fee structure:
+ * - Base fee: 8.25% of transaction amount
+ * - Flat fee: ₦200 (20000 kobo) for transactions ≥ ₦2500 (250000 kobo)
+ * - Maximum fee cap: ₦3000 (300000 kobo)
+ *
+ * All monetary values are in kobo (1 Naira = 100 kobo) to avoid floating-point errors.
+ *
+ * @param amountInKobo - The transaction amount in kobo
+ * @returns An object containing the commission amount and settlement amount in kobo
+ */
+export const calculateCommission = (amountInKobo: number) => {
+  // Fee constants (converted to kobo)
+  const FEE_PERCENTAGE = 8.25 / 100;
+  const FLAT_FEE_KOBO = 20000; // ₦200 in kobo
+  const FEE_CAP_KOBO = 300000; // ₦3000 in kobo
+  const FLAT_FEE_THRESHOLD_KOBO = 250000; // ₦2500 in kobo
+
+  // Calculate the percentage-based fee component
+  const percentageFee = Math.round(amountInKobo * FEE_PERCENTAGE);
+
+  // Determine if the flat fee should be applied
+  // The flat fee is waived for transactions less than ₦2500 (250000 kobo)
+  const shouldApplyFlatFee = amountInKobo >= FLAT_FEE_THRESHOLD_KOBO;
+
+  // Calculate the total transaction fee (percentage fee + flat fee if applicable)
+  const transactionFee = shouldApplyFlatFee
+    ? percentageFee + FLAT_FEE_KOBO
+    : percentageFee;
+
+  // Apply the fee cap - commission cannot exceed ₦3000 (300000 kobo)
+  const commission = Math.min(transactionFee, FEE_CAP_KOBO);
+
+  // Calculate the final settlement amount (original amount minus commission)
+  const settleAmount = amountInKobo - commission;
+
+  return {
+    commission,
+    settleAmount,
+    // Include additional details for transparency and debugging
+    details: {
+      percentageFee,
+      flatFeeApplied: shouldApplyFlatFee ? FLAT_FEE_KOBO : 0,
+      feeCapApplied: transactionFee > FEE_CAP_KOBO,
+    },
+  };
+};
+
+/**
+ * Adds a specified number of business days to a given date.
+ * Sundays are not counted as business days.
+ *
+ * @param date - The starting Date.
+ * @param daysToAdd - The number of business days to add.
+ * @returns A new Date that is the result of adding the business days.
+ */
+function addBusinessDays(date: Date, daysToAdd: number): Date {
+  const result = new Date(date);
+  while (daysToAdd > 0) {
+    // Move to the next day
+    result.setDate(result.getDate() + 1);
+    // Only count the day if it is not a Sunday (0 represents Sunday)
+    if (result.getDay() !== 0) {
+      daysToAdd--;
+    }
+  }
+  return result;
 }
 
-export function addCommasToNumber(number: number) {
-  if (typeof number !== "number") {
-    return number; // Return unchanged if it's not a number
-  }
+/**
+ * Calculates an estimated delivery date range for a product.
+ * The function takes the shipping days required (excluding processing days)
+ * and calculates the lower bound by adding that many business days (skipping Sundays)
+ * to the order date. It then calculates an upper bound by adding 2 additional business days.
+ *
+ * @param shippingDays - The number of shipping days (business days) required.
+ * @returns A string representing the estimated delivery date range in the format "DD MMMM YYYY - DD MMMM YYYY".
+ *
+ * @example
+ * // If today is March 18, 2025 and shippingDays is 5:
+ * // lower bound: March 23, 2025, upper bound: March 25, 2025,
+ * // so the function returns "23 March 2025 - 25 March 2025".
+ */
+export function calculateEstimatedDeliveryDays(shippingDays: number): string {
+  // Get the current date (order date)
+  const orderDate = new Date(Date.now());
 
-  const numberStr = number.toString();
-  const parts = numberStr.split(".");
+  // Calculate the lower bound by adding shippingDays business days (skipping Sundays)
+  const lowerBound = addBusinessDays(orderDate, shippingDays);
 
-  // Split the number into its integer and decimal parts
-  const integerPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  const decimalPart = parts[1] ? "." + parts[1] : "";
+  // Calculate the upper bound by adding 2 additional business days to the lower bound
+  const upperBound = addBusinessDays(lowerBound, 2);
 
-  // Combine the integer and decimal parts
-  return integerPart + decimalPart;
+  // Format the dates to "DD MMMM YYYY" (e.g., "23 March 2025")
+  const formatDate = (date: Date): string =>
+    date.toLocaleDateString("en-US", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+
+  // Return the estimated delivery range as a string
+  return `${formatDate(lowerBound)} - ${formatDate(upperBound)}`;
 }
 
 export function getSizeName(value: string) {

@@ -1,5 +1,5 @@
 import { shimmer, toBase64 } from "@/lib/image";
-import { addCommasToNumber } from "@/lib/utils";
+import { formatNaira } from "@/lib/utils";
 import { CombinedProduct } from "@/types";
 import { Eye } from "lucide-react";
 import Image from "next/image";
@@ -58,9 +58,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
       </div>
       <div className="mt-3 space-y-1">
         <h3 className="font-medium line-clamp-2 text-sm">{title}</h3>
-        {price && (
-          <p className="text-sm font-semibold">₦{addCommasToNumber(price)}</p>
-        )}
+        {price && <p className="text-sm font-semibold">{formatNaira(price)}</p>}
       </div>
     </Link>
   );

@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { formatCurrency } from "@/lib/utils";
+import { formatNaira } from "@/lib/utils";
 import { User } from "@/types";
 
 interface OrderSummaryProps {
@@ -25,6 +25,7 @@ interface OrderSummaryProps {
   onPlaceOrder: () => void;
   userData: User;
   isComplete: boolean;
+  placeOrderLoading: boolean;
 }
 
 export default function OrderSummary({
@@ -34,6 +35,7 @@ export default function OrderSummary({
   onPlaceOrder,
   userData,
   isComplete,
+  placeOrderLoading,
 }: OrderSummaryProps) {
   const total = subtotal + shippingCost;
 
@@ -123,34 +125,6 @@ export default function OrderSummary({
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-      {/* <Accordion type="single" collapsible defaultValue="shipping-to">
-        <AccordionItem value="shipping-methods" className="border-none">
-          <AccordionTrigger className="pr-4 hover:no-underline pb-2">
-            <CardHeader className="px-6 py-1 text-sm">
-              <CardTitle className="text-sm">Shipping To</CardTitle>
-            </CardHeader>
-          </AccordionTrigger>
-
-          <AccordionContent className="">
-            <CardContent className="">
-              <h2 id="cart-heading" className="sr-only">
-                Pleasa, Fill out your Information
-              </h2>
-
-              <div>
-                <p className="text-sm">
-                  {userData.firstName} {userData.lastName}
-                </p>
-                <p className="text-sm mt-2">{userData.phoneNumber}</p>
-                <p className="text-sm mt-1">{userData.address}</p>
-                <p className="text-sm mt-1">
-                  {userData.cityOfResidence}, {userData.stateOfResidence}
-                </p>
-              </div>
-            </CardContent>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion> */}
 
       <CardHeader className="pt-1">
         <CardTitle>Order Summary</CardTitle>
@@ -158,19 +132,19 @@ export default function OrderSummary({
       <CardContent className="space-y-4">
         <div className="flex justify-between">
           <span className="text-muted-foreground">Items ({totalItems})</span>
-          <span>{formatCurrency(subtotal)}</span>
+          <span>{formatNaira(subtotal)}</span>
         </div>
 
         <div className="flex justify-between">
           <span className="text-muted-foreground">Shipping</span>
-          <span>{formatCurrency(shippingCost)}</span>
+          <span>{formatNaira(shippingCost)}</span>
         </div>
 
         <Separator />
 
         <div className="flex justify-between font-medium text-lg">
           <span>Total</span>
-          <span>{formatCurrency(total)}</span>
+          <span>{formatNaira(total)}</span>
         </div>
 
         {!isComplete && (
@@ -181,12 +155,15 @@ export default function OrderSummary({
       </CardContent>
       <CardFooter>
         <Button
-          className="w-full bg-udua-orange-primary hover:bg-orange-400"
+          className={`w-full bg-udua-orange-primary hover:bg-orange-400 ${
+            placeOrderLoading && "animate-pulse"
+          }`}
           size="lg"
           onClick={onPlaceOrder}
-          disabled={!isComplete}
+          disabled={!isComplete || placeOrderLoading}
         >
-          Place Order
+          {!placeOrderLoading && "Place Order"}
+          {placeOrderLoading && "Processing..."}
         </Button>
       </CardFooter>
     </Card>

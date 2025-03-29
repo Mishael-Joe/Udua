@@ -27,7 +27,9 @@ const ProductTypeSelector = ({
         >
           {options.map((type) => (
             <option key={type} value={type}>
-              {type}
+              {type === "physicalproducts"
+                ? `Physical Products`
+                : `Digital Products`}
             </option>
           ))}
         </select>

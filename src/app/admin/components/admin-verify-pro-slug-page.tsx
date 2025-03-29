@@ -13,13 +13,12 @@ import axios from "axios";
 import DOMPurify from "dompurify";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
-import { addCommasToNumber } from "@/lib/utils";
+import { formatNaira } from "@/lib/utils";
 import { CheckCircle2, Clock } from "lucide-react";
 import { PERMISSIONS } from "@/lib/rbac/permissions";
 import { withAdminAuth } from "../components/auth/with-admin-auth";
 
-type Products = Omit<Product, "storeID" | "images" | "path" | "price"> & {
-  price: string;
+type Products = Omit<Product, "storeID" | "images" | "path"> & {
   images: ""[];
 };
 
@@ -28,9 +27,9 @@ function VerifyProduct({ params }: { params: { slug: string } }) {
   //   console.log('params', params)
   const [product, setProduct] = useState<Products>({
     name: "",
-    price: "",
+    price: 0,
     sizes: [],
-    productQuantity: "",
+    productQuantity: 0,
     images: [""],
     description: "",
     specifications: "",
@@ -170,7 +169,7 @@ function VerifyProduct({ params }: { params: { slug: string } }) {
                         </Label>
                         <div className="flex items-center gap-2">
                           <span className="text-gray-900">
-                            ₦{addCommasToNumber(parseFloat(product.price))}
+                            {formatNaira(parseFloat(product.price))}
                           </span>
                         </div>
                       </div>
@@ -197,7 +196,7 @@ function VerifyProduct({ params }: { params: { slug: string } }) {
                         >
                           <span className="text-gray-900">{size.size}</span>
                           <span className="text-gray-900">
-                            ₦{addCommasToNumber(size.price)}
+                            {formatNaira(size.price)}
                           </span>
                           <span className="text-gray-900">{size.quantity}</span>
                         </div>

@@ -8,68 +8,57 @@ export async function POST() {
   try {
     await connectToDB();
 
-    // // Update all stores by adding the new fields if they don't already exist
-    // const result = await Store.updateMany(
-    //   {}, // Match all stores
-    //   {
-    //     $set: {
-    //       forgotpasswordToken: null, // Setting default as null
-    //       forgotpasswordTokenExpiry: null,
-    //       payoutAccounts: [], // Empty array for payout accounts
-    //       payoutHistory: [], // Empty array for payout history
-    //     },
-    //   }
-    // );
-
-    // Update all stores by adding the new fields if they don't already exist
-    // const result = await User.updateMany(
-    //   {}, // Match all stores
-    //   {
-    //     $unset: {
-    //       isSeller: '', // Setting default as null
-    //       userProducts: '',
-    //     },
-    //   }
-    // );
-
-    // Rename productPrice to price in all documents
-    const result = await Product.updateMany(
-      {},
+    // Update all users by adding a store to the 'stores' array if the store doesn't already exist
+    const result = await User.updateMany(
+      {}, // Match all users
       {
-        $rename: {
-          productName: "name",
-          productPrice: "price",
-          productSizes: "sizes",
-          productImage: "images",
-          productDescription: "description",
-          productSpecification: "specifications",
-          productCategory: "category",
-          productSubCategory: "subCategory",
+        $push: {
+          stores: {
+            _id: "66fbae5615b9fec5eac1b9bb",
+          },
         },
       }
     );
 
+    // Example: Rename fields in all Product documents
     // const result = await Product.updateMany(
     //   {},
     //   {
-    //     $set: {
-    //       productType: "Physical Product", // Add or update the 'isVisible' field for all products
+    //     $rename: {
+    //       productName: "name",
+    //       productPrice: "price",
+    //       productSizes: "sizes",
+    //       productImage: "images",
+    //       productDescription: "description",
+    //       productSpecification: "specifications",
+    //       productCategory: "category",
+    //       productSubCategory: "subCategory",
     //     },
     //   }
     // );
 
-    // const results = await Store.updateMany(
+    // Example: Set productType field in all Product documents
+    // const result = await Product.updateMany(
+    //   {},
+    //   {
+    //     $set: {
+    //       productType: "Physical Product",
+    //     },
+    //   }
+    // );
+
+    // Example: Add an empty ebooks array to all Store documents
+    // const result = await Store.updateMany(
     //   {}, // Apply to all stores
     //   {
     //     $set: {
     //       ebooks: [],
     //     },
-    //   },
-    //   { multi: true } // Update all documents
+    //   }
     // );
 
     return NextResponse.json(
-      { message: "Product model updated successfully", result },
+      { message: "User model updated successfully", result },
       { status: 200 }
     );
   } catch (error) {

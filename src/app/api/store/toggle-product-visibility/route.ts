@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
   try {
     await connectToDB();
     const requestBody = await request.json();
-    const { productId } = requestBody.data;
+    const { productId } = requestBody;
 
     // console.log(`requestBody`, requestBody);
 
@@ -19,13 +19,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Find the product by ID
-    const product = await Product.findById(productId).select('isVisible');
+    const product = await Product.findById(productId).select("isVisible");
 
     if (!product) {
-      return NextResponse.json(
-        { error: "Product not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
     // Toggle visibility

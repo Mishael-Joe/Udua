@@ -90,11 +90,14 @@ function CreateStorePage({ admin }: { admin?: AdminData }) {
         });
         setIsLoading(false);
       }
-    } catch (error) {
+    } catch (error: any) {
+      // console.error("error", error);
       toast({
         variant: `destructive`,
         title: "Error",
-        description: `There was an error creating a store for this user. Please try again.`,
+        description:
+          error.response.data.error ||
+          `There was an error creating a store for this user. Please try again.`,
       });
       setIsLoading(false);
     }
@@ -178,7 +181,7 @@ function CreateStorePage({ admin }: { admin?: AdminData }) {
           />
           <Button
             type="submit"
-            className="items-end w-full bg-purple-500 hover:bg-purple-600"
+            className="items-end w-full bg-blue-500 hover:bg-udua-blue-primary"
           >
             {!isLoading && "Submit"}
             {isLoading && (

@@ -1,12 +1,11 @@
 "use client";
 
 import { useMemo, useCallback, useState } from "react";
-import Link from "next/link";
 import { Plus, Minus, ShoppingBagIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import DOMPurify from "dompurify";
 
-import { addCommasToNumber } from "@/lib/utils";
+import { formatNaira } from "@/lib/utils";
 import { useStateContext } from "@/context/stateContext";
 import { Button } from "@/components/ui/button";
 import ShareButton from "../utils/shareBTN";
@@ -108,7 +107,7 @@ export function ProductInfo({ product }: ForProductInfo) {
 
     return (
       <p className="text-lg sm:text-2xl tracking-tight font-semibold">
-        &#8358; {addCommasToNumber(price as number)}
+        {formatNaira(price)}
       </p>
     );
   }, [isPhysicalProduct, product.price, selectedSize?.price]);
@@ -170,8 +169,8 @@ export function ProductInfo({ product }: ForProductInfo) {
                 onClick={() => setSelectedSize(size)}
                 className={`mr-2 mt-4 ${
                   selectedSize?.size === size.size
-                    ? "bg-udua-orange-primary/90"
-                    : "bg-udua-orange-primary/55"
+                    ? "bg-udua-orange-primary/90 hover:bg-udua-orange-primary"
+                    : "bg-udua-orange-primary/55 hover:bg-udua-orange-primary"
                 }`}
                 disabled={size.quantity === 0}
               >

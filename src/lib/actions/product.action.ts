@@ -12,13 +12,11 @@ import bcryptjs from "bcryptjs";
 import EBook from "../models/digital-product.model";
 import ProductReview from "../models/product-review.model";
 
-type Product = Omit<Products, "price"> & {
-  price: string;
+type Product = Products & {
   storePassword: string;
 };
 
-type DigitalProducts = Omit<DigitalProduct, "price"> & {
-  price: string;
+type DigitalProducts = DigitalProduct & {
   storePassword: string;
 };
 

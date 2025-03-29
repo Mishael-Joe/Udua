@@ -1,7 +1,7 @@
 "use client";
 
 import { siteConfig } from "@/config/site";
-import { calculateCommission } from "@/constant/constant";
+import { calculateCommission } from "@/lib/utils";
 import React, { FormEvent, useState } from "react";
 
 const UduaPricing = () => {
@@ -51,7 +51,9 @@ const UduaPricing = () => {
             Enter amount:
           </label>
           <div className="relative sm:w-1/2">
-            <p className=" absolute top-2.5 left-2 text-xl mt-2 sm:mt-0 dark:text-slate-800">NGN</p>
+            <p className=" absolute top-2.5 left-2 text-xl mt-2 sm:mt-0 dark:text-slate-800">
+              NGN
+            </p>
             <input
               id="amountInput"
               type="text"

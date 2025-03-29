@@ -35,6 +35,7 @@ export const getUserDataFromToken = (request: NextRequest): string | null => {
     }
   } catch (error: any) {
     console.error(error);
-    throw new Error(`Error getting user data from token: ${error.message}`);
+    return null;
+    // throw new Error(`Error getting user data from token: ${error.message}`);
   }
 };

@@ -10,6 +10,7 @@ import { CombinedProduct, User } from "@/types";
 import axios from "axios";
 const { v4: uuidv4 } = require("uuid");
 import { useToast } from "@/components/ui/use-toast";
+import { currencyOperations } from "@/lib/utils";
 
 // Interface for each product in the cart
 interface CartProduct {
@@ -62,6 +63,7 @@ export default function CheckoutPage() {
   const [cartData, setCartData] = useState<CartResponse | null>(null);
   const [loading1, setLoading1] = useState(true);
   const [loading, setLoading] = useState(true);
+  const [placeOrderLoading, setPlaceOrderLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // selectedShippingMethods is a record where the key is storeID and the value is the ShippingMethod
   const [selectedShippingMethods, setSelectedShippingMethods] = useState<
@@ -150,7 +152,7 @@ export default function CheckoutPage() {
     // Calculate total shipping cost whenever selected shipping methods change
     let totalShipping = 0;
     Object.values(selectedShippingMethods).forEach((method: ShippingMethod) => {
-      totalShipping += method.price || 0;
+      totalShipping = currencyOperations.add(totalShipping, method.price) || 0;
     });
     setTotalShippingCost(totalShipping);
   }, [selectedShippingMethods]);
@@ -169,6 +171,7 @@ export default function CheckoutPage() {
   };
 
   const handlePlaceOrder = async () => {
+    setPlaceOrderLoading(true);
     // Check if shipping methods are selected for all stores with shipping methods available
     const storesWithShippingMethods = cartData?.groupedCart.filter(
       (group: GroupedCart) =>
@@ -184,34 +187,11 @@ export default function CheckoutPage() {
       return;
     }
 
-    // // Iterate through cart items and assign selected shipping methods
-    // if (cartItemsWithShippingMethod) {
-    //   const updatedCartItems = cartItemsWithShippingMethod.map((item) => {
-    //     // Find the selected shipping method for this store by storeID
-    //     const selectedMethod = selectedShippingMethods[item.storeID];
-
-    //     // console.log("selectedMethod", selectedMethod);
-
-    //     // Destructure the item to exclude shippingMethods
-    //     const { shippingMethods, ...restOfItem } = item;
-
-    //     // Attach the selected shipping method to the item if it exists
-    //     return {
-    //       ...restOfItem,
-    //       selectedShippingMethod: selectedMethod || null, // Fallback to null if no method is selected
-    //     };
-    //   });
-
-    //   // Optionally, update the cartItemsWithShippingMethod state
-    //   setCartItemsWithShippingMethod(updatedCartItems);
-    // }
-    // console.log("cartItemsWithShippingMethod", cartItemsWithShippingMethod);
-
     if (!userData) return;
     const config = {
       cartItemsWithShippingMethod: cartItemsWithShippingMethod,
       selectedShippingMethods: selectedShippingMethods,
-      amount: cartData!.totalPrice + totalShippingCost,
+      amount: currencyOperations.add(cartData!.totalPrice, totalShippingCost),
       customer: {
         name: `${userData.firstName} ${userData.lastName}`,
         email: userData.email,
@@ -222,9 +202,6 @@ export default function CheckoutPage() {
         city: userData.cityOfResidence,
         state: userData.stateOfResidence,
         address: userData.address,
-        itemsInCart: cartItemsWithShippingMethod,
-        // itemsInCart: [...cartItems],
-        // deliveryMethod: deliveryMethod,
         postal_code: userData.postalCode || "",
         userID: userData._id,
       },
@@ -260,12 +237,14 @@ export default function CheckoutPage() {
           "An error occurred while processing your payment. Please try again later. If this error still persists, please contact our support team.",
       });
       console.error("An error occurred while processing your payment:", error);
+    } finally {
+      setPlaceOrderLoading(false);
     }
     // Here you would implement the order placement logic
-    console.log(
-      "Placing order with shipping methods:",
-      selectedShippingMethods
-    );
+    // console.log(
+    //   "Placing order with shipping methods:",
+    //   selectedShippingMethods
+    // );
     // router.push("/order-confirmation");
   };
 
@@ -282,7 +261,10 @@ export default function CheckoutPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
         <p className="text-destructive">Error: {error}</p>
-        <Button className="mt-4" onClick={() => router.push("/cart")}>
+        <Button
+          className="bg-orange-400 hover:bg-udua-orange-primary mt-4"
+          onClick={() => router.push("/cart")}
+        >
           Return to Cart
         </Button>
       </div>
@@ -296,7 +278,12 @@ export default function CheckoutPage() {
         <p className="text-muted-foreground mb-6">
           Add some items to your cart before checking out.
         </p>
-        <Button onClick={() => router.push("/")}>Continue Shopping</Button>
+        <Button
+          onClick={() => router.push("/")}
+          className="bg-orange-400 hover:bg-udua-orange-primary"
+        >
+          Continue Shopping
+        </Button>
       </div>
     );
   }
@@ -327,6 +314,7 @@ export default function CheckoutPage() {
             shippingCost={totalShippingCost}
             totalItems={cartData.totalQuantity}
             onPlaceOrder={handlePlaceOrder}
+            placeOrderLoading={placeOrderLoading}
             userData={userData!}
             isComplete={cartData.groupedCart.every(
               (group: GroupedCart) =>

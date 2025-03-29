@@ -22,7 +22,16 @@ export async function POST(request: NextRequest) {
 
     const userId = await getUserDataFromToken(request);
 
-    if (!userId || !productID || !productType || !quantity || !storeID) {
+    if (!userId) {
+      return NextResponse.json(
+        {
+          error: "Please log in to add items to your cart.",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (!productID || !productType || !quantity || !storeID) {
       return NextResponse.json(
         {
           error:

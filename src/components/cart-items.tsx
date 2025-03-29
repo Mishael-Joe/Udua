@@ -7,7 +7,7 @@ import { useEffect, useMemo } from "react";
 import { shimmer, toBase64 } from "@/lib/image";
 import { Button } from "@/components/ui/button";
 import { CartItemsEmpty } from "@/components/cart-items-empty";
-import { addCommasToNumber } from "@/lib/utils";
+import { formatNaira } from "@/lib/utils";
 import { useStateContext } from "@/context/stateContext";
 
 // Reusable Info Message Component
@@ -96,9 +96,7 @@ export function CartItems() {
                     </div>
 
                     {price && (
-                      <p className="mt-1 font-medium">
-                        &#8358; {addCommasToNumber(price)}
-                      </p>
+                      <p className="mt-1 font-medium"> {formatNaira(price)}</p>
                     )}
 
                     {size && (
@@ -152,12 +150,12 @@ export function CartItems() {
                   </div>
                 </div>
 
-                {isPhysical && (
+                {/* {isPhysical && (
                   <p className="mt-4 flex space-x-2 text-sm">
                     <Clock className="h-5 w-5 shrink-0" />
                     <span>Ships in 4 days</span>
                   </p>
-                )}
+                )} */}
               </div>
             </li>
           );

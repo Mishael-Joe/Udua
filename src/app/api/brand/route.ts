@@ -3,14 +3,22 @@ import { connectToDB } from "@/lib/mongoose";
 import Store from "@/lib/models/store.model";
 import Product from "@/lib/models/product.model";
 import EBook from "@/lib/models/digital-product.model";
+import { getUserDataFromToken } from "@/lib/helpers/getUserDataFromToken";
+import User from "@/lib/models/user.model";
 
 export async function POST(request: NextRequest) {
   const requestBody = await request.json();
   const { storeID } = requestBody;
+  let isFollowing = false;
   // console.log('requestBody', requestBody)
   try {
     // Connect to the database
     await connectToDB();
+    const userId = await getUserDataFromToken(request);
+
+    if (!userId) {
+      isFollowing = false;
+    }
 
     if (!storeID) {
       return NextResponse.json(
@@ -22,6 +30,14 @@ export async function POST(request: NextRequest) {
     // Find the store by its ID
     const product = Product.findOne().select(`_id`);
     const ebook = EBook.findOne().select(`_id`);
+
+    if (typeof userId === "string") {
+      const user = await User.findById(userId).select("followingStores");
+
+      if (user.followingStores.includes(storeID)) {
+        isFollowing = true;
+      }
+    }
 
     const store = await Store.findById(storeID)
       .select("-password -storeOwner -updatedAt -pendingBalance")
@@ -58,7 +74,11 @@ export async function POST(request: NextRequest) {
     // Return success response
     // console.log("store", storeWithItems);
     return NextResponse.json(
-      { message: "Store details fetched successfully.", store: storeWithItems },
+      {
+        message: "Store details fetched successfully.",
+        store: storeWithItems,
+        isFollowing,
+      },
       { status: 200 }
     );
   } catch (error: any) {

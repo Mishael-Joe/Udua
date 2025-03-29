@@ -8,16 +8,16 @@ interface IUser extends Document {
   otherNames: string;
   email: string;
   password: string;
-  adminPassword: string;
   phoneNumber: string;
   address: string;
   cityOfResidence: string;
   stateOfResidence: string;
   postalCode: string;
   isVerified: boolean;
-  isAdmin: boolean;
   followingStores: mongoose.Schema.Types.ObjectId[];
-  store: mongoose.Schema.Types.ObjectId;
+  stores: {
+    store: mongoose.Schema.Types.ObjectId;
+  }[];
   forgotpasswordToken?: string;
   forgotpasswordTokenExpiry?: Date;
   verifyToken?: string;
@@ -31,7 +31,6 @@ const userSchema = new Schema<IUser>(
     otherNames: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    adminPassword: { type: String },
     phoneNumber: { type: String, required: true, unique: true },
     address: { type: String, required: true },
     cityOfResidence: { type: String, required: true },
@@ -39,9 +38,9 @@ const userSchema = new Schema<IUser>(
     postalCode: { type: String, required: true },
     isVerified: { type: Boolean, default: false },
     followingStores: [{ type: mongoose.Schema.Types.ObjectId, ref: "stores" }],
-    isAdmin: { type: Boolean, default: false },
-    store: { type: mongoose.Schema.Types.ObjectId, ref: "stores" },
-    // store: { type: mongoose.Schema.Types.ObjectId, ref: "Store" },
+    stores: [
+      { store: { type: mongoose.Schema.Types.ObjectId, ref: "stores" } },
+    ],
     forgotpasswordToken: String,
     forgotpasswordTokenExpiry: Date,
     verifyToken: String,

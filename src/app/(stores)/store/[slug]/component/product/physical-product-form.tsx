@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createProduct } from "@/lib/actions/product.action";
 import type { Product } from "@/types";
-import { uploadImagesToCloudinary } from "@/lib/utils";
+import { formatNaira, uploadImagesToCloudinary } from "@/lib/utils";
 import Image from "next/image";
 import { ToastAction } from "@/components/ui/toast";
 import {
@@ -29,11 +29,11 @@ import {
 
 import dynamic from "next/dynamic";
 import "react-quill-new/dist/quill.snow.css";
+import { HighlightBox } from "@/components/highlight-box";
 
 const QuillEditor = dynamic(() => import("react-quill-new"), { ssr: false });
 
-type Products = Omit<Product, "images" | "path" | "price"> & {
-  price: string;
+type Products = Omit<Product, "images" | "path"> & {
   images: File[];
   path?: string;
   storePassword: string;
@@ -56,9 +56,9 @@ const PhysicalProductForm = ({
 }: PhysicalProductFormProps) => {
   const [physicalProduct, setPhysicalProduct] = useState<Products>({
     name: "",
-    price: "",
+    price: 0,
     sizes: [],
-    productQuantity: "",
+    productQuantity: 0,
     images: [],
     description: "",
     specifications: "",
@@ -177,8 +177,8 @@ const PhysicalProductForm = ({
   const addSize = () => {
     setPhysicalProduct((prev) => ({
       ...prev,
-      price: "",
-      productQuantity: "",
+      price: 0,
+      productQuantity: 0,
       sizes: [...(prev.sizes || []), { size: "", price: 0, quantity: 0 }],
     }));
   };
@@ -259,7 +259,7 @@ const PhysicalProductForm = ({
     if (
       (physicalProduct.category !== "Fashion" &&
         physicalProduct.category !== "Clothing" &&
-        (physicalProduct.price === "" ||
+        (physicalProduct.price === 0 ||
           isNaN(Number(physicalProduct.price)) ||
           Number(physicalProduct.price) <= 0)) ||
       ((physicalProduct.category === "Fashion" ||
@@ -313,7 +313,7 @@ const PhysicalProductForm = ({
     if (
       (physicalProduct.category !== "Fashion" &&
         physicalProduct.category !== "Clothing" &&
-        (physicalProduct.productQuantity === "" ||
+        (physicalProduct.productQuantity === 0 ||
           isNaN(Number(physicalProduct.productQuantity)) ||
           Number(physicalProduct.productQuantity) <= 0)) ||
       ((physicalProduct.category === "Fashion" ||
@@ -540,23 +540,32 @@ const PhysicalProductForm = ({
             <CardContent>
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="grid gap-3">
-                  <Label
-                    htmlFor="product-price"
-                    className="text-base-semibold text-light-2"
-                  >
-                    Product Price
-                  </Label>
+                  {physicalProduct.price! <= 0 && (
+                    <Label
+                      htmlFor="product-price"
+                      className="text-base-semibold text-light-2"
+                    >
+                      Product Price{" "}
+                      <span className="text-xs font-semibold">in kobo</span>
+                    </Label>
+                  )}
+                  {physicalProduct.price! > 0 && (
+                    <p className="text-sm">
+                      Your price in Naira: {formatNaira(physicalProduct.price!)}
+                    </p>
+                  )}
                   <Input
                     id="product-price"
                     name="price"
                     value={physicalProduct.price}
                     onChange={handleChange}
                     className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 dark:text-white bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400"
-                    type="text"
+                    type="number"
                     placeholder="Product Price"
                     aria-label="Product Price"
                     aria-required="true"
                     disabled={physicalProduct.sizes!.length > 0}
+                    min={0}
                   />
                 </div>
                 <div className="grid gap-3">
@@ -586,6 +595,19 @@ const PhysicalProductForm = ({
                     size-based Prices & Quantity.
                   </p>
                 )}
+                {physicalProduct.category !== "Clothing" &&
+                  physicalProduct.category !== "Fashion" && (
+                    <HighlightBox title="NOTE:" color="red">
+                      <p className="text-sm">
+                        To ensure accuracy and consistency in processing
+                        transactions,{" "}
+                        <span className="font-semibold">
+                          kindly note that all monetary values must be submitted
+                          in Kobo (₦’s subunit).
+                        </span>
+                      </p>
+                    </HighlightBox>
+                  )}
               </div>
             </CardContent>
           </Card>
@@ -661,7 +683,7 @@ const PhysicalProductForm = ({
           </div>
         </div>
 
-        <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
+        <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
           {/* Size Options for Fashion/Clothing */}
           {(physicalProduct.category === "Clothing" ||
             physicalProduct.category === "Fashion") && (
@@ -774,10 +796,11 @@ const PhysicalProductForm = ({
                         <Button
                           type="button"
                           onClick={() => removeSize(index)}
-                          className="bg-transparent hover:bg-transparent hover:text-udua-orange-primary text-udua-orange-primary/80"
+                          className="bg-transparent hover:bg-transparent hover:text-udua-orange-primary text-udua-orange-primary/80 p-2 mt-5"
                           aria-label={`Remove size ${
                             sizeObj.size || index + 1
                           }`}
+                          size={`icon`}
                         >
                           <XIcon width={15} height={15} />
                         </Button>
@@ -788,11 +811,22 @@ const PhysicalProductForm = ({
                   <Button
                     type="button"
                     onClick={addSize}
-                    className="mt-3 hover:bg-udua-orange-primary bg-udua-orange-primary/80"
+                    className="my-5 hover:bg-udua-orange-primary bg-udua-orange-primary/80 "
                     aria-label="Add another size option"
                   >
                     Add Size
                   </Button>
+
+                  <HighlightBox title="NOTE:" color="red">
+                    <p className="text-sm">
+                      To ensure accuracy and consistency in processing
+                      transactions,{" "}
+                      <span className="font-semibold">
+                        kindly note that all monetary values must be submitted
+                        in Kobo (₦’s subunit).
+                      </span>
+                    </p>
+                  </HighlightBox>
                 </div>
               </CardContent>
             </Card>

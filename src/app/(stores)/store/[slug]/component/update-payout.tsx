@@ -273,6 +273,7 @@ const UpdatePayoutAccountForm = () => {
             <Button
               type="submit"
               disabled={isSubmitting || isValidating || !accountHolderName}
+              className="bg-blue-500 hover:bg-udua-blue-primary"
             >
               {isSubmitting || isValidating ? (
                 <>
