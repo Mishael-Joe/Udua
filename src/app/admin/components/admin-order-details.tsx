@@ -13,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { addCommasToNumber } from "@/lib/utils";
+import { formatNaira } from "@/lib/utils";
 
 function AdminOrderDetails() {
   const [orderID, setOrderID] = useState("");
@@ -189,8 +189,8 @@ function AdminOrderDetails() {
                   </p>
                   <p>Status: {order.status}</p>
                   <p>
-                    Total Amount: &#8358;
-                    {addCommasToNumber(order.totalAmount)}
+                    Total Amount:
+                    {formatNaira(order.totalAmount)}
                   </p>
                   <p>Shipping Address: {order.shippingAddress}</p>
                   <p>Shipping Method: {order.shippingMethod}</p>
@@ -239,7 +239,7 @@ function AdminOrderDetails() {
                         </p>
                         {product.price && (
                           <p className="mt-2 font-medium">
-                            Price: &#8358; {addCommasToNumber(product.price)}{" "}
+                            Price: {formatNaira(product.price)}{" "}
                           </p>
                         )}
                       </div>
@@ -250,50 +250,6 @@ function AdminOrderDetails() {
             </Card>
           </div>
         )}
-
-        {/* {product.isVerifiedProduct === false && (
-          <div className="w-full border rounded-md p-3 mt-4">
-            <div>
-              <p className=" max-w-xl">
-                Verify that this product meets the criteria before approving it.
-              </p>
-              <form
-                onSubmit={(e) => handleSubmit("verifyProduct", e)}
-                className="flex justify-end pt-3"
-              >
-                <Button type="submit" className="hover:text-purple-600">
-                  {!isLoading && "verify Product"}
-                  {isLoading && (
-                    <Loader className=" animate-spin w-5 h-5 mr-4" />
-                  )}{" "}
-                  {isLoading && "Please wait..."}
-                </Button>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {product.isVerifiedProduct && (
-          <div className="w-full border rounded-md p-3 mt-4">
-            <div>
-              <p className=" max-w-xl">
-                You can unverify this product if necessary.
-              </p>
-              <form
-                onSubmit={(e) => handleSubmit("UnVerifyProduct", e)}
-                className="flex justify-end pt-3"
-              >
-                <Button type="submit" className="hover:text-purple-600">
-                  {!isLoading && "Unverify Product"}
-                  {isLoading && (
-                    <Loader className=" animate-spin w-5 h-5 mr-4" />
-                  )}{" "}
-                  {isLoading && "Please wait..."}
-                </Button>
-              </form>
-            </div>
-          </div>
-        )} */}
       </div>
     </section>
   );

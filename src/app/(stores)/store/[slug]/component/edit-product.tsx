@@ -31,8 +31,7 @@ import { Product } from "@/types";
 import axios from "axios";
 import { productCategories, subCategories } from "@/constant/constant";
 
-type Products = Omit<Product, "storeID" | "images" | "path" | "price"> & {
-  price: string;
+type Products = Omit<Product, "storeID" | "images" | "path"> & {
   images: ""[];
 };
 
@@ -44,9 +43,9 @@ export default function EditProduct({
   // console.log("params", params);
   const [product, setProduct] = useState<Products>({
     name: "",
-    price: "",
+    price: 0,
     sizes: [],
-    productQuantity: "",
+    productQuantity: 0,
     images: [""],
     description: "",
     specifications: "",

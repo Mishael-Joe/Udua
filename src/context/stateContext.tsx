@@ -152,7 +152,11 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
     } catch (error: any) {
       // If there's an error response from the server, log the response data.
       if (error.response) {
-        console.error("Failed to add to cart:", error.response.data);
+        // console.error("Failed to add to cart:", error.response.data);
+        toast({
+          title: `Error adding to cart`,
+          description: error.response.data.error || `Error adding to cart`,
+        });
       } else {
         console.error("Error adding to cart:", error.message);
       }

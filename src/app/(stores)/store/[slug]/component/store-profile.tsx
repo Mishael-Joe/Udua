@@ -14,15 +14,16 @@ import { Store } from "@/types";
 import DOMPurify from "dompurify";
 import { toast } from "@/components/ui/use-toast";
 
-export default function StoreProfile() {
+export default function StoreProfile({ id }: { id: string }) {
   const [store, setStore] = useState<Store | null>(null);
   const [isCopied, setIsCopied] = useState(false);
+  // console.log("id", id);
 
   useEffect(() => {
     const fetchStoreData = async () => {
       try {
         const response = await axios.post<{ store: Store }>(
-          "/api/store/fetch-store-data"
+          `/api/store/fetch-store-data/${id}`
         );
         setStore(response.data.store);
       } catch (error) {
@@ -36,7 +37,7 @@ export default function StoreProfile() {
   const handleShareStore = () => {
     if (!store?.uniqueId) return;
 
-    const storeUrl = `${window.location.origin}/store/${store.uniqueId}`;
+    const storeUrl = `${window.location.origin}/brand/${store._id}`;
     navigator.clipboard.writeText(storeUrl);
     setIsCopied(true);
     toast({
@@ -73,10 +74,8 @@ export default function StoreProfile() {
     );
   }
 
-  const { name, description, products, uniqueId } = store;
+  const { name, description, products, uniqueId, followers } = store;
   const sanitizedDescription = DOMPurify.sanitize(description);
-
-  let followers = "300";
 
   return (
     <main className="container mx-auto px-4 md:px-8 py-6">
@@ -101,7 +100,8 @@ export default function StoreProfile() {
                   <div className="flex items-center gap-2 w-full sm:w-auto">
                     <Users className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
                     <span className="text-sm sm:text-base font-medium">
-                      {followers?.length.toLocaleString()} Followers
+                      {followers?.length.toLocaleString()} Follower
+                      {(followers.length > 1 || followers.length === 0) && "s"}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -167,101 +167,3 @@ export default function StoreProfile() {
     </main>
   );
 }
-
-// "use client";
-
-// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-// import axios from "axios";
-// import { useEffect, useState } from "react";
-// import { Loader, StoreIcon } from "lucide-react";
-// import StoreDescription from "./store-description";
-// import { Store } from "@/types";
-// import { ProductGrid } from "@/components/product-grid";
-// import DOMPurify from "dompurify";
-
-// export default function StoreProfile() {
-//   const [store, setStore] = useState<Store | null>(null);
-
-//   useEffect(() => {
-//     const fetchStoreData = async () => {
-//       try {
-//         // Pass the slug to the API in case it is needed for fetching store data.
-//         const response = await axios.post<{ store: Store }>(
-//           "/api/store/fetch-store-data"
-//         );
-//         setStore(response.data.store);
-//       } catch (error: any) {
-//         console.error("Failed to fetch store data:", error.message);
-//       }
-//     };
-
-//     fetchStoreData();
-//   }, []);
-
-//   // Display a centered loader while waiting for store data.
-//   if (!store) {
-//     return (
-//       <div className="w-full min-h-screen flex items-center justify-center">
-//         <Loader className="animate-spin" />
-//       </div>
-//     );
-//   }
-
-//   // Destructure the store data for easy access.
-//   const { name, description, products } = store;
-
-//   const sanitizedContentForDescription = DOMPurify.sanitize(description);
-
-//   return (
-//     <main className="overflow-hidden">
-//       <section className="p-4 md:p-8 ">
-//         {/* Store Header */}
-//         <div className="p-4 border border-gray-700 h-72 w-full rounded-md bg-muted/50">
-//           <div className="flex h-2/3 w-full items-center">
-//             {/* Store icon displayed only on larger screens */}
-//             <div className="hidden sm:flex basis-1/5 w-1/4 justify-center">
-//               <StoreIcon className="h-16 w-16 sm:h-24 sm:w-24" />
-//             </div>
-//             <div className="flex flex-col gap-4 w-full sm:pl-5 lg:pl-0">
-//               <p className="text-2xl font-semibold">{name}</p>
-//               {/* Using Tailwind's line-clamp utility for a 3-line ellipsis */}
-//               <div
-//                 className="line-clamp-3 text-gray-700"
-//                 dangerouslySetInnerHTML={{
-//                   __html: sanitizedContentForDescription,
-//                 }}
-//               ></div>
-//               {/* <p className="line-clamp-3 text-gray-700">{description}</p> */}
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* Store Tabs */}
-//         <div className="pt-4 w-full">
-//           <Tabs defaultValue="products" className="sm:max-w-4xl mx-auto w-full">
-//             <TabsList className="grid w-full grid-cols-2 text-xl font-bold">
-//               <TabsTrigger value="products">Products</TabsTrigger>
-//               <TabsTrigger value="description">Description</TabsTrigger>
-//             </TabsList>
-
-//             <TabsContent value="products">
-//               <Card>
-//                 <CardHeader>
-//                   <CardTitle>Products on this store</CardTitle>
-//                 </CardHeader>
-//                 <CardContent>
-//                   <ProductGrid products={products || []} />
-//                 </CardContent>
-//               </Card>
-//             </TabsContent>
-
-//             <TabsContent value="description">
-//               <StoreDescription store={store} />
-//             </TabsContent>
-//           </Tabs>
-//         </div>
-//       </section>
-//     </main>
-//   );
-// }

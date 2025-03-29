@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { formatCurrency } from "@/lib/utils";
+import { currencyOperations, formatNaira } from "@/lib/utils";
 
 interface ProductItemProps {
   item: any;
@@ -68,10 +68,10 @@ export default function ProductItem({ item }: ProductItemProps) {
       </div>
 
       <div className="text-right">
-        <p className="font-medium">{formatCurrency(price)}</p>
+        <p className="font-medium">{formatNaira(price)}</p>
         <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
         <p className="font-medium text-sm">
-          {formatCurrency(price * item.quantity)}
+          {formatNaira(currencyOperations.multiply(price, item.quantity))}
         </p>
       </div>
     </div>

@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createDigitalProduct } from "@/lib/actions/product.action";
 import type { DigitalProduct } from "@/types";
-import { uploadImagesToCloudinary } from "@/lib/utils";
+import { formatNaira, uploadImagesToCloudinary } from "@/lib/utils";
 import Image from "next/image";
 import { ToastAction } from "@/components/ui/toast";
 import {
@@ -29,14 +29,14 @@ import {
 import dynamic from "next/dynamic";
 import "react-quill-new/dist/quill.snow.css";
 import axios from "axios";
+import { HighlightBox } from "@/components/highlight-box";
 
 const QuillEditor = dynamic(() => import("react-quill-new"), { ssr: false });
 
 type DigitalProducts = Omit<
   DigitalProduct,
-  "coverIMG" | "price" | "coverImageKey" | "coverIMG"
+  "coverIMG" | "coverImageKey" | "coverIMG"
 > & {
-  price: string;
   storePassword: string;
   pdfFile: File[];
   coverIMG: File[];
@@ -64,7 +64,7 @@ const DigitalProductForm = ({
     description: "",
     category: "",
     subcategory: "",
-    price: "",
+    price: 0,
     fileType: "",
     fileSize: 0,
     s3Key: "",
@@ -213,7 +213,7 @@ const DigitalProductForm = ({
 
     // Validate product price
     if (
-      digitalProduct.price === "" ||
+      digitalProduct.price === 0 ||
       isNaN(Number(digitalProduct.price)) ||
       Number(digitalProduct.price) <= 0
     ) {
@@ -519,12 +519,20 @@ const DigitalProductForm = ({
             <CardContent className="pt-6">
               <div className="grid gap-6">
                 <div className="grid gap-3">
-                  <Label
-                    htmlFor="ebook-price"
-                    className="text-base-semibold text-light-2"
-                  >
-                    Price
-                  </Label>
+                  {digitalProduct.price! <= 0 && (
+                    <Label
+                      htmlFor="ebook-price"
+                      className="text-base-semibold text-light-2"
+                    >
+                      Price{" "}
+                      <span className="text-xs font-semibold">in kobo</span>
+                    </Label>
+                  )}
+                  {digitalProduct.price! > 0 && (
+                    <p className="text-sm">
+                      Your price in Naira: {formatNaira(digitalProduct.price!)}
+                    </p>
+                  )}
                   <Input
                     id="ebook-price"
                     name="price"
@@ -536,6 +544,17 @@ const DigitalProductForm = ({
                     aria-label="Price"
                     aria-required="true"
                   />
+
+                  <HighlightBox title="NOTE:" color="red">
+                    <p className="text-sm">
+                      To ensure accuracy and consistency in processing
+                      transactions,{" "}
+                      <span className="font-semibold">
+                        kindly note that all monetary values must be submitted
+                        in Kobo (₦’s subunit).
+                      </span>
+                    </p>
+                  </HighlightBox>
                 </div>
 
                 <div className="grid gap-3">

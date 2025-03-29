@@ -342,7 +342,11 @@ export default function ShippingMethodForm() {
                 )}
               />
 
-              <Button type="submit" disabled={isSubmitting} className="w-full">
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-blue-500 hover:bg-udua-blue-primary"
+              >
                 {isSubmitting ? "Saving..." : "Create Shipping Method"}
               </Button>
             </form>

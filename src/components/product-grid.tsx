@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { BellIcon, XCircle } from "lucide-react";
 import { shimmer, toBase64 } from "@/lib/image";
-import { addCommasToNumber } from "@/lib/utils";
+import { formatNaira } from "@/lib/utils";
 import type { ForProductGrid } from "@/types";
 
 /**
@@ -108,8 +108,8 @@ export function ProductGrid({ products }: ForProductGrid) {
                   {isPhysicalProduct ? product.name : product.title}
                 </h3>
                 {price !== null && (
-                  <p className="mt-1 font-medium" aria-label="Product price">
-                    &#8358; {addCommasToNumber(price)}
+                  <p className="mt-1 font-bold" aria-label="Product price">
+                    {formatNaira(price)}
                   </p>
                 )}
               </Link>

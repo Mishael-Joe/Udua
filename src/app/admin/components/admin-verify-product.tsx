@@ -27,7 +27,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { withAdminAuth } from "./auth/with-admin-auth";
 import { PERMISSIONS } from "@/lib/rbac/permissions";
-import { addCommasToNumber } from "@/lib/utils";
+import { formatNaira } from "@/lib/utils";
 
 type UnverifiedProducts = Products & {
   createdAt: Date;
@@ -105,8 +105,6 @@ function UnverifiedProducts() {
                     <TableHead>Product Name</TableHead>
                     <TableHead>Product ID</TableHead>
                     <TableHead>Product Price</TableHead>
-                    {/* <TableHead>Payment Status</TableHead> */}
-                    {/* <TableHead>Date</TableHead> */}
                     <TableHead>More</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -133,22 +131,11 @@ function UnverifiedProducts() {
 
                       <TableCell className="font-medium">
                         {product.productType === "physicalproducts" ? (
-                          <p>{addCommasToNumber(product.price!)}</p>
+                          <p>{formatNaira(product.price!)}</p>
                         ) : (
                           <p>Size Base</p>
                         )}
                       </TableCell>
-
-                      {/* <TableCell>
-                        {new Date(product.createdAt).toLocaleDateString(
-                          "en-US",
-                          {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          }
-                        )}
-                      </TableCell> */}
 
                       <TableCell>
                         <DropdownMenu>

@@ -14,7 +14,7 @@ import {
   Loader,
   Clipboard,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatNaira } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -286,7 +286,7 @@ function SettlementDetailsPage({ params }: { params: { slug: string } }) {
               />
               <DetailItem
                 label="Total Amount"
-                value={`₦${settlement.mainOrderID.totalAmount.toLocaleString()}`}
+                value={formatNaira(settlement.mainOrderID.totalAmount)}
               />
             </CardContent>
           </Card>
@@ -328,7 +328,7 @@ function SettlementDetailsPage({ params }: { params: { slug: string } }) {
             <CardContent className="pt-4 space-y-3">
               <DetailItem
                 label="Settlement Amount"
-                value={`₦${settlement.settlementAmount.toLocaleString()}`}
+                value={formatNaira(settlement.settlementAmount)}
               />
               <DetailItem
                 label="Payout Method"
@@ -360,7 +360,7 @@ function SettlementDetailsPage({ params }: { params: { slug: string } }) {
                 />
                 <DetailItem
                   label="Shipping Cost"
-                  value={`₦${subOrder.shippingMethod.price.toLocaleString()}`}
+                  value={formatNaira(subOrder.shippingMethod.price)}
                 />
                 <DetailItem
                   label="Delivery Status"
@@ -413,7 +413,7 @@ function SettlementDetailsPage({ params }: { params: { slug: string } }) {
                       {product.physicalProducts || product.digitalProducts}
                     </TableCell>
                     <TableCell className="text-right">
-                      ₦{product.price.toLocaleString()}
+                      {formatNaira(product.price)}
                     </TableCell>
                     <TableCell className="text-right">
                       {product.quantity}

@@ -11,7 +11,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { formatCurrency } from "@/lib/utils";
+import { formatNaira } from "@/lib/utils";
 import ProductItem from "./product-item";
 import { Truck } from "lucide-react";
 import { GroupedCart, ShippingMethod } from "../page";
@@ -92,7 +92,7 @@ export default function StoreCartGroup({
                 {selectedShippingMethod && (
                   <span className="ml-2 text-sm text-muted-foreground">
                     ({selectedShippingMethod.name}:{" "}
-                    {formatCurrency(selectedShippingMethod.price)})
+                    {formatNaira(selectedShippingMethod.price)})
                   </span>
                 )}
               </div>
@@ -134,7 +134,7 @@ export default function StoreCartGroup({
                           )}
                         </div>
                         <span className="font-medium">
-                          {formatCurrency(method.price)}
+                          {formatNaira(method.price)}
                         </span>
                       </Label>
                     </div>

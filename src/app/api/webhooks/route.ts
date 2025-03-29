@@ -55,7 +55,7 @@ export async function POST(request: Request) {
         status,
         paymentType: transactionData.channel,
         postalCode: metadata.postal_code,
-        amount: transactionData.amount / 100,
+        amount: transactionData.amount,
         transactionReference,
       });
 

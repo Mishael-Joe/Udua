@@ -71,7 +71,7 @@ const configItems = (slug: string) => [
   },
   {
     title: "Manage Shipping Methods",
-    url: `/store/${slug}/dash-board`,
+    url: `/store/${slug}/shipping-methods`,
     icon: Truck,
   },
   {

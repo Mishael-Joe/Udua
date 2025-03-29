@@ -33,7 +33,7 @@ import { format } from "date-fns";
 import { ProductGrid } from "./product-grid";
 import { bookCategories, productCategories } from "@/constant/constant";
 import { Switch } from "./ui/switch";
-import { addCommasToNumber } from "@/lib/utils";
+import { formatNaira } from "@/lib/utils";
 import { CombinedProduct } from "@/types";
 
 // Define sorting options
@@ -369,10 +369,10 @@ export default function ProductFilters({ products }: Product) {
                 />
                 <div className="flex items-center justify-between">
                   <span className="text-sm">
-                    &#8358;{addCommasToNumber(filters.minPrice)}
+                    {formatNaira(filters.minPrice)}
                   </span>
                   <span className="text-sm">
-                    &#8358;{addCommasToNumber(filters.maxPrice)}
+                    {formatNaira(filters.maxPrice)}
                   </span>
                 </div>
               </div>
