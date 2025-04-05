@@ -20,6 +20,7 @@ export type User = {
   varifyTokenExpiry: Date;
   stores: {
     _id: string;
+    storeId: string;
     name: string;
   }[];
 };

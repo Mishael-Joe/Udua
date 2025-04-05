@@ -13,6 +13,7 @@ import {
   Banknote,
   NotebookText,
   Store,
+  Handshake,
 } from "lucide-react";
 
 import {
@@ -46,7 +47,7 @@ const menuItems = (slug: string) => [
   { title: "Home", url: `/store/${slug}/my-store`, icon: Home },
   { title: "Orders", url: `/store/${slug}/dash-board`, icon: FileBoxIcon },
   { title: "Payout", url: `/store/${slug}/payout`, icon: WalletIcon },
-  //   { title: "Security", url: `/store/${slug}/security`, icon: ShieldAlertIcon },
+  { title: "Deals", url: `/store/${slug}/deals`, icon: Handshake },
 ];
 
 const inventoryItems = (slug: string) => [

@@ -2,54 +2,10 @@
 
 import { CartItems } from "@/components/cart-items";
 import { CartSummary } from "@/components/cart-summary";
-import React, { useEffect, useCallback, useMemo, useState } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import axios from "axios";
 import { CombinedProduct } from "@/types";
-import Link from "next/link";
-import Image from "next/image";
-import { formatNaira } from "@/lib/utils";
-import { shimmer, toBase64 } from "@/lib/image";
 import { RecentProductsSection } from "@/components/recently-viewed-products";
-
-// Reusable Product Card Component
-const ProductCard = ({ product }: { product: CombinedProduct }) => {
-  const isPhysical = product.productType === "physicalproducts";
-  const imageUrl = isPhysical ? product.images[0] : product.coverIMG[0];
-  const title = isPhysical ? product.name : product.title;
-  const price = isPhysical
-    ? product.price ?? product.sizes?.[0]?.price
-    : product.price;
-
-  // Memoize blur data URL generation
-  const blurData = useMemo(
-    () => `data:image/svg+xml;base64,${toBase64(shimmer(300, 150))}`,
-    []
-  );
-
-  return (
-    <Link
-      href={`/product/${product._id}`}
-      className="group text-sm flex flex-col w-40 md:w-52"
-      aria-label={`View ${title}`}
-    >
-      <div className="aspect-square w-40 h-40 md:h-52 relative overflow-hidden rounded-lg border-2 border-gray-200 bg-gray-100 group-hover:opacity-75 dark:border-gray-800">
-        <Image
-          placeholder="blur"
-          blurDataURL={blurData}
-          src={imageUrl}
-          alt={title}
-          fill
-          className="object-cover"
-          sizes="(max-width: 640px) 40vw, 20vw"
-        />
-      </div>
-
-      <h3 className="mt-1 font-medium line-clamp-1 w-40 md:w-52">{title}</h3>
-
-      {price && <p className="mt-1 font-medium">{formatNaira(price)}</p>}
-    </Link>
-  );
-};
 
 export default function Page() {
   const [recentlyViewedProducts, setRecentlyViewedProducts] = useState<

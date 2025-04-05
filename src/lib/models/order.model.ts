@@ -14,7 +14,7 @@ interface ISubOrder {
   shippingMethod?: {
     name: string;
     price: number;
-    estimatedDeliveryDays?: number;
+    estimatedDeliveryDays?: string; // i.e "April 1st 2025 - April 3rd 2025"
     description?: string;
   };
   trackingNumber?: string;
@@ -102,7 +102,7 @@ const SubOrderSchema = new Schema<ISubOrder>({
     // Changed from String to Object
     name: { type: String },
     price: { type: Number },
-    estimatedDeliveryDays: { type: Number },
+    estimatedDeliveryDays: { type: Number }, // i.e "April 1st 2025 - April 3rd 2025"
     description: { type: String },
   }, // Optional shipping method for the sub-order
   trackingNumber: { type: String }, // Optional tracking number for the sub-order

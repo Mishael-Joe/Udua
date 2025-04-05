@@ -4,6 +4,32 @@ import { connectToDB } from "@/lib/mongoose";
 import { getStoreIDFromToken } from "@/lib/helpers/getStoreIDFromToken";
 import Store from "@/lib/models/store.model";
 
+export async function GET(request: NextRequest) {
+  try {
+    await connectToDB();
+    const storeID = await getStoreIDFromToken(request);
+
+    if (!storeID) {
+      return NextResponse.json(
+        { error: "Unauthorized: Store ID missing" },
+        { status: 401 }
+      );
+    }
+
+    const store = await Store.findById(storeID).select("shippingMethods");
+    if (!store) {
+      return NextResponse.json({ error: "Store not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({
+      shippingMethods: store.shippingMethods,
+    });
+  } catch (error: any) {
+    console.error("Error fetching shipping methods:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     await connectToDB();

@@ -18,7 +18,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 401 });
     }
 
-    const existingStore = await Store.find({ storeEmail: store.storeEmail });
+    const existingStore = await Store.findOne({ storeEmail: store.storeEmail });
+    // console.log("existingStore", existingStore);
     if (existingStore) {
       return NextResponse.json(
         { error: "This Email has been used already." },
@@ -43,7 +44,7 @@ export async function POST(request: NextRequest) {
 
     // Update the user's stores array
     await User.findByIdAndUpdate(store.storeOwner, {
-      $push: { stores: res._id },
+      $push: { stores: { storeId: res._id } },
     });
 
     return NextResponse.json(

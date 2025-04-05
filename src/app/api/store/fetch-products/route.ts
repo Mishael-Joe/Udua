@@ -20,7 +20,8 @@ export async function POST(request: NextRequest) {
     const storeProducts = await Product.find({
       storeID: storeID.toString(),
     })
-      .select("_id images coverIMG productType name title")
+      .select("_id productType name")
+      // .select("_id images coverIMG productType name title")
       .exec();
 
     // console.log(`storeProducts`, storeProducts);

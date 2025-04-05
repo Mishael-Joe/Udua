@@ -1,83 +1,74 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { DealAnalyticsChart } from "./deals/DealAnalyticsChart";
-import { useToast } from "@/components/ui/use-toast";
-
+import { getStoreDeals } from "@/lib/actions/deal.actions";
+import DealCard from "@/components/deals/deal-card";
 import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Plus } from "lucide-react";
 import Link from "next/link";
 
-interface DealAnalyticsData {
-  title: string;
-  redemptionCount: number;
-  revenueGenerated: number;
-}
+export async function DealsPage({ params }: { params: { slug: string } }) {
+  // In a real app, you would get the storeId from the session or params
+  const storeId = params.slug; // Replace with actual store ID
 
-function Deals({ params }: { params: { slug: string } }) {
-  const { toast } = useToast();
-  const [data, setData] = useState<DealAnalyticsData[]>([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.post("/api/store/deals/analytics");
-        // console.log("response", response);
-        const formattedData = response.data.data.map((deal: any) => ({
-          title: deal.title,
-          redemptionCount: deal.redemptionCount,
-          revenueGenerated: deal.revenueGenerated,
-        }));
-        // console.log("formattedData", formattedData);
-        setData(formattedData);
-      } catch (error) {
-        toast({
-          title: "Error fetching analytics",
-          variant: "destructive",
-        });
-      }
-    };
-
-    fetchData();
-  }, [toast]);
+  const { success, deals, error } = await getStoreDeals(storeId);
 
   return (
-    <main className="flex flex-col">
-      {/* Page Header with Semantic HTML */}
-      <header className="grid items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-        <div className="flex items-center py-6">
-          <h1 className="text-lg font-semibold md:text-2xl">Deals</h1>
-          <div className="ml-auto flex items-center gap-2">
-            <Link
-              href={`/store/${params.slug}/create-deal`}
-              passHref
-              legacyBehavior
-            >
-              <Button size="sm" className="h-8 gap-1">
-                <PlusCircle className="h-3.5 w-3.5" aria-hidden="true" />
-                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                  Create a Deal
-                </span>
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      {/* Product Table Section */}
-      {/* <section
-        aria-labelledby="products-table-heading"
-        className="grid gap-4 md:gap-8 lg:grid-cols-1 xl:grid-cols-1"
-      ></section> */}
-      <div className="px-6">
-        <h1 className="text-2xl font-bold mb-6">Analytics</h1>
-        <div className="bg-white p-4 rounded-lg shadow pl-0">
-          <DealAnalyticsChart data={data} />
-        </div>
+    <div className="container mx-auto py-8">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Store Deals</h1>
+        <Button asChild className="bg-blue-500 hover:bg-udua-blue-primary">
+          <Link href={`/store/${storeId}/deals/create`}>
+            <Plus className="mr-2 h-4 w-4" />
+            Create Deal
+          </Link>
+        </Button>
       </div>
-    </main>
+
+      {error && (
+        <Card className="mb-6">
+          <CardContent className="pt-6">
+            <p className="text-destructive">Error loading deals: {error}</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {success && deals!.length === 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>No Deals Found</CardTitle>
+            <CardDescription>
+              You haven't created any deals yet. Create your first deal to
+              attract more customers!
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button asChild className="bg-blue-500 hover:bg-udua-blue-primary">
+              <Link href={`/store/${storeId}/deals/create`}>
+                <Plus className="mr-2 h-4 w-4" />
+                Create Your First Deal
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {success && deals!.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {deals!.map((deal) => (
+            <DealCard
+              key={deal._id}
+              deal={deal}
+              // onEdit={(id) => console.log(`Edit deal ${id}`)}
+              // onDelete={(id) => console.log(`Delete deal ${id}`)}
+            />
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
-
-export default Deals;

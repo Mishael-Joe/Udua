@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -15,11 +15,19 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Trash } from "lucide-react";
+import { Edit, Plus, Trash } from "lucide-react";
 import axios from "axios";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Form validation schema
 const formSchema = z.object({
@@ -39,11 +47,33 @@ const formSchema = z.object({
     .optional(),
 });
 
+interface ShippingMethod {
+  name: string;
+  price: number;
+  estimatedDeliveryDays?: number;
+  isActive: boolean;
+  description?: string;
+  applicableRegions?: string[];
+  conditions?: {
+    minOrderValue?: number;
+    maxOrderValue?: number;
+    minWeight?: number;
+    maxWeight?: number;
+  };
+}
+
 export default function ShippingMethodForm() {
   const { toast } = useToast();
   const [regions, setRegions] = useState<string[]>([]);
   const [newRegion, setNewRegion] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [shippingMethods, setShippingMethods] = useState<ShippingMethod[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentMethod, setCurrentMethod] = useState<ShippingMethod | null>(
+    null
+  );
+  const MAX_METHODS = 3;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -53,14 +83,40 @@ export default function ShippingMethodForm() {
     },
   });
 
+  // Fetch existing shipping methods on component mount
+  useEffect(() => {
+    const fetchShippingMethods = async () => {
+      try {
+        const response = await axios.get("/api/store/shipping-methods");
+        setShippingMethods(response.data.shippingMethods);
+      } catch (error) {
+        console.error("Error fetching shipping methods:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load shipping methods",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchShippingMethods();
+  }, []);
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      setIsSubmitting(true);
-      // Add regions to form values
-      const fullValues = { ...values, applicableRegions: regions };
-      //   console.log("fullValues", fullValues);
+      // Check maximum methods limit
+      if (shippingMethods.length >= MAX_METHODS) {
+        toast({
+          title: "Limit Reached",
+          description: `Maximum of ${MAX_METHODS} shipping methods allowed`,
+          variant: "destructive",
+        });
+        return;
+      }
 
-      // Call your API endpoint here
+      setIsSubmitting(true);
+      const fullValues = { ...values, applicableRegions: regions };
+
       const response = await axios.post("/api/store/shipping-methods", {
         fullValues,
       });
@@ -72,6 +128,9 @@ export default function ShippingMethodForm() {
         });
         form.reset();
         setRegions([]);
+        // Refresh the methods list
+        const refreshResponse = await axios.get("/api/store/shipping-methods");
+        setShippingMethods(refreshResponse.data.shippingMethods);
       }
     } catch (error: any) {
       const { response } = error;
@@ -95,6 +154,23 @@ export default function ShippingMethodForm() {
     }
   }
 
+  const handleEditMethod = (method: ShippingMethod) => {
+    setIsEditing(true);
+    setCurrentMethod(method);
+    form.reset({
+      ...method,
+      conditions: method.conditions || {},
+    });
+    setRegions(method.applicableRegions || []);
+  };
+
+  const cancelEdit = () => {
+    setIsEditing(false);
+    setCurrentMethod(null);
+    form.reset();
+    setRegions([]);
+  };
+
   const addRegion = () => {
     if (newRegion.trim()) {
       setRegions([...regions, newRegion.trim()]);
@@ -107,16 +183,96 @@ export default function ShippingMethodForm() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="max-w-7xl mx-auto p-6 space-y-8">
+      {/* Existing Methods Section */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">
-            Add Shipping Method
+          <CardTitle className="text-2xl font-bold flex items-center justify-between">
+            <span>Shipping Methods</span>
+            <Badge variant="outline">
+              {shippingMethods.length}/{MAX_METHODS}
+            </Badge>
           </CardTitle>
+          <CardDescription>
+            Manage your store's shipping methods and configurations
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="space-y-4">
+              {[...Array(3)].map((_, i) => (
+                <Skeleton key={i} className="h-[120px] w-full rounded-lg" />
+              ))}
+            </div>
+          ) : shippingMethods.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {shippingMethods.map((method, index) => (
+                <Card key={index} className="relative">
+                  <CardContent className="p-6 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold">{method.name}</h3>
+                      <Badge
+                        variant={method.isActive ? "default" : "secondary"}
+                      >
+                        {method.isActive ? "Active" : "Inactive"}
+                      </Badge>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Price:</span>
+                        <span>₦{(method.price / 100).toFixed(2)}</span>
+                      </div>
+                      {method.estimatedDeliveryDays && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">
+                            Delivery Days:
+                          </span>
+                          <span>{method.estimatedDeliveryDays}</span>
+                        </div>
+                      )}
+                    </div>
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => handleEditMethod(method)}
+                    >
+                      <Edit className="h-4 w-4 mr-2" />
+                      Edit Method
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              No shipping methods configured
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Add/Edit Method Form */}
+      <Card
+        className={
+          shippingMethods.length >= MAX_METHODS && !isEditing
+            ? "opacity-50 pointer-events-none"
+            : ""
+        }
+      >
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold">
+            {isEditing ? `Edit ${currentMethod?.name}` : "Add Shipping Method"}
+          </CardTitle>
+          <CardDescription>
+            {shippingMethods.length >= MAX_METHODS && !isEditing
+              ? "Maximum methods reached. Remove existing methods to add new ones."
+              : "Configure new shipping method for your store"}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* Keep existing form fields */}
               {/* Basic Information Section */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
@@ -342,13 +498,30 @@ export default function ShippingMethodForm() {
                 )}
               />
 
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-blue-500 hover:bg-udua-blue-primary"
-              >
-                {isSubmitting ? "Saving..." : "Create Shipping Method"}
-              </Button>
+              <div className="flex gap-4">
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="flex-1 bg-blue-500 hover:bg-udua-blue-primary"
+                >
+                  {isSubmitting
+                    ? "Saving..."
+                    : isEditing
+                    ? "Update Method"
+                    : "Create Method"}
+                </Button>
+
+                {isEditing && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="flex-1"
+                    onClick={cancelEdit}
+                  >
+                    Cancel Edit
+                  </Button>
+                )}
+              </div>
             </form>
           </Form>
         </CardContent>

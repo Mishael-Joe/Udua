@@ -150,7 +150,7 @@ const Profile = () => {
           {/* Store Section */}
           {user.stores.length > 0 && (
             <StoreSection
-              storeId={user.stores[0]._id}
+              storeId={user.stores[0].storeId}
               userName={user.firstName}
             />
           )}

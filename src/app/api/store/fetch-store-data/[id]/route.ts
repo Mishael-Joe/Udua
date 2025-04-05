@@ -3,6 +3,7 @@ import { connectToDB } from "@/lib/mongoose";
 import Store from "@/lib/models/store.model";
 import Product from "@/lib/models/product.model";
 import EBook from "@/lib/models/digital-product.model";
+import mongoose from "mongoose";
 
 export async function POST(
   request: NextRequest,
@@ -12,7 +13,17 @@ export async function POST(
     // Connect to the database
     await connectToDB();
     const { id } = await params;
-    // console.log("id", id);
+
+    // Log the ID to verify it
+    // console.log("Store ID:", id);
+
+    // Validate the ID format
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json(
+        { error: "Invalid Store ID format" },
+        { status: 400 }
+      );
+    }
 
     if (!id) {
       return NextResponse.json(
@@ -49,8 +60,11 @@ export async function POST(
 
     // Combine physicalProducts and digitalProducts into one array
     const storeItems = [
-      ...store.physicalProducts.map((product: any) => ({ ...product._doc })),
-      ...store.digitalProducts.map((ebook: any) => ({ ...ebook._doc })),
+      ...(store.physicalProducts?.map((product: any) => ({
+        ...product._doc,
+      })) || []),
+      ...(store.digitalProducts?.map((ebook: any) => ({ ...ebook._doc })) ||
+        []),
     ];
 
     // Replace the products field with storeItems and remove the ebooks field

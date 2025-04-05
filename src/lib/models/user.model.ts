@@ -16,7 +16,7 @@ interface IUser extends Document {
   isVerified: boolean;
   followingStores: mongoose.Schema.Types.ObjectId[];
   stores: {
-    store: mongoose.Schema.Types.ObjectId;
+    storeId: mongoose.Schema.Types.ObjectId;
   }[];
   forgotpasswordToken?: string;
   forgotpasswordTokenExpiry?: Date;
@@ -39,7 +39,7 @@ const userSchema = new Schema<IUser>(
     isVerified: { type: Boolean, default: false },
     followingStores: [{ type: mongoose.Schema.Types.ObjectId, ref: "stores" }],
     stores: [
-      { store: { type: mongoose.Schema.Types.ObjectId, ref: "stores" } },
+      { storeId: { type: mongoose.Schema.Types.ObjectId, ref: "stores" } },
     ],
     forgotpasswordToken: String,
     forgotpasswordTokenExpiry: Date,
