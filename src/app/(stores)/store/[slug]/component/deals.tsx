@@ -1,5 +1,5 @@
 import { getStoreDeals } from "@/lib/actions/deal.actions";
-import DealCard from "@/components/deals/deal-card";
+import StoreDealCard from "./deals/store-deal-card";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,8 +12,7 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 
 export async function DealsPage({ params }: { params: { slug: string } }) {
-  // In a real app, you would get the storeId from the session or params
-  const storeId = params.slug; // Replace with actual store ID
+  const storeId = params.slug;
 
   const { success, deals, error } = await getStoreDeals(storeId);
 
@@ -60,9 +59,10 @@ export async function DealsPage({ params }: { params: { slug: string } }) {
       {success && deals!.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {deals!.map((deal) => (
-            <DealCard
+            <StoreDealCard
               key={deal._id}
               deal={deal}
+              params={params}
               // onEdit={(id) => console.log(`Edit deal ${id}`)}
               // onDelete={(id) => console.log(`Delete deal ${id}`)}
             />

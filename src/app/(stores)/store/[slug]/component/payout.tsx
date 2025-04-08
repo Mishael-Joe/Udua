@@ -94,9 +94,6 @@ const SecurityCard = ({
           <div className="text-3xl font-bold">
             {formatNaira(totalAvailablePayout || 0)}
           </div>
-          {/* {item.title === "Security" && (
-            <Progress value={75} className="h-2 mt-4" />
-          )} */}
         </CardContent>
       )}
     </Card>
@@ -153,7 +150,7 @@ export default function Payout({ params }: { params: { slug: string } }) {
         (sum, product) =>
           currencyOperations.add(
             sum,
-            calculateCommission(product.price).settleAmount
+            calculateCommission(product.priceAtOrder).settleAmount
           ),
         0
       )
@@ -163,8 +160,8 @@ export default function Payout({ params }: { params: { slug: string } }) {
   if (loading) {
     return (
       <div className="p-8 space-y-6">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {[...Array(3)].map((_, i) => (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+          {[...Array(2)].map((_, i) => (
             <Skeleton key={i} className="h-[180px] rounded-xl" />
           ))}
         </div>
@@ -180,7 +177,7 @@ export default function Payout({ params }: { params: { slug: string } }) {
     <main className="p-4 md:p-8 space-y-8">
       <div className="space-y-4">
         <h1 className="text-2xl font-bold">Payout Dashboard</h1>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
           {security.map((item, i) => (
             <SecurityCard
               key={i}
@@ -232,7 +229,8 @@ export default function Payout({ params }: { params: { slug: string } }) {
                         order.subOrders[0].products.reduce(
                           (sum, product) =>
                             sum +
-                            calculateCommission(product.price).settleAmount *
+                            calculateCommission(product.priceAtOrder)
+                              .settleAmount *
                               product.quantity,
                           0
                         )

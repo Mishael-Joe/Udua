@@ -163,3 +163,133 @@ export async function POST(request: Request) {
 //     );
 //   }
 // }
+
+let itemsInCart = [
+  {
+    storeID: "66fbae5615b9fec5eac1b9bb",
+    storeName: "Mish Brand",
+    products: [
+      {
+        product: {
+          _id: "670075f70d87b0b2b62ad1aa",
+          storeID: "66fbae5615b9fec5eac1b9bb",
+          productType: "physicalproducts",
+          images: [
+            "https://res.cloudinary.com/dhngvbjtz/image/upload/v1728083446/qfewevb0j8yfakrjxgsv.jpg",
+          ],
+          name: "Roberto Cavalli Oil Perfume",
+          price: "550000",
+          category: ["Body_Care_Products"],
+        },
+        storeID: "66fbae5615b9fec5eac1b9bb",
+        quantity: "1",
+        productType: "physicalproducts",
+        priceAtAdd: "467500",
+        originalPrice: "550000",
+        dealInfo: {
+          dealId: "67eff726953998e12bc20870",
+          dealType: "flash_sale",
+          value: "15",
+          name: "Summer Sale",
+          endDate: "2025-04-10T23:00:00.000Z",
+          _id: "67f19619ed29df4814cc4f2b",
+        },
+        _id: "67f19619ed29df4814cc4f2a",
+      },
+      {
+        selectedSize: {
+          size: "43",
+          price: "2200000",
+          quantity: "4",
+        },
+        product: {
+          _id: "67859c2a0ae0ef727dae0573",
+          storeID: "66fbae5615b9fec5eac1b9bb",
+          productType: "physicalproducts",
+          images: [
+            "https://res.cloudinary.com/dhngvbjtz/image/upload/v1736809498/posa5etppfozu5snpndo.jpg",
+          ],
+          name: "Barker Emerson Oxford Shoes",
+          sizes: [
+            {
+              size: "43",
+              price: "2200000",
+              quantity: "4",
+              _id: "67859c2a0ae0ef727dae0574",
+            },
+            {
+              size: "44",
+              price: "2450000",
+              quantity: "9",
+              _id: "67859c2a0ae0ef727dae0575",
+            },
+            {
+              size: "45",
+              price: "2600000",
+              quantity: "5",
+              _id: "67859c2a0ae0ef727dae0576",
+            },
+          ],
+          category: ["Fashion"],
+        },
+        storeID: "66fbae5615b9fec5eac1b9bb",
+        quantity: "1",
+        productType: "physicalproducts",
+        priceAtAdd: "1870000",
+        originalPrice: "2200000",
+        dealInfo: {
+          dealId: "67eff726953998e12bc20870",
+          dealType: "flash_sale",
+          value: "15",
+          name: "Summer Sale",
+          endDate: "2025-04-10T23:00:00.000Z",
+          _id: "67f1969aed29df4814cc50dc",
+        },
+        _id: "67f1969aed29df4814cc50db",
+      },
+      {
+        product: {
+          _id: "675e786172b144a2ec0fce92",
+          storeID: "66fbae5615b9fec5eac1b9bb",
+          title:
+            "Atomic Habits: Tiny Changes, Remarkable Results by James Clear",
+          category: "Non-Fiction",
+          price: "450000",
+          coverIMG: [
+            "https://res.cloudinary.com/dhngvbjtz/image/upload/v1734244448/gjzx5wxant0aii1hqvhi.png",
+          ],
+          productType: "digitalproducts",
+        },
+        storeID: "66fbae5615b9fec5eac1b9bb",
+        quantity: "1",
+        productType: "digitalproducts",
+        priceAtAdd: "450000",
+        originalPrice: "450000",
+        _id: "67f33392a5c0a7c7bb5dc5a9",
+      },
+    ],
+    shippingMethods: [
+      {
+        name: "Standard Shipping",
+        price: "120000",
+        estimatedDeliveryDays: "5",
+        isActive: "true",
+        description: "Within 4-5 business days.",
+      },
+      {
+        name: "Express",
+        price: "250000",
+        estimatedDeliveryDays: "3",
+        isActive: "true",
+        description: "Within 3-4 business days.",
+      },
+    ],
+    selectedShippingMethod: {
+      name: "Standard Shipping",
+      price: "120000",
+      estimatedDeliveryDays: "5",
+      isActive: "true",
+      description: "Within 4-5 business days.",
+    },
+  },
+];

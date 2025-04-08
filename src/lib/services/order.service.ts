@@ -4,90 +4,9 @@ import Store from "@/lib/models/store.model";
 import Order from "@/lib/models/order.model";
 import EBook from "@/lib/models/digital-product.model";
 import Cart from "@/lib/models/cart.model";
+import { DealService } from "./deal.service";
 import { sendEmail } from "./email.service";
-import {
-  calculateEstimatedDeliveryDays,
-  currencyOperations,
-  calculateCommission,
-} from "../utils";
-
-// Type definitions
-interface ProductData {
-  _id: string;
-  storeID: string;
-  productType: "physicalproducts" | "digitalproducts";
-  name?: string;
-  title?: string;
-  price: number;
-  images?: string[];
-  coverIMG?: string[];
-  category: string | string[];
-  sizes?: Array<{
-    size: string;
-    price: number;
-    quantity: number;
-    _id: string;
-  }>;
-}
-
-interface SelectedSize {
-  size: string;
-  price: number;
-  quantity: number;
-}
-
-interface CartProduct {
-  product: ProductData;
-  storeID: string;
-  quantity: number;
-  productType: "physicalproducts" | "digitalproducts";
-  _id: string;
-  selectedSize?: SelectedSize;
-  price: number;
-}
-
-interface ShippingMethod {
-  name: string;
-  price: number;
-  estimatedDeliveryDays: number;
-  isActive: boolean;
-  description?: string;
-}
-
-interface CartStoreGroup {
-  storeID: string;
-  products: CartProduct[];
-  selectedShippingMethod: ShippingMethod;
-}
-
-interface OrderData {
-  cartItems: CartStoreGroup[];
-  userID: string;
-  userEmail: string;
-  shippingAddress: string;
-  shippingMethod?: string;
-  status: string;
-  paymentType: string;
-  postalCode: string;
-  amount: number;
-  transactionReference: string;
-}
-
-interface OrderProductItem {
-  physicalProducts?: mongoose.Types.ObjectId | string;
-  digitalProducts?: mongoose.Types.ObjectId | string;
-  store: string;
-  quantity: number;
-  price: number;
-  selectedSize?: {
-    size: string;
-    price: number;
-  };
-}
-
-interface StoreOrdersMap {
-  [storeId: string]: OrderProductItem[];
-}
+import { currencyOperations, calculateCommission } from "../utils";
 
 interface InsufficientStock {
   productId: string;
@@ -109,79 +28,213 @@ interface NotificationItem {
  * @param orderData The complete order data from the checkout
  * @returns The created order ID
  */
-export async function processOrder(orderData: OrderData): Promise<string> {
+export async function processOrder(orderData: any): Promise<string> {
   // Start a MongoDB session for transaction support
   const session = await mongoose.startSession();
   session.startTransaction();
 
   try {
     // Initialize collections for tracking
-    const storeOrders: StoreOrdersMap = {};
+    const storeSubOrders: Record<
+      string,
+      {
+        store: string;
+        products: any[];
+        totalAmount: number;
+        originalSubtotal: number;
+        savings: number;
+        appliedDeals: any[];
+        shippingMethod?: {
+          name: string;
+          price: number;
+          estimatedDeliveryDays: string;
+          description: string;
+        };
+        deliveryStatus: string;
+        payoutStatus: string;
+      }
+    > = {};
     const notifications: NotificationItem[] = [];
     const insufficientStockItems: InsufficientStock[] = [];
-    const digitalProductDownloads: Array<{
-      email: string;
-      title: string;
-      url: string;
-    }> = [];
+    const digitalProductDownloads = [];
+    const dealUpdates = [];
 
     // Process each store's cart items
     for (const storeGroup of orderData.cartItems) {
       const { storeID, products, selectedShippingMethod } = storeGroup;
 
-      // Initialize store order group if it doesn't exist
-      if (!storeOrders[storeID]) {
-        storeOrders[storeID] = [];
+      // Initialize store sub-order if it doesn't exist
+      if (!storeSubOrders[storeID]) {
+        storeSubOrders[storeID] = {
+          store: storeID,
+          products: [],
+          totalAmount: 0,
+          originalSubtotal: 0,
+          savings: 0,
+          appliedDeals: [],
+          shippingMethod: selectedShippingMethod
+            ? {
+                name: selectedShippingMethod.name,
+                price: Number(selectedShippingMethod.price),
+                estimatedDeliveryDays:
+                  selectedShippingMethod.estimatedDeliveryDays || "5-7 days",
+                description: selectedShippingMethod.description || "",
+              }
+            : undefined,
+          deliveryStatus: "Order Placed",
+          payoutStatus: "",
+        };
       }
 
       // Process each product in the store group
       for (const item of products) {
         // Convert string values to numbers for consistency
         const quantity = Number(item.quantity);
-        const price = Number(item.price);
+        const priceAtAdd = Number(item.priceAtAdd);
+        const originalPrice = Number(item.originalPrice);
 
         if (item.productType === "physicalproducts") {
           // Process physical product
-          const stockValidation = await validateAndUpdatePhysicalProductStock(
-            item,
-            quantity,
+          const product = await Product.findById(item.product._id).session(
             session
           );
 
-          if (!stockValidation.success) {
+          if (!product) {
+            throw new Error(`Product not found: ${item.product._id}`);
+          }
+
+          // Validate stock
+          let hasStock = true;
+          let availableQuantity = 0;
+
+          if (item.selectedSize) {
+            // Size-based product
+            const size = product.sizes.find(
+              (s) => s.size === item.selectedSize.size
+            );
+            if (!size) {
+              throw new Error(
+                `Size ${item.selectedSize.size} not found for product ${product.name}`
+              );
+            }
+
+            availableQuantity = size.quantity;
+            if (size.quantity < quantity) {
+              hasStock = false;
+            } else {
+              // Update stock
+              size.quantity -= quantity;
+            }
+          } else {
+            // Regular product
+            availableQuantity = product.productQuantity;
+            if (product.productQuantity < quantity) {
+              hasStock = false;
+            } else {
+              // Update stock
+              product.productQuantity -= quantity;
+            }
+          }
+
+          if (!hasStock) {
             insufficientStockItems.push({
               productId: item.product._id,
-              productName: item.product.name || "Unknown Product",
+              productName: product.name || "Unknown Product",
               requestedQuantity: quantity,
-              availableQuantity: stockValidation.availableQuantity,
+              availableQuantity,
               size: item.selectedSize?.size,
             });
             continue;
           }
 
-          // Add to store orders
-          storeOrders[storeID].push({
+          // Save product with updated stock
+          await product.save({ session });
+
+          // Add to store sub-orders
+          const orderProduct = {
             physicalProducts: item.product._id,
             store: storeID,
             quantity,
-            price: currencyOperations.multiply(price, quantity),
+            priceAtOrder: priceAtAdd,
+            originalPrice,
             selectedSize: item.selectedSize
               ? {
                   size: item.selectedSize.size,
                   price: Number(item.selectedSize.price),
                 }
               : undefined,
-          });
+            dealInfo: (item.dealInfo && item.dealInfo) || null,
+          };
+
+          // Add deal info if a deal was applied
+          if (item.dealInfo) {
+            orderProduct["dealInfo"] = {
+              dealId: item.dealInfo.dealId,
+              dealType: item.dealInfo.dealType,
+              value: item.dealInfo.value,
+              name: item.dealInfo.name,
+            };
+          }
+
+          storeSubOrders[storeID].products.push(orderProduct);
+
+          // Update store totals
+          const itemTotal = currencyOperations.multiply(priceAtAdd, quantity);
+          const originalItemTotal = currencyOperations.multiply(
+            originalPrice,
+            quantity
+          );
+          const itemSavings = originalItemTotal - itemTotal;
+
+          storeSubOrders[storeID].totalAmount = currencyOperations.add(
+            storeSubOrders[storeID].totalAmount,
+            itemTotal
+          );
+
+          storeSubOrders[storeID].originalSubtotal = currencyOperations.add(
+            storeSubOrders[storeID].originalSubtotal,
+            originalItemTotal
+          );
+
+          storeSubOrders[storeID].savings = currencyOperations.add(
+            storeSubOrders[storeID].savings,
+            itemSavings
+          );
 
           // Update store balance and prepare notification
           await updateStoreBalance(
             storeID,
-            currencyOperations.multiply(price, quantity),
-            item.product.name || "Unknown Product",
+            itemTotal,
+            product.name || "Unknown Product",
             quantity,
             session,
             notifications
           );
+
+          // Track deal for analytics update
+          if (item.dealInfo) {
+            dealUpdates.push({
+              dealId: item.dealInfo.dealId,
+              userId: orderData.userID,
+              quantity,
+              discountAmount: itemSavings,
+              orderTotal: itemTotal,
+            });
+
+            // Track applied deals for the store
+            if (
+              !storeSubOrders[storeID].appliedDeals.some(
+                (d) => d.dealId.toString() === item.dealInfo.dealId
+              )
+            ) {
+              storeSubOrders[storeID].appliedDeals.push({
+                dealId: item.dealInfo.dealId,
+                dealType: item.dealInfo.dealType,
+                value: item.dealInfo.value,
+                name: item.dealInfo.name,
+              });
+            }
+          }
         } else if (item.productType === "digitalproducts") {
           // Process digital product
           const digitalProduct = await EBook.findById(item.product._id).session(
@@ -192,13 +245,50 @@ export async function processOrder(orderData: OrderData): Promise<string> {
             throw new Error(`Digital product not found: ${item.product._id}`);
           }
 
-          // Add to store orders
-          storeOrders[storeID].push({
+          // Add to store sub-orders
+          const orderProduct = {
             digitalProducts: item.product._id,
             store: storeID,
             quantity,
-            price: currencyOperations.multiply(price, quantity),
-          });
+            priceAtOrder: priceAtAdd,
+            originalPrice,
+            dealInfo: (item.dealInfo && item.dealInfo) || null,
+          };
+
+          // Add deal info if a deal was applied
+          if (item.dealInfo) {
+            orderProduct["dealInfo"] = {
+              dealId: item.dealInfo.dealId,
+              dealType: item.dealInfo.dealType,
+              value: item.dealInfo.value,
+              name: item.dealInfo.name,
+            };
+          }
+
+          storeSubOrders[storeID].products.push(orderProduct);
+
+          // Update store totals
+          const itemTotal = currencyOperations.multiply(priceAtAdd, quantity);
+          const originalItemTotal = currencyOperations.multiply(
+            originalPrice,
+            quantity
+          );
+          const itemSavings = originalItemTotal - itemTotal;
+
+          storeSubOrders[storeID].totalAmount = currencyOperations.add(
+            storeSubOrders[storeID].totalAmount,
+            itemTotal
+          );
+
+          storeSubOrders[storeID].originalSubtotal = currencyOperations.add(
+            storeSubOrders[storeID].originalSubtotal,
+            originalItemTotal
+          );
+
+          storeSubOrders[storeID].savings = currencyOperations.add(
+            storeSubOrders[storeID].savings,
+            itemSavings
+          );
 
           // Prepare download link for digital product
           if (digitalProduct.s3Key) {
@@ -213,18 +303,51 @@ export async function processOrder(orderData: OrderData): Promise<string> {
           // Update store balance and prepare notification
           await updateStoreBalance(
             storeID,
-            currencyOperations.multiply(price, quantity),
+            itemTotal,
             digitalProduct.title,
             quantity,
             session,
             notifications
           );
+
+          // Track deal for analytics update
+          if (item.dealInfo) {
+            dealUpdates.push({
+              dealId: item.dealInfo.dealId,
+              userId: orderData.userID,
+              quantity,
+              discountAmount: itemSavings,
+              orderTotal: itemTotal,
+            });
+
+            // Track applied deals for the store
+            if (
+              !storeSubOrders[storeID].appliedDeals.some(
+                (d) => d.dealId.toString() === item.dealInfo.dealId
+              )
+            ) {
+              storeSubOrders[storeID].appliedDeals.push({
+                dealId: item.dealInfo.dealId,
+                dealType: item.dealInfo.dealType,
+                value: item.dealInfo.value,
+                name: item.dealInfo.name,
+              });
+            }
+          }
         }
+      }
+
+      // Add shipping cost to store total amount
+      if (selectedShippingMethod) {
+        storeSubOrders[storeID].totalAmount = currencyOperations.add(
+          storeSubOrders[storeID].totalAmount,
+          Number(selectedShippingMethod.price)
+        );
       }
     }
 
     // Check if we have any products to process
-    if (Object.keys(storeOrders).length === 0) {
+    if (Object.keys(storeSubOrders).length === 0) {
       // If there are insufficient stock items, throw an error
       if (insufficientStockItems.length > 0) {
         throw new Error(
@@ -234,63 +357,52 @@ export async function processOrder(orderData: OrderData): Promise<string> {
       throw new Error("No valid products to process in the order");
     }
 
-    // Create sub-orders for each store
-    const subOrders = Object.keys(storeOrders).map((storeId) => {
-      const products = storeOrders[storeId];
+    // Convert storeSubOrders to array for the order
+    const subOrders = Object.values(storeSubOrders);
 
-      // Find the shipping method for this store
-      const storeGroup = orderData.cartItems.find(
-        (group) => group.storeID === storeId
-      );
-      const shippingMethod = storeGroup?.selectedShippingMethod;
-
-      // Calculate total amount for this store's products
-      const productsTotal = products.reduce(
-        (sum, product) => currencyOperations.add(sum, product.price),
-        0
-      );
-      const shippingCost = shippingMethod ? Number(shippingMethod.price) : 0;
-      const totalAmount = currencyOperations.add(productsTotal, shippingCost);
-
-      // Create sub-order object with shipping method as an object
-      return {
-        store: storeId,
-        products: products,
-        totalAmount,
-        shippingMethod: {
-          name: shippingMethod?.name || "Standard Shipping",
-          price: Number(shippingMethod?.price || 0),
-          estimatedDeliveryDays: calculateEstimatedDeliveryDays(
-            Number(shippingMethod?.estimatedDeliveryDays || 5)
-          ),
-          description: shippingMethod?.description || "",
-        },
-        deliveryStatus: "Order Placed",
-      };
-    });
-
-    // Calculate the total amount for the entire order
+    // Calculate the total amount and savings for the entire order
     const orderTotalAmount = subOrders.reduce(
-      (sum, subOrder) => currencyOperations.add(sum, subOrder.totalAmount),
+      (sum, subOrder: any) => currencyOperations.add(sum, subOrder.totalAmount),
       0
     );
+
+    const orderTotalSavings = subOrders.reduce(
+      (sum, subOrder: any) => currencyOperations.add(sum, subOrder.savings),
+      0
+    );
+
+    // Get store IDs for the order
+    const storeIds = Object.keys(storeSubOrders);
 
     // Create the main order with all sub-orders
     const order = new Order({
       user: orderData.userID,
-      stores: Object.keys(storeOrders),
+      stores: storeIds,
       subOrders,
       totalAmount: orderTotalAmount,
-      status: orderData.status,
-      postalCode: orderData.postalCode,
-      shippingAddress: orderData.shippingAddress,
+      totalSavings: orderTotalSavings,
+      status: "processing",
+      postalCode: orderData.postalCode || "",
+      shippingAddress: orderData.shippingAddress || "",
       paymentMethod: orderData.paymentType,
-      paymentStatus: orderData.status === "success" ? "paid" : "declined",
-      transactionReference: orderData.transactionReference,
+      paymentStatus: "paid",
+      paymentReference: orderData.transactionReference,
     });
 
     // Save the order
     const savedOrder = await order.save({ session });
+
+    // Update deal analytics
+    for (const dealUpdate of dealUpdates) {
+      await DealService.updateDealAnalytics(
+        dealUpdate.dealId,
+        dealUpdate.userId,
+        dealUpdate.quantity,
+        dealUpdate.discountAmount,
+        dealUpdate.orderTotal,
+        session
+      );
+    }
 
     // Clear the user's cart
     await Cart.findOneAndUpdate(
@@ -319,62 +431,6 @@ export async function processOrder(orderData: OrderData): Promise<string> {
 }
 
 /**
- * Validates and updates stock for physical products
- */
-async function validateAndUpdatePhysicalProductStock(
-  item: CartProduct,
-  quantity: number,
-  session: mongoose.ClientSession
-): Promise<{ success: boolean; availableQuantity: number }> {
-  const product = await Product.findById(item.product._id).session(session);
-
-  if (!product) {
-    throw new Error(`Product not found: ${item.product._id}`);
-  }
-
-  // Check if the product has sizes and a selected size
-  if (item.selectedSize) {
-    const selectedSize = product.sizes?.find(
-      (size: SelectedSize) => size.size === item.selectedSize?.size
-    );
-
-    if (!selectedSize) {
-      throw new Error(
-        `Size ${item.selectedSize.size} not found for product ${product.name}`
-      );
-    }
-
-    // Check if there's enough stock for the selected size
-    if (selectedSize.quantity < quantity) {
-      return {
-        success: false,
-        availableQuantity: selectedSize.quantity,
-      };
-    }
-
-    // Update the stock for the selected size
-    selectedSize.quantity -= quantity;
-    await product.save({ session });
-
-    return { success: true, availableQuantity: selectedSize.quantity };
-  } else {
-    // Check if there's enough stock for the product
-    if (product.productQuantity < quantity) {
-      return {
-        success: false,
-        availableQuantity: product.productQuantity,
-      };
-    }
-
-    // Update the stock for the product
-    product.productQuantity -= quantity;
-    await product.save({ session });
-
-    return { success: true, availableQuantity: product.productQuantity };
-  }
-}
-
-/**
  * Updates a store's pending balance
  */
 async function updateStoreBalance(
@@ -383,7 +439,7 @@ async function updateStoreBalance(
   productName: string,
   quantity: number,
   session: mongoose.ClientSession,
-  notifications: NotificationItem[]
+  notifications: any[]
 ): Promise<void> {
   const store = await Store.findById(storeID).session(session);
 
@@ -396,9 +452,6 @@ async function updateStoreBalance(
 
   // Update the store's pending balance
   store.pendingBalance += settleAmount;
-  // store.platformFee += platformFee;
-  // store.totalEarnings += settleAmount;
-
   await store.save({ session });
 
   // Add notification for the store
@@ -436,7 +489,7 @@ async function generateDownloadUrl(s3Key: string): Promise<string> {
  * Sends notifications to stores about their sold products
  */
 async function sendNotifications(
-  notifications: NotificationItem[],
+  notifications: any[],
   orderId: string
 ): Promise<void> {
   const sendPromises = notifications.map((notification) => {
@@ -460,12 +513,485 @@ async function sendDigitalProductDownloads(
     return sendEmail({
       to: download.email,
       subject: `Your Digital Purchase: ${download.title}`,
-      text: `Thank you for your purchase! You can download "${download.title}" using the link below. This link will expire in 24 hours:\n\n${download.url}\n\nIf you have any issues with your download, please contact customer support.`,
+      text: `Thank you for your purchase! You can download "${download.title}" using the link below. This link will expire in 24 hours:
+
+${download.url}
+
+If you have any issues with your download, please contact customer support.`,
     });
   });
 
   await Promise.all(sendPromises);
 }
+
+// import mongoose from "mongoose";
+// import Product from "@/lib/models/product.model";
+// import Store from "@/lib/models/store.model";
+// import Order from "@/lib/models/order.model";
+// import EBook from "@/lib/models/digital-product.model";
+// import Cart from "@/lib/models/cart.model";
+// import { sendEmail } from "./email.service";
+// import {
+//   calculateEstimatedDeliveryDays,
+//   currencyOperations,
+//   calculateCommission,
+// } from "../utils";
+
+// // Type definitions
+// interface ProductData {
+//   _id: string;
+//   storeID: string;
+//   productType: "physicalproducts" | "digitalproducts";
+//   name?: string;
+//   title?: string;
+//   price: number;
+//   images?: string[];
+//   coverIMG?: string[];
+//   category: string | string[];
+//   sizes?: Array<{
+//     size: string;
+//     price: number;
+//     quantity: number;
+//     _id: string;
+//   }>;
+// }
+
+// interface SelectedSize {
+//   size: string;
+//   price: number;
+//   quantity: number;
+// }
+
+// interface CartProduct {
+//   product: ProductData;
+//   storeID: string;
+//   quantity: number;
+//   productType: "physicalproducts" | "digitalproducts";
+//   _id: string;
+//   selectedSize?: SelectedSize;
+//   price: number;
+// }
+
+// interface ShippingMethod {
+//   name: string;
+//   price: number;
+//   estimatedDeliveryDays: number;
+//   isActive: boolean;
+//   description?: string;
+// }
+
+// interface CartStoreGroup {
+//   storeID: string;
+//   products: CartProduct[];
+//   selectedShippingMethod: ShippingMethod;
+// }
+
+// interface OrderData {
+//   cartItems: CartStoreGroup[];
+//   userID: string;
+//   userEmail: string;
+//   shippingAddress: string;
+//   shippingMethod?: string;
+//   status: string;
+//   paymentType: string;
+//   postalCode: string;
+//   amount: number;
+//   transactionReference: string;
+// }
+
+// interface OrderProductItem {
+//   physicalProducts?: mongoose.Types.ObjectId | string;
+//   digitalProducts?: mongoose.Types.ObjectId | string;
+//   store: string;
+//   quantity: number;
+//   price: number;
+//   selectedSize?: {
+//     size: string;
+//     price: number;
+//   };
+// }
+
+// interface StoreOrdersMap {
+//   [storeId: string]: OrderProductItem[];
+// }
+
+// interface InsufficientStock {
+//   productId: string;
+//   productName: string;
+//   requestedQuantity: number;
+//   availableQuantity: number;
+//   size?: string;
+// }
+
+// interface NotificationItem {
+//   storeEmail: string;
+//   productName: string;
+//   quantity: number;
+//   orderId?: string;
+// }
+
+// /**
+//  * Main function to process an order
+//  * @param orderData The complete order data from the checkout
+//  * @returns The created order ID
+//  */
+// export async function processOrder(orderData: OrderData): Promise<string> {
+//   // Start a MongoDB session for transaction support
+//   const session = await mongoose.startSession();
+//   session.startTransaction();
+
+//   try {
+//     // Initialize collections for tracking
+//     const storeOrders: StoreOrdersMap = {};
+//     const notifications: NotificationItem[] = [];
+//     const insufficientStockItems: InsufficientStock[] = [];
+//     const digitalProductDownloads: Array<{
+//       email: string;
+//       title: string;
+//       url: string;
+//     }> = [];
+
+//     // Process each store's cart items
+//     for (const storeGroup of orderData.cartItems) {
+//       const { storeID, products, selectedShippingMethod } = storeGroup;
+
+//       // Initialize store order group if it doesn't exist
+//       if (!storeOrders[storeID]) {
+//         storeOrders[storeID] = [];
+//       }
+
+//       // Process each product in the store group
+//       for (const item of products) {
+//         // Convert string values to numbers for consistency
+//         const quantity = Number(item.quantity);
+//         const price = Number(item.price);
+
+//         if (item.productType === "physicalproducts") {
+//           // Process physical product
+//           const stockValidation = await validateAndUpdatePhysicalProductStock(
+//             item,
+//             quantity,
+//             session
+//           );
+
+//           if (!stockValidation.success) {
+//             insufficientStockItems.push({
+//               productId: item.product._id,
+//               productName: item.product.name || "Unknown Product",
+//               requestedQuantity: quantity,
+//               availableQuantity: stockValidation.availableQuantity,
+//               size: item.selectedSize?.size,
+//             });
+//             continue;
+//           }
+
+//           // Add to store orders
+//           storeOrders[storeID].push({
+//             physicalProducts: item.product._id,
+//             store: storeID,
+//             quantity,
+//             price: currencyOperations.multiply(price, quantity),
+//             selectedSize: item.selectedSize
+//               ? {
+//                   size: item.selectedSize.size,
+//                   price: Number(item.selectedSize.price),
+//                 }
+//               : undefined,
+//           });
+
+//           // Update store balance and prepare notification
+//           await updateStoreBalance(
+//             storeID,
+//             currencyOperations.multiply(price, quantity),
+//             item.product.name || "Unknown Product",
+//             quantity,
+//             session,
+//             notifications
+//           );
+//         } else if (item.productType === "digitalproducts") {
+//           // Process digital product
+//           const digitalProduct = await EBook.findById(item.product._id).session(
+//             session
+//           );
+
+//           if (!digitalProduct) {
+//             throw new Error(`Digital product not found: ${item.product._id}`);
+//           }
+
+//           // Add to store orders
+//           storeOrders[storeID].push({
+//             digitalProducts: item.product._id,
+//             store: storeID,
+//             quantity,
+//             price: currencyOperations.multiply(price, quantity),
+//           });
+
+//           // Prepare download link for digital product
+//           if (digitalProduct.s3Key) {
+//             const downloadUrl = await generateDownloadUrl(digitalProduct.s3Key);
+//             digitalProductDownloads.push({
+//               email: orderData.userEmail,
+//               title: digitalProduct.title,
+//               url: downloadUrl,
+//             });
+//           }
+
+//           // Update store balance and prepare notification
+//           await updateStoreBalance(
+//             storeID,
+//             currencyOperations.multiply(price, quantity),
+//             digitalProduct.title,
+//             quantity,
+//             session,
+//             notifications
+//           );
+//         }
+//       }
+//     }
+
+//     // Check if we have any products to process
+//     if (Object.keys(storeOrders).length === 0) {
+//       // If there are insufficient stock items, throw an error
+//       if (insufficientStockItems.length > 0) {
+//         throw new Error(
+//           `Insufficient stock for ${insufficientStockItems.length} product(s). Please update your cart.`
+//         );
+//       }
+//       throw new Error("No valid products to process in the order");
+//     }
+
+//     // Create sub-orders for each store
+//     const subOrders = Object.keys(storeOrders).map((storeId) => {
+//       const products = storeOrders[storeId];
+
+//       // Find the shipping method for this store
+//       const storeGroup = orderData.cartItems.find(
+//         (group) => group.storeID === storeId
+//       );
+//       const shippingMethod = storeGroup?.selectedShippingMethod;
+
+//       // Calculate total amount for this store's products
+//       const productsTotal = products.reduce(
+//         (sum, product) => currencyOperations.add(sum, product.price),
+//         0
+//       );
+//       const shippingCost = shippingMethod ? Number(shippingMethod.price) : 0;
+//       const totalAmount = currencyOperations.add(productsTotal, shippingCost);
+
+//       // Create sub-order object with shipping method as an object
+//       return {
+//         store: storeId,
+//         products: products,
+//         totalAmount,
+//         shippingMethod: {
+//           name: shippingMethod?.name || "Standard Shipping",
+//           price: Number(shippingMethod?.price || 0),
+//           estimatedDeliveryDays: calculateEstimatedDeliveryDays(
+//             Number(shippingMethod?.estimatedDeliveryDays || 5)
+//           ),
+//           description: shippingMethod?.description || "",
+//         },
+//         deliveryStatus: "Order Placed",
+//       };
+//     });
+
+//     // Calculate the total amount for the entire order
+//     const orderTotalAmount = subOrders.reduce(
+//       (sum, subOrder) => currencyOperations.add(sum, subOrder.totalAmount),
+//       0
+//     );
+
+//     // Create the main order with all sub-orders
+//     const order = new Order({
+//       user: orderData.userID,
+//       stores: Object.keys(storeOrders),
+//       subOrders,
+//       totalAmount: orderTotalAmount,
+//       status: orderData.status,
+//       postalCode: orderData.postalCode,
+//       shippingAddress: orderData.shippingAddress,
+//       paymentMethod: orderData.paymentType,
+//       paymentStatus: orderData.status === "success" ? "paid" : "declined",
+//       transactionReference: orderData.transactionReference,
+//     });
+
+//     // Save the order
+//     const savedOrder = await order.save({ session });
+
+//     // Clear the user's cart
+//     await Cart.findOneAndUpdate(
+//       { user: orderData.userID },
+//       { $set: { items: [] } },
+//       { session }
+//     );
+
+//     // Commit the transaction
+//     await session.commitTransaction();
+//     session.endSession();
+
+//     // Send notifications and download links after transaction is committed
+//     await sendNotifications(notifications, savedOrder._id.toString());
+//     await sendDigitalProductDownloads(digitalProductDownloads);
+
+//     return savedOrder._id.toString();
+//   } catch (error) {
+//     // Rollback the transaction if any error occurs
+//     await session.abortTransaction();
+//     session.endSession();
+
+//     console.error("Error processing order:", error);
+//     throw error;
+//   }
+// }
+
+// /**
+//  * Validates and updates stock for physical products
+//  */
+// async function validateAndUpdatePhysicalProductStock(
+//   item: CartProduct,
+//   quantity: number,
+//   session: mongoose.ClientSession
+// ): Promise<{ success: boolean; availableQuantity: number }> {
+//   const product = await Product.findById(item.product._id).session(session);
+
+//   if (!product) {
+//     throw new Error(`Product not found: ${item.product._id}`);
+//   }
+
+//   // Check if the product has sizes and a selected size
+//   if (item.selectedSize) {
+//     const selectedSize = product.sizes?.find(
+//       (size: SelectedSize) => size.size === item.selectedSize?.size
+//     );
+
+//     if (!selectedSize) {
+//       throw new Error(
+//         `Size ${item.selectedSize.size} not found for product ${product.name}`
+//       );
+//     }
+
+//     // Check if there's enough stock for the selected size
+//     if (selectedSize.quantity < quantity) {
+//       return {
+//         success: false,
+//         availableQuantity: selectedSize.quantity,
+//       };
+//     }
+
+//     // Update the stock for the selected size
+//     selectedSize.quantity -= quantity;
+//     await product.save({ session });
+
+//     return { success: true, availableQuantity: selectedSize.quantity };
+//   } else {
+//     // Check if there's enough stock for the product
+//     if (product.productQuantity < quantity) {
+//       return {
+//         success: false,
+//         availableQuantity: product.productQuantity,
+//       };
+//     }
+
+//     // Update the stock for the product
+//     product.productQuantity -= quantity;
+//     await product.save({ session });
+
+//     return { success: true, availableQuantity: product.productQuantity };
+//   }
+// }
+
+// /**
+//  * Updates a store's pending balance
+//  */
+// async function updateStoreBalance(
+//   storeID: string,
+//   amount: number,
+//   productName: string,
+//   quantity: number,
+//   session: mongoose.ClientSession,
+//   notifications: NotificationItem[]
+// ): Promise<void> {
+//   const store = await Store.findById(storeID).session(session);
+
+//   if (!store) {
+//     throw new Error(`Store not found: ${storeID}`);
+//   }
+
+//   // Calculate the commission and settle amount
+//   const { settleAmount } = calculateCommission(amount);
+
+//   // Update the store's pending balance
+//   store.pendingBalance += settleAmount;
+//   // store.platformFee += platformFee;
+//   // store.totalEarnings += settleAmount;
+
+//   await store.save({ session });
+
+//   // Add notification for the store
+//   notifications.push({
+//     storeEmail: store.storeEmail,
+//     productName,
+//     quantity,
+//   });
+// }
+
+// /**
+//  * Generates a download URL for a digital product
+//  */
+// async function generateDownloadUrl(s3Key: string): Promise<string> {
+//   try {
+//     const response = await fetch(
+//       `${
+//         process.env.BASE_URL
+//       }/api/s3-bucket/generate-download-url?s3Key=${encodeURIComponent(s3Key)}`
+//     );
+
+//     if (!response.ok) {
+//       throw new Error(`Failed to generate download URL for s3Key: ${s3Key}`);
+//     }
+
+//     const { downloadUrl } = await response.json();
+//     return downloadUrl;
+//   } catch (error) {
+//     console.error("Error generating download URL:", error);
+//     throw error;
+//   }
+// }
+
+// /**
+//  * Sends notifications to stores about their sold products
+//  */
+// async function sendNotifications(
+//   notifications: NotificationItem[],
+//   orderId: string
+// ): Promise<void> {
+//   const sendPromises = notifications.map((notification) => {
+//     return sendEmail({
+//       to: notification.storeEmail,
+//       subject: "New Order Notification",
+//       text: `You have a new order (#${orderId})! Your product "${notification.productName}" has been purchased. Quantity: ${notification.quantity}. Please check your store dashboard for more details.`,
+//     });
+//   });
+
+//   await Promise.all(sendPromises);
+// }
+
+// /**
+//  * Sends download links for digital products
+//  */
+// async function sendDigitalProductDownloads(
+//   downloads: Array<{ email: string; title: string; url: string }>
+// ): Promise<void> {
+//   const sendPromises = downloads.map((download) => {
+//     return sendEmail({
+//       to: download.email,
+//       subject: `Your Digital Purchase: ${download.title}`,
+//       text: `Thank you for your purchase! You can download "${download.title}" using the link below. This link will expire in 24 hours:\n\n${download.url}\n\nIf you have any issues with your download, please contact customer support.`,
+//     });
+//   });
+
+//   await Promise.all(sendPromises);
+// }
 
 // import mongoose from "mongoose";
 // import Product from "@/lib/models/product.model";

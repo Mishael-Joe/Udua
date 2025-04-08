@@ -226,7 +226,6 @@ export default function CheckoutPage() {
           ...group,
           selectedShippingMethod: selectedShippingMethods[group.storeID],
         })),
-        selectedShippingMethods,
         amount: currencyOperations.add(cartData!.totalPrice, totalShippingCost),
         customer: {
           name: `${userData.firstName} ${userData.lastName}`,

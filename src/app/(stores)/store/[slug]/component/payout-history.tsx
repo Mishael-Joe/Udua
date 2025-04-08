@@ -47,8 +47,8 @@ import { format } from "date-fns";
  */
 const LoadingState = () => (
   <div className="p-8 space-y-6">
-    <div className="grid gap-4 md:grid-cols-3">
-      {[...Array(3)].map((_, i) => (
+    <div className="grid gap-4 md:grid-cols-2">
+      {[...Array(2)].map((_, i) => (
         <Skeleton key={i} className="h-32 rounded-xl" />
       ))}
     </div>
@@ -236,7 +236,7 @@ function PayoutHistory({ params }: { params: { slug: string } }) {
       {/* Financial Overview Section */}
       <section className="space-y-4">
         <h2 className="text-2xl font-bold">Financial Overview</h2>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
           <StatsCard
             title="Total Earnings"
             value={storeTotalEarnings}
@@ -248,12 +248,6 @@ function PayoutHistory({ params }: { params: { slug: string } }) {
             value={pendingSettlementAmount}
             description="Awaiting payment processing"
             icon={Clock}
-          />
-          <StatsCard
-            title="Payout Accounts"
-            value={payoutAccounts.length}
-            description="Registered payment methods"
-            icon={WalletCards}
           />
         </div>
       </section>

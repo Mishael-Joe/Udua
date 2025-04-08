@@ -213,12 +213,37 @@ export type ProductOrder = {
   digitalProducts?: DigitalProduct | string; // ObjectId reference
   store: string;
   quantity: number;
-  price: number;
+  priceAtOrder: number;
+  originalPrice?: number;
+  selectedSize?: {
+    size: string;
+    price: number;
+  };
+  dealInfo?: DealInfo;
 };
+
+interface DealInfo {
+  dealId: string;
+  dealType:
+    | "percentage"
+    | "fixed"
+    | "free_shipping"
+    | "flash_sale"
+    | "buy_x_get_y";
+  value: number;
+  name: string;
+}
+
+interface AppliedDeal {
+  dealId: string;
+  dealType: string;
+  value: number;
+  name: string;
+}
 
 export type SubOrder = {
   _id: string;
-  store: string; // ObjectId reference
+  store: Store | string; // ObjectId reference
   products: ProductOrder[];
   totalAmount: number;
   shippingMethod?: {
@@ -239,13 +264,18 @@ export type SubOrder = {
     | "Returned"
     | "Failed Delivery"
     | "Refunded";
+  originalSubtotal?: number;
+  savings?: number;
+  appliedDeals?: AppliedDeal[];
+  payoutStatus: string;
 };
 
 export type Order = {
   _id: string;
-  user: string; // ObjectId reference
+  user: User | string; // ObjectId reference
   stores: string[]; // Array of store ObjectId references
   subOrders: SubOrder[]; // Array of sub-orders, each tied to a specific store
+  totalSavings?: number;
   totalAmount: number;
   status: string;
   postalCode: string;
@@ -257,35 +287,8 @@ export type Order = {
   taxAmount?: number;
   createdAt: Date;
   updatedAt: Date;
+  paymentReference?: string; // Reference for the payment
 };
-
-// export type Order = {
-//   _id: string;
-//   user: string;
-//   stores: string[];
-//   products: ProductOrder[];
-//   totalAmount: number;
-//   status: string;
-//   shippingAddress: string;
-//   postalCode: string;
-//   trackingNumber: number;
-//   shippingMethod: string;
-//   paymentMethod: string;
-//   paymentStatus: string;
-//   deliveryStatus:
-//     | "Order Placed"
-//     | "Processing"
-//     | "Shipped"
-//     | "Out for Delivery"
-//     | "Delivered"
-//     | "Canceled"
-//     | "Returned"
-//     | "Failed Delivery"
-//     | "Refunded";
-//   createdAt: Date;
-//   deliveryDate: Date;
-//   updatedAt: Date;
-// };
 
 export interface Cart {
   product: {
@@ -418,4 +421,65 @@ export interface Settlement {
   createdAt: string; // ISO Date string
   updatedAt: string; // ISO Date string
   __v: number;
+}
+
+export interface Deal {
+  _id: string;
+  name: string;
+  dealType:
+    | "percentage"
+    | "fixed"
+    | "free_shipping"
+    | "flash_sale"
+    | "buy_x_get_y";
+  value: number;
+  startDate: Date | string;
+  endDate: Date | string;
+  products?: {
+    _id: string;
+    name?: string;
+    title?: string;
+    price: number;
+    images?: string[];
+    coverIMG?: string;
+    productType: string;
+    sizes?: {
+      size: string;
+      price: number;
+      quantity: number;
+    }[];
+  }[];
+  storeID: string;
+  description: string;
+  productIds: string[];
+  categoryIds: string;
+  isActive: boolean;
+  minCartValue: number;
+  maxDiscountValue: number;
+  usageLimit: number;
+  usageCount: number;
+  autoApply: boolean;
+  applyToSizes: string;
+  code: string;
+
+  // Buy X Get Y specific fields
+  buyQuantity: number;
+  getQuantity: number;
+  getProductIds: string;
+
+  // Flash sale specific fields
+  flashSaleQuantity: number;
+  flashSaleRemaining: number;
+
+  analytics: {
+    viewCount: number;
+    clickCount: number;
+    redemptionCount: number;
+    totalDiscountAmount: number;
+    revenueGenerated: number;
+    uniqueUsersUsed: string[];
+    averageOrderValue: number;
+    firstRedemptionDate: Date;
+    lastRedemptionDate: Date;
+  };
 }

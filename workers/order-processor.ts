@@ -1,3 +1,7 @@
+import dotenv from "dotenv";
+dotenv.config();
+
+import { connectToDB } from "@/lib/mongoose";
 import deadLetterQueueConsumer from "@/lib/queue/dead-letter-consumer";
 import orderQueueConsumer from "@/lib/queue/order-queue-consumer";
 import rabbitMQConnection from "@/lib/queue/rabbitmq-connection";
@@ -8,6 +12,7 @@ import rabbitMQConnection from "@/lib/queue/rabbitmq-connection";
 async function startWorker() {
   try {
     console.log("Starting order processing worker...");
+    await connectToDB();
 
     // Connect to RabbitMQ
     await rabbitMQConnection.connect();

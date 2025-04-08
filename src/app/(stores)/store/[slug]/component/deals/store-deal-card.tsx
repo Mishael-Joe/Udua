@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Percent, Truck, Zap, Gift } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import CountdownTimer from "./countdown-timer";
+import CountdownTimer from "@/components/deals/countdown-timer";
 
 interface DealCardProps {
   deal: {
@@ -37,9 +37,10 @@ interface DealCardProps {
       }[];
     }[];
   };
+  params: { slug: string };
 }
 
-export default function DealCard({ deal }: DealCardProps) {
+export default function StoreDealCard({ deal, params }: DealCardProps) {
   // Convert dates to Date objects if they're strings
   const endDate =
     typeof deal.endDate === "string" ? new Date(deal.endDate) : deal.endDate;
@@ -115,7 +116,9 @@ export default function DealCard({ deal }: DealCardProps) {
         </CardContent>
         <CardFooter className="p-4 pt-0">
           <Button asChild className="w-full">
-            <Link href={`/deals/${deal._id}`}>View Deal</Link>
+            <Link href={`/store/${params.slug}/deals/${deal._id}`}>
+              View Deal
+            </Link>
           </Button>
         </CardFooter>
       </Card>
@@ -177,7 +180,9 @@ export default function DealCard({ deal }: DealCardProps) {
       </CardContent>
       <CardFooter className="p-4 pt-0">
         <Button asChild className="w-full">
-          <Link href={`/deals/${deal._id}`}>View Deal</Link>
+          <Link href={`/store/${params.slug}/deals/${deal._id}`}>
+            View Deal
+          </Link>
         </Button>
       </CardFooter>
     </Card>

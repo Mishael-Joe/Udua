@@ -83,7 +83,8 @@ export class RabbitMQConnection extends EventEmitter {
       this.channel = await this.connection.createChannel();
 
       // Set prefetch count to control concurrency
-      await this.channel.prefetch(5); // Process 5 messages at a time
+      // await this.channel.prefetch(5); // Process 5 messages at a time
+      await this.channel.prefetch(1); // Process 1 messages at a time
 
       console.log("Connected to RabbitMQ successfully");
 

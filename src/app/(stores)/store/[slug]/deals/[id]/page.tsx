@@ -9,12 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft, BarChart2 } from "lucide-react";
-
-interface ProductSize {
-  size: string;
-  price: number;
-  quantity: number;
-}
+import { Deal } from "@/types";
 
 async function getDealById(id: string) {
   try {
@@ -64,7 +59,11 @@ export default async function DealPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { success, deal, error } = await getDealById(id);
+  const { success, deal, error } = (await getDealById(id)) as {
+    success: boolean;
+    deal: Deal;
+    error: any;
+  };
 
   if (!success || !deal) {
     notFound();
@@ -84,7 +83,9 @@ export default async function DealPage({
   };
 
   // Get price range for size-based products
-  const getPriceRange = (sizes: ProductSize[]) => {
+  const getPriceRange = (
+    sizes: { size: string; price: number; quantity: number }[]
+  ) => {
     if (!sizes || sizes.length === 0) return { min: 0, max: 0 };
 
     const prices = sizes.map((size) => size.price);
@@ -139,7 +140,7 @@ export default async function DealPage({
         </Button>
 
         <Button asChild>
-          <Link href={`/deals/analytics/${deal._id}`}>
+          <Link href={`/store/${id}/deals/${deal._id}/analytics`}>
             <BarChart2 className="mr-2 h-4 w-4" />
             View Analytics
           </Link>
@@ -216,7 +217,7 @@ export default async function DealPage({
 
                 if (hasSizes) {
                   // Size-based pricing
-                  const priceRange = getPriceRange(product.sizes);
+                  const priceRange = getPriceRange(product.sizes!);
                   const discountedMin = calculateDiscountedPrice(
                     priceRange.min
                   );
@@ -297,7 +298,7 @@ export default async function DealPage({
                               Available sizes:
                             </p>
                             <div className="flex flex-wrap gap-2">
-                              {product.sizes.map((size, index) => (
+                              {product.sizes!.map((size, index) => (
                                 <div
                                   key={index}
                                   className="text-xs bg-muted px-2 py-1 rounded"

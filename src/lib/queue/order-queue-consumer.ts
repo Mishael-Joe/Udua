@@ -76,7 +76,7 @@ export class OrderQueueConsumer {
       const content = message.content.toString();
       const orderMessage = JSON.parse(content) as OrderMessage;
 
-      console.log(`Processing order ${orderMessage.id}`);
+      // console.log(`Processing order ${orderMessage.id}`);
 
       // Get the retry count from the message headers
       const retryCount = message.properties.headers?.["x-retry-count"] || 0;

@@ -1,3 +1,5 @@
+import { ItemsInCart } from "../services/payment.service";
+
 /**
  * Configuration for RabbitMQ queues and exchanges
  */
@@ -37,9 +39,13 @@ export interface OrderMessage {
 
   // Order data
   data: {
-    cartItems: any[];
+    cartItems: ItemsInCart;
     userID: string;
     userEmail: string;
+    name: string;
+    state: string;
+    city: string;
+    phone_number: string;
     shippingAddress: string;
     shippingMethod?: string;
     status: string;

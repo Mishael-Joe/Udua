@@ -47,6 +47,21 @@ export async function GET(
     const dealObj = deal.toObject();
     dealObj.products = allProducts;
 
+    console.log("Deal Object:", dealObj); // Log the deal object for debugging
+
+    // Ensure analytics object exists with default values
+    if (!dealObj.analytics) {
+      dealObj.analytics = {
+        viewCount: 0,
+        clickCount: 0,
+        redemptionCount: 0,
+        totalDiscountAmount: 0,
+        revenueGenerated: 0,
+        uniqueUsersUsed: [],
+        averageOrderValue: 0,
+      };
+    }
+
     return NextResponse.json({ success: true, deal: dealObj });
   } catch (error: any) {
     console.error("Error fetching deal by ID:", error);

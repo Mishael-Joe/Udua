@@ -93,7 +93,7 @@ export function PayoutDialog({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="gap-2">
+        <Button className="gap-2 bg-orange-400 hover:bg-udua-orange-primary">
           <Banknote className="h-4 w-4" />
           Request Payout
         </Button>
@@ -160,6 +160,7 @@ export function PayoutDialog({
           <Button
             onClick={handleSubmit}
             disabled={!selectedAccount || isSubmitting}
+            className="bg-orange-400 hover:bg-udua-orange-primary"
           >
             {isSubmitting ? (
               <>

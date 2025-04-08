@@ -106,25 +106,49 @@ export class DeadLetterQueueConsumer {
     orderMessage: OrderMessage
   ): Promise<void> {
     const adminEmail = process.env.ADMIN_EMAIL || "mishaeljoe55@gmail.com";
+    const text = `
+    An order has failed processing after ${
+      orderMessage.metadata.retryCount
+    } retries.
+    
+    Order ID: ${orderMessage.id}
+    Transaction Reference: ${orderMessage.data.transactionReference}
+    User ID: ${orderMessage.data.userID}
+    User Email: ${orderMessage.data.userEmail}
+    Amount: ${formatNaira(orderMessage.data.amount)}
+    Original Timestamp: ${orderMessage.metadata.originalTimestamp}
+    Last Retry: ${orderMessage.metadata.lastRetryTimestamp}
+    
+    Please review this order manually in the admin dashboard.
+  `;
+
+    const html = `
+    <!DOCTYPE html>
+    <html>
+      <body style="font-family: Arial, sans-serif; line-height: 1.6;">
+An order has failed processing after ${
+      orderMessage.metadata.retryCount
+    } retries.
+    
+    Order ID: ${orderMessage.id}
+    Transaction Reference: ${orderMessage.data.transactionReference}
+    User ID: ${orderMessage.data.userID}
+    User Email: ${orderMessage.data.userEmail}
+    Amount: ${formatNaira(orderMessage.data.amount)}
+    Original Timestamp: ${orderMessage.metadata.originalTimestamp}
+    Last Retry: ${orderMessage.metadata.lastRetryTimestamp}
+    
+    Please review this order manually in the admin dashboard.
+      </body>
+    </html>
+
+    `;
 
     await sendEmail({
       to: adminEmail,
       subject: `URGENT: Failed Order Processing - ${orderMessage.id}`,
-      text: `
-        An order has failed processing after ${
-          orderMessage.metadata.retryCount
-        } retries.
-        
-        Order ID: ${orderMessage.id}
-        Transaction Reference: ${orderMessage.data.transactionReference}
-        User ID: ${orderMessage.data.userID}
-        User Email: ${orderMessage.data.userEmail}
-        Amount: ${formatNaira(orderMessage.data.amount)}
-        Original Timestamp: ${orderMessage.metadata.originalTimestamp}
-        Last Retry: ${orderMessage.metadata.lastRetryTimestamp}
-        
-        Please review this order manually in the admin dashboard.
-      `,
+      text,
+      html,
     });
   }
 
@@ -135,28 +159,52 @@ export class DeadLetterQueueConsumer {
   private async notifyCustomerOfFailedOrder(
     orderMessage: OrderMessage
   ): Promise<void> {
+    const text = `
+    Dear Customer,
+    
+    We're sorry to inform you that we encountered an issue while processing your recent order.
+    
+    Our team has been notified and is working to resolve this issue. You have not been charged for this order.
+    
+    If you have any questions, please contact our customer support team and reference the following information:
+    
+    Transaction Reference: ${orderMessage.data.transactionReference}
+    Date: ${new Date(orderMessage.metadata.originalTimestamp).toLocaleString()}
+    
+    We apologize for any inconvenience this may have caused.
+    
+    Best regards,
+    The Udua Team
+  `;
+
+    const html = `
+    <!DOCTYPE html>
+    <html>
+      <body style="font-family: Arial, sans-serif; line-height: 1.6;">
+            Dear Customer,
+    
+    We're sorry to inform you that we encountered an issue while processing your recent order.
+    
+    Our team has been notified and is working to resolve this issue. You have not been charged for this order.
+    
+    If you have any questions, please contact our customer support team and reference the following information:
+    
+    Transaction Reference: ${orderMessage.data.transactionReference}
+    Date: ${new Date(orderMessage.metadata.originalTimestamp).toLocaleString()}
+    
+    We apologize for any inconvenience this may have caused.
+    
+    Best regards,
+    The Udua Team
+      </body>
+    </html>
+
+    `;
     await sendEmail({
       to: orderMessage.data.userEmail,
       subject: "Important: Issue with Your Order",
-      text: `
-        Dear Customer,
-        
-        We're sorry to inform you that we encountered an issue while processing your recent order.
-        
-        Our team has been notified and is working to resolve this issue. You have not been charged for this order.
-        
-        If you have any questions, please contact our customer support team and reference the following information:
-        
-        Transaction Reference: ${orderMessage.data.transactionReference}
-        Date: ${new Date(
-          orderMessage.metadata.originalTimestamp
-        ).toLocaleString()}
-        
-        We apologize for any inconvenience this may have caused.
-        
-        Best regards,
-        The Udua Team
-      `,
+      text,
+      html,
     });
   }
 

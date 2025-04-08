@@ -1,4 +1,77 @@
-import type { CartItems } from "@/types";
+interface DealInfo {
+  dealId: string;
+  dealType: string;
+  value: string;
+  name: string;
+  endDate: string;
+  _id: string;
+}
+
+interface SizeOption {
+  size: string;
+  price: string;
+  quantity: string;
+  _id?: string;
+}
+
+interface PhysicalProduct {
+  _id: string;
+  storeID: string;
+  productType: "physicalproducts";
+  images: string[];
+  name: string;
+  price?: string;
+  sizes?: SizeOption[];
+  category: string[];
+}
+
+interface DigitalProduct {
+  _id: string;
+  storeID: string;
+  productType: "digitalproducts";
+  title: string;
+  category: string;
+  price: string;
+  coverIMG: string[];
+}
+
+type Product = PhysicalProduct | DigitalProduct;
+
+interface SelectedSize {
+  size: string;
+  price: string;
+  quantity: string;
+}
+
+interface CartItem {
+  product: Product;
+  storeID: string;
+  quantity: string;
+  productType: "physicalproducts" | "digitalproducts";
+  priceAtAdd: string;
+  originalPrice: string;
+  dealInfo?: DealInfo;
+  selectedSize?: SelectedSize;
+  _id: string;
+}
+
+interface ShippingMethod {
+  name: string;
+  price: string;
+  estimatedDeliveryDays: string;
+  isActive: string;
+  description: string;
+}
+
+interface StoreCart {
+  storeID: string;
+  storeName: string;
+  products: CartItem[];
+  shippingMethods: ShippingMethod[];
+  selectedShippingMethod: ShippingMethod;
+}
+
+export type ItemsInCart = StoreCart[];
 
 type TransactionVerificationResult = {
   status: string;
@@ -6,13 +79,14 @@ type TransactionVerificationResult = {
   channel: string;
   amount: number;
   metadata: {
-    itemsInCart: CartItems[];
+    itemsInCart: ItemsInCart;
     userID: string;
+    name: string;
     state: string;
     city: string;
     address: string;
-    deliveryMethod: string;
     postal_code: string;
+    phone_number: string;
   };
   customer: {
     email: string;
@@ -49,6 +123,8 @@ export async function verifyPaystackTransaction(
       console.error("Transaction verification failed:", result);
       return null;
     }
+
+    // console.log("Transaction verified successfully:", result);
 
     return {
       status: result.data.status,
