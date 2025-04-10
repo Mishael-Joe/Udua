@@ -1,47 +1,22 @@
 "use client";
 
-import { useMemo, useCallback, useState, useEffect } from "react";
-import {
-  Plus,
-  Minus,
-  ShoppingBagIcon,
-  Percent,
-  Zap,
-  Tag,
-  Clock,
-} from "lucide-react";
+import { useMemo, useCallback, useState } from "react";
+import { Plus, Minus, ShoppingBagIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import DOMPurify from "dompurify";
 
 import { formatNaira } from "@/lib/utils";
 import { useStateContext } from "@/context/stateContext";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import ShareButton from "../utils/shareBTN";
 import type { ForProductInfo } from "@/types";
+import { ClothingSizeGuide } from "./Clothing-size-guide";
 import { FootWearSizeGuide } from "./shoe-size-guide";
-import CountdownTimer from "./deals/countdown-timer";
-
-interface DealInfo {
-  _id: string;
-  name: string;
-  dealType:
-    | "percentage"
-    | "fixed"
-    | "free_shipping"
-    | "flash_sale"
-    | "buy_x_get_y";
-  value: number;
-  endDate: string | Date;
-}
 
 export function ProductInfo({ product }: ForProductInfo) {
   const pathname = usePathname();
   const { addToCart, quantity, incrementQuantity, decrementQuantity } =
     useStateContext();
-
-  const [dealInfo, setDealInfo] = useState<DealInfo | null>(null);
-  const [isLoadingDeal, setIsLoadingDeal] = useState(true);
 
   const currentUrl = useMemo(
     () => `${window.location.protocol}//${window.location.host}${pathname}`,
@@ -71,52 +46,10 @@ export function ProductInfo({ product }: ForProductInfo) {
 
   const isPhysicalProduct = product.productType === "physicalproducts";
 
-  // Fetch deal information for this product
-  useEffect(() => {
-    const fetchDealInfo = async () => {
-      try {
-        setIsLoadingDeal(true);
-        const response = await fetch(`/api/products/${product._id}/deals`);
-        const data = await response.json();
-
-        if (data.success && data.hasDeals) {
-          setDealInfo(data.deal);
-        } else {
-          setDealInfo(null);
-        }
-      } catch (error) {
-        console.error("Error fetching deal info:", error);
-        setDealInfo(null);
-      } finally {
-        setIsLoadingDeal(false);
-      }
-    };
-
-    fetchDealInfo();
-  }, [product._id]);
-
-  // Calculate discounted price
-  const calculateDiscountedPrice = useCallback(
-    (originalPrice: number) => {
-      if (!dealInfo) return originalPrice;
-
-      if (
-        dealInfo.dealType === "percentage" ||
-        dealInfo.dealType === "flash_sale"
-      ) {
-        return originalPrice - originalPrice * (dealInfo.value / 100);
-      } else if (dealInfo.dealType === "fixed") {
-        return Math.max(0, originalPrice - dealInfo.value);
-      }
-
-      return originalPrice;
-    },
-    [dealInfo]
-  );
-
   // Unified add to cart handler
   const handleAddToCart = useCallback(() => {
     const storeID = product.storeID;
+    // console.log("storeID", storeID);
     addToCart(
       product,
       storeID,
@@ -166,87 +99,18 @@ export function ProductInfo({ product }: ForProductInfo) {
     [quantity, decrementQuantity, incrementQuantity]
   );
 
-  // Get deal badge icon
-  const getDealIcon = useCallback(() => {
-    if (!dealInfo) return null;
-
-    switch (dealInfo.dealType) {
-      case "percentage":
-        return <Percent className="h-4 w-4" />;
-      case "fixed":
-        return <Tag className="h-4 w-4" />;
-      case "flash_sale":
-        return <Zap className="h-4 w-4" />;
-      default:
-        return null;
-    }
-  }, [dealInfo]);
-
-  // Get deal badge text
-  const getDealText = useCallback(() => {
-    if (!dealInfo) return "";
-
-    switch (dealInfo.dealType) {
-      case "percentage":
-        return `${dealInfo.value}% OFF`;
-      case "fixed":
-        return `${formatNaira(dealInfo.value)} OFF`;
-      case "flash_sale":
-        return `FLASH SALE: ${dealInfo.value}% OFF`;
-      default:
-        return "";
-    }
-  }, [dealInfo]);
-
   // Price display component
   const PriceDisplay = useMemo(() => {
-    const basePrice = isPhysicalProduct
+    const price = isPhysicalProduct
       ? selectedSize?.price ?? product.price
       : product.price;
 
-    if (dealInfo) {
-      const discountedPrice = calculateDiscountedPrice(basePrice);
-
-      return (
-        <div className="flex flex-col">
-          <div className="flex items-center gap-2">
-            <p className="text-lg sm:text-2xl tracking-tight font-semibold text-udua-orange-primary">
-              {formatNaira(discountedPrice)}
-            </p>
-            <p className="text-sm sm:text-lg tracking-tight line-through text-muted-foreground">
-              {formatNaira(basePrice)}
-            </p>
-          </div>
-          <div className="mt-1">
-            <Badge className="flex items-center gap-1 bg-red-600">
-              {getDealIcon()}
-              {getDealText()}
-            </Badge>
-          </div>
-          {dealInfo.dealType === "flash_sale" && (
-            <div className="mt-2 flex items-center gap-1 text-sm">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              <CountdownTimer endDate={new Date(dealInfo.endDate)} />
-            </div>
-          )}
-        </div>
-      );
-    }
-
     return (
       <p className="text-lg sm:text-2xl tracking-tight font-semibold">
-        {formatNaira(basePrice)}
+        {formatNaira(price)}
       </p>
     );
-  }, [
-    isPhysicalProduct,
-    product.price,
-    selectedSize?.price,
-    dealInfo,
-    calculateDiscountedPrice,
-    getDealIcon,
-    getDealText,
-  ]);
+  }, [isPhysicalProduct, product.price, selectedSize?.price]);
 
   return (
     <div className="mt-5 px-4 sm:px-0 lg:mt-0 lg:sticky md:top-20">
@@ -256,11 +120,7 @@ export function ProductInfo({ product }: ForProductInfo) {
 
       <div className="sm:mt-3">
         <h2 className="sr-only">Product information</h2>
-        {isLoadingDeal ? (
-          <div className="h-8 w-32 bg-muted animate-pulse rounded"></div>
-        ) : (
-          PriceDisplay
-        )}
+        {PriceDisplay}
       </div>
 
       <form className="mt-3">
@@ -356,25 +216,54 @@ export function ProductInfo({ product }: ForProductInfo) {
   );
 }
 
+{
+  /* This feature is under construction and it is comming soon. #-DEALS */
+}
+
 // "use client";
 
-// import { useMemo, useCallback, useState } from "react";
-// import { Plus, Minus, ShoppingBagIcon } from "lucide-react";
+// import { useMemo, useCallback, useState, useEffect } from "react";
+// import {
+//   Plus,
+//   Minus,
+//   ShoppingBagIcon,
+//   Percent,
+//   Zap,
+//   Tag,
+//   Clock,
+// } from "lucide-react";
 // import { usePathname } from "next/navigation";
 // import DOMPurify from "dompurify";
 
 // import { formatNaira } from "@/lib/utils";
 // import { useStateContext } from "@/context/stateContext";
 // import { Button } from "@/components/ui/button";
+// import { Badge } from "@/components/ui/badge";
 // import ShareButton from "../utils/shareBTN";
 // import type { ForProductInfo } from "@/types";
-// import { ClothingSizeGuide } from "./Clothing-size-guide";
 // import { FootWearSizeGuide } from "./shoe-size-guide";
+// import CountdownTimer from "./deals/countdown-timer";
+
+// interface DealInfo {
+//   _id: string;
+//   name: string;
+//   dealType:
+//     | "percentage"
+//     | "fixed"
+//     | "free_shipping"
+//     | "flash_sale"
+//     | "buy_x_get_y";
+//   value: number;
+//   endDate: string | Date;
+// }
 
 // export function ProductInfo({ product }: ForProductInfo) {
 //   const pathname = usePathname();
 //   const { addToCart, quantity, incrementQuantity, decrementQuantity } =
 //     useStateContext();
+
+//   const [dealInfo, setDealInfo] = useState<DealInfo | null>(null);
+//   const [isLoadingDeal, setIsLoadingDeal] = useState(true);
 
 //   const currentUrl = useMemo(
 //     () => `${window.location.protocol}//${window.location.host}${pathname}`,
@@ -404,10 +293,52 @@ export function ProductInfo({ product }: ForProductInfo) {
 
 //   const isPhysicalProduct = product.productType === "physicalproducts";
 
+//   // Fetch deal information for this product
+//   useEffect(() => {
+//     const fetchDealInfo = async () => {
+//       try {
+//         setIsLoadingDeal(true);
+//         const response = await fetch(`/api/products/${product._id}/deals`);
+//         const data = await response.json();
+
+//         if (data.success && data.hasDeals) {
+//           setDealInfo(data.deal);
+//         } else {
+//           setDealInfo(null);
+//         }
+//       } catch (error) {
+//         console.error("Error fetching deal info:", error);
+//         setDealInfo(null);
+//       } finally {
+//         setIsLoadingDeal(false);
+//       }
+//     };
+
+//     fetchDealInfo();
+//   }, [product._id]);
+
+//   // Calculate discounted price
+//   const calculateDiscountedPrice = useCallback(
+//     (originalPrice: number) => {
+//       if (!dealInfo) return originalPrice;
+
+//       if (
+//         dealInfo.dealType === "percentage" ||
+//         dealInfo.dealType === "flash_sale"
+//       ) {
+//         return originalPrice - originalPrice * (dealInfo.value / 100);
+//       } else if (dealInfo.dealType === "fixed") {
+//         return Math.max(0, originalPrice - dealInfo.value);
+//       }
+
+//       return originalPrice;
+//     },
+//     [dealInfo]
+//   );
+
 //   // Unified add to cart handler
 //   const handleAddToCart = useCallback(() => {
 //     const storeID = product.storeID;
-//     // console.log("storeID", storeID);
 //     addToCart(
 //       product,
 //       storeID,
@@ -457,18 +388,87 @@ export function ProductInfo({ product }: ForProductInfo) {
 //     [quantity, decrementQuantity, incrementQuantity]
 //   );
 
+//   // Get deal badge icon
+//   const getDealIcon = useCallback(() => {
+//     if (!dealInfo) return null;
+
+//     switch (dealInfo.dealType) {
+//       case "percentage":
+//         return <Percent className="h-4 w-4" />;
+//       case "fixed":
+//         return <Tag className="h-4 w-4" />;
+//       case "flash_sale":
+//         return <Zap className="h-4 w-4" />;
+//       default:
+//         return null;
+//     }
+//   }, [dealInfo]);
+
+//   // Get deal badge text
+//   const getDealText = useCallback(() => {
+//     if (!dealInfo) return "";
+
+//     switch (dealInfo.dealType) {
+//       case "percentage":
+//         return `${dealInfo.value}% OFF`;
+//       case "fixed":
+//         return `${formatNaira(dealInfo.value)} OFF`;
+//       case "flash_sale":
+//         return `FLASH SALE: ${dealInfo.value}% OFF`;
+//       default:
+//         return "";
+//     }
+//   }, [dealInfo]);
+
 //   // Price display component
 //   const PriceDisplay = useMemo(() => {
-//     const price = isPhysicalProduct
+//     const basePrice = isPhysicalProduct
 //       ? selectedSize?.price ?? product.price
 //       : product.price;
 
+//     if (dealInfo) {
+//       const discountedPrice = calculateDiscountedPrice(basePrice);
+
+//       return (
+//         <div className="flex flex-col">
+//           <div className="flex items-center gap-2">
+//             <p className="text-lg sm:text-2xl tracking-tight font-semibold text-udua-orange-primary">
+//               {formatNaira(discountedPrice)}
+//             </p>
+//             <p className="text-sm sm:text-lg tracking-tight line-through text-muted-foreground">
+//               {formatNaira(basePrice)}
+//             </p>
+//           </div>
+//           <div className="mt-1">
+//             <Badge className="flex items-center gap-1 bg-red-600">
+//               {getDealIcon()}
+//               {getDealText()}
+//             </Badge>
+//           </div>
+//           {dealInfo.dealType === "flash_sale" && (
+//             <div className="mt-2 flex items-center gap-1 text-sm">
+//               <Clock className="h-4 w-4 text-muted-foreground" />
+//               <CountdownTimer endDate={new Date(dealInfo.endDate)} />
+//             </div>
+//           )}
+//         </div>
+//       );
+//     }
+
 //     return (
 //       <p className="text-lg sm:text-2xl tracking-tight font-semibold">
-//         {formatNaira(price)}
+//         {formatNaira(basePrice)}
 //       </p>
 //     );
-//   }, [isPhysicalProduct, product.price, selectedSize?.price]);
+//   }, [
+//     isPhysicalProduct,
+//     product.price,
+//     selectedSize?.price,
+//     dealInfo,
+//     calculateDiscountedPrice,
+//     getDealIcon,
+//     getDealText,
+//   ]);
 
 //   return (
 //     <div className="mt-5 px-4 sm:px-0 lg:mt-0 lg:sticky md:top-20">
@@ -478,7 +478,11 @@ export function ProductInfo({ product }: ForProductInfo) {
 
 //       <div className="sm:mt-3">
 //         <h2 className="sr-only">Product information</h2>
-//         {PriceDisplay}
+//         {isLoadingDeal ? (
+//           <div className="h-8 w-32 bg-muted animate-pulse rounded"></div>
+//         ) : (
+//           PriceDisplay
+//         )}
 //       </div>
 
 //       <form className="mt-3">

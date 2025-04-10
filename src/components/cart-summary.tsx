@@ -5,16 +5,13 @@ import { Button } from "@/components/ui/button";
 import { useStateContext } from "@/context/stateContext";
 import { formatNaira } from "@/lib/utils";
 import { useMemo } from "react";
-import { Badge } from "@/components/ui/badge";
 
 export function CartSummary() {
-  const { cartItems, totalPrice, totalOriginalPrice, totalSavings } =
-    useStateContext();
+  const { cartItems, totalPrice } = useStateContext();
 
   // Memoized calculated values
   const isEmpty = useMemo(() => cartItems.length === 0, [cartItems.length]);
   const subtotal = useMemo(() => Math.max(totalPrice, 0), [totalPrice]);
-  const hasSavings = useMemo(() => totalSavings > 0, [totalSavings]);
 
   return (
     <section
@@ -31,20 +28,6 @@ export function CartSummary() {
             <dt className="text-sm">Subtotal</dt>
             <dd className="text-sm font-medium">{formatNaira(subtotal)}</dd>
           </div>
-
-          {/* Display savings from deals if applicable */}
-          {hasSavings && (
-            <div className="flex items-center justify-between text-udua-orange-primary">
-              <dt className="text-sm flex items-center">
-                <Badge variant="outline" className="mr-2">
-                  Deal Savings
-                </Badge>
-              </dt>
-              <dd className="text-sm font-medium">
-                -{formatNaira(totalSavings)}
-              </dd>
-            </div>
-          )}
 
           <div className="flex items-center justify-between border-t border-gray-200 pt-4 dark:border-gray-600">
             <dt className="text-base font-medium">Order Total</dt>
@@ -73,6 +56,10 @@ export function CartSummary() {
   );
 }
 
+{
+  /* This feature is under construction and it is comming soon. #-DEALS */
+}
+
 // "use client";
 
 // import Link from "next/link";
@@ -80,13 +67,16 @@ export function CartSummary() {
 // import { useStateContext } from "@/context/stateContext";
 // import { formatNaira } from "@/lib/utils";
 // import { useMemo } from "react";
+// import { Badge } from "@/components/ui/badge";
 
 // export function CartSummary() {
-//   const { cartItems, totalPrice } = useStateContext();
+//   const { cartItems, totalPrice, totalOriginalPrice, totalSavings } =
+//     useStateContext();
 
 //   // Memoized calculated values
 //   const isEmpty = useMemo(() => cartItems.length === 0, [cartItems.length]);
 //   const subtotal = useMemo(() => Math.max(totalPrice, 0), [totalPrice]);
+//   const hasSavings = useMemo(() => totalSavings > 0, [totalSavings]);
 
 //   return (
 //     <section
@@ -103,6 +93,20 @@ export function CartSummary() {
 //             <dt className="text-sm">Subtotal</dt>
 //             <dd className="text-sm font-medium">{formatNaira(subtotal)}</dd>
 //           </div>
+
+//           {/* Display savings from deals if applicable */}
+//           {hasSavings && (
+//             <div className="flex items-center justify-between text-udua-orange-primary">
+//               <dt className="text-sm flex items-center">
+//                 <Badge variant="outline" className="mr-2">
+//                   Deal Savings
+//                 </Badge>
+//               </dt>
+//               <dd className="text-sm font-medium">
+//                 -{formatNaira(totalSavings)}
+//               </dd>
+//             </div>
+//           )}
 
 //           <div className="flex items-center justify-between border-t border-gray-200 pt-4 dark:border-gray-600">
 //             <dt className="text-base font-medium">Order Total</dt>

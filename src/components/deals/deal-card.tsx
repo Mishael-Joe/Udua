@@ -8,35 +8,10 @@ import { Percent, Truck, Zap, Gift } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import CountdownTimer from "./countdown-timer";
+import { Deal } from "@/types";
 
 interface DealCardProps {
-  deal: {
-    _id: string;
-    name: string;
-    dealType:
-      | "percentage"
-      | "fixed"
-      | "free_shipping"
-      | "flash_sale"
-      | "buy_x_get_y";
-    value: number;
-    startDate: Date | string;
-    endDate: Date | string;
-    products?: {
-      _id: string;
-      name?: string;
-      title?: string;
-      price: number;
-      images?: string[];
-      coverIMG?: string;
-      productType: string;
-      sizes?: {
-        size: string;
-        price: number;
-        quantity: number;
-      }[];
-    }[];
-  };
+  deal: Deal;
 }
 
 export default function DealCard({ deal }: DealCardProps) {
@@ -159,7 +134,7 @@ export default function DealCard({ deal }: DealCardProps) {
 
           {/* Price display */}
           <div className="mt-2 flex items-center gap-2">
-            <span className="text-lg font-bold">
+            <span className="text-lg font-bold text-udua-orange-primary">
               {formatNaira(discountedPrice)}
             </span>
             <span className="text-sm text-muted-foreground line-through">
@@ -176,7 +151,10 @@ export default function DealCard({ deal }: DealCardProps) {
         </div>
       </CardContent>
       <CardFooter className="p-4 pt-0">
-        <Button asChild className="w-full">
+        <Button
+          asChild
+          className="w-full bg-orange-400 hover:bg-udua-orange-primary"
+        >
           <Link href={`/deals/${deal._id}`}>View Deal</Link>
         </Button>
       </CardFooter>

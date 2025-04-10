@@ -110,7 +110,7 @@ export async function processOrder(orderData: any): Promise<string> {
           if (item.selectedSize) {
             // Size-based product
             const size = product.sizes.find(
-              (s) => s.size === item.selectedSize.size
+              (s: { size: number }) => s.size === item.selectedSize.size
             );
             if (!size) {
               throw new Error(

@@ -75,7 +75,7 @@ export default function MetricCard({
           </div>
           <p className="text-xs text-muted-foreground mt-1">{description}</p>
         </div>
-        {trend !== undefined && (
+        {/* {trend !== undefined && (
           <div className="mt-4 flex items-center">
             <div
               className={`flex items-center text-xs ${
@@ -99,7 +99,7 @@ export default function MetricCard({
               vs. last period
             </span>
           </div>
-        )}
+        )} */}
       </CardContent>
     </Card>
   );

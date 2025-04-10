@@ -2,6 +2,8 @@ import DealCard from "./deal-card";
 import DealCarousel from "./deal-carousel";
 import { Suspense } from "react";
 import DealsSectionSkeleton from "./deals-section-skeleton";
+import { Deal } from "@/types";
+import Link from "next/link";
 
 async function getActiveDeals(limit = 6) {
   try {
@@ -30,7 +32,11 @@ export default async function DealsSection({
   limit = 6,
   showCarousel = true,
 }: DealsSectionProps) {
-  const { success, deals, error } = await getActiveDeals(limit);
+  const { success, deals, error } = (await getActiveDeals(limit)) as {
+    success: boolean;
+    deals: Deal[];
+    error: any;
+  };
 
   if (!success || !deals || deals.length === 0) {
     return null; // Don't show the section if no deals are available
@@ -46,9 +52,9 @@ export default async function DealsSection({
               Limited time offers you don't want to miss
             </p>
           </div>
-          <a href="/deals" className="text-sm font-medium hover:underline">
+          <Link href="/deals" className="text-sm font-medium hover:underline">
             View all deals →
-          </a>
+          </Link>
         </div>
 
         <Suspense fallback={<DealsSectionSkeleton count={limit} />}>

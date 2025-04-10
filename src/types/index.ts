@@ -483,3 +483,48 @@ export interface Deal {
     lastRedemptionDate: Date;
   };
 }
+
+/**
+ * Shipping method interface
+ */
+export interface ShippingMethod {
+  name: string;
+  price: number;
+  description?: string;
+  estimatedDeliveryDays?: string;
+}
+
+/**
+ * Cart product interface
+ */
+export interface CartProduct {
+  _id: string;
+  product: any;
+  quantity: number;
+  productType: "physicalproducts" | "digitalproducts";
+  selectedSize?: {
+    size: string;
+    price: number;
+    quantity: number;
+  };
+  priceAtAdd: number;
+  originalPrice: number;
+  dealInfo?: {
+    dealId: string;
+    dealType: string;
+    value: number;
+    name: string;
+    endDate: Date;
+  };
+}
+
+/**
+ * Grouped cart interface
+ */
+export interface GroupedCart {
+  storeID: string;
+  storeName: string;
+  products: CartProduct[];
+  shippingMethods?: ShippingMethod[];
+  selectedShippingMethod?: ShippingMethod;
+}

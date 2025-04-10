@@ -25,8 +25,6 @@ import MetricCard from "./metric-card";
 import RedemptionChart from "./redemption-chart";
 import RevenueChart from "./revenue-chart";
 import ProductDistributionChart from "./product-distribution-chart";
-import UsageByTimeChart from "./usage-by-time-chart";
-import UsersTable from "./users-table";
 import { Deal } from "@/types";
 
 // Animation variants
@@ -54,7 +52,6 @@ const itemVariants = {
 };
 
 export default function DealAnalyticsDashboard({ deal }: { deal: Deal }) {
-  console.log("Deal:", deal); // Log the deal object for debugging
   const [dateRange, setDateRange] = useState<{
     from: Date;
     to: Date;
@@ -77,38 +74,6 @@ export default function DealAnalyticsDashboard({ deal }: { deal: Deal }) {
   const conversionRate =
     viewCount > 0 ? (redemptionCount / viewCount) * 100 : 0;
 
-  // Generate sample data for charts (in a real app, this would come from the API)
-  const generateSampleData = () => {
-    const data = [];
-    const startDate = new Date(deal.startDate);
-    const endDate = new Date();
-    const daysDiff = Math.ceil(
-      (endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24)
-    );
-
-    for (let i = 0; i < daysDiff; i++) {
-      const date = new Date(startDate);
-      date.setDate(date.getDate() + i);
-
-      // Generate random data that follows a realistic pattern
-      const redemptions = Math.floor(Math.random() * 10) + 1;
-      const revenue = redemptions * (averageOrderValue || 5000);
-      const discount =
-        redemptions * (totalDiscountAmount / (redemptionCount || 1));
-
-      data.push({
-        date: format(date, "yyyy-MM-dd"),
-        redemptions,
-        revenue,
-        discount,
-      });
-    }
-
-    return data;
-  };
-
-  const chartData = generateSampleData();
-
   // Generate sample product distribution data
   const productDistributionData = [
     { name: "Product A", value: 35 },
@@ -118,48 +83,17 @@ export default function DealAnalyticsDashboard({ deal }: { deal: Deal }) {
     { name: "Others", value: 5 },
   ];
 
-  // Generate sample usage by time data
-  const generateTimeData = () => {
-    const data = [];
-    for (let hour = 0; hour < 24; hour++) {
-      data.push({
-        hour: `${hour}:00`,
-        value: Math.floor(Math.random() * 100),
-      });
-    }
-    return data;
-  };
-
-  const timeData = generateTimeData();
-
-  // Generate sample users data
-  const generateUsersData = () => {
-    return Array.from({ length: 10 }, (_, i) => ({
-      id: `user-${i + 1}`,
-      email: `user${i + 1}@example.com`,
-      name: `User ${i + 1}`,
-      orders: Math.floor(Math.random() * 5) + 1,
-      spent: (Math.floor(Math.random() * 10) + 1) * 10000,
-      lastUsed: format(
-        subDays(new Date(), Math.floor(Math.random() * 30)),
-        "MMM dd, yyyy"
-      ),
-    }));
-  };
-
-  const usersData = generateUsersData();
-
-  // Handle date range selection
-  const handleDateRangeChange = (range: { from?: Date; to?: Date }) => {
-    if (range.from && range.to) {
-      setDateRange({ from: range.from, to: range.to });
-    }
-  };
+  // // Handle date range selection
+  // const handleDateRangeChange = (range: { from?: Date; to?: Date }) => {
+  //   if (range.from && range.to) {
+  //     setDateRange({ from: range.from, to: range.to });
+  //   }
+  // };
 
   // Handle export data
-  const handleExportData = () => {
-    alert("Exporting data... This would download a CSV in a real application.");
-  };
+  // const handleExportData = () => {
+  //   alert("Exporting data... This would download a CSV in a real application.");
+  // };
 
   return (
     <motion.div
@@ -182,7 +116,7 @@ export default function DealAnalyticsDashboard({ deal }: { deal: Deal }) {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2">
-          <Popover>
+          {/* <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
@@ -201,11 +135,11 @@ export default function DealAnalyticsDashboard({ deal }: { deal: Deal }) {
                 initialFocus
               />
             </PopoverContent>
-          </Popover>
-          <Button variant="outline" onClick={handleExportData}>
+          </Popover> */}
+          {/* <Button variant="outline" onClick={handleExportData}>
             <Download className="mr-2 h-4 w-4" />
             Export
-          </Button>
+          </Button> */}
         </div>
       </motion.div>
 
@@ -261,54 +195,54 @@ export default function DealAnalyticsDashboard({ deal }: { deal: Deal }) {
       {/* Key Metrics */}
       <motion.div
         variants={itemVariants}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
       >
         <MetricCard
           title="Total Redemptions"
           value={redemptionCount}
           description="Times this deal was used"
-          trend={7.2}
+          // trend={7.2}
           icon="shopping-bag"
         />
         <MetricCard
           title="Total Discount"
           value={formatNaira(totalDiscountAmount)}
           description="Amount discounted"
-          trend={-2.5}
+          // trend={-2.5}
           icon="tag"
         />
         <MetricCard
           title="Revenue Generated"
           value={formatNaira(revenueGenerated)}
           description="Total revenue from this deal"
-          trend={12.3}
+          // trend={12.3}
           icon="trending-up"
         />
         <MetricCard
           title="Conversion Rate"
           value={`${conversionRate.toFixed(1)}%`}
           description="Views to redemptions"
-          trend={3.8}
+          // trend={3.8}
           icon="percent"
         />
         <MetricCard
           title="Avg. Order Value"
           value={formatNaira(averageOrderValue)}
           description="Average per order"
-          trend={5.1}
+          // trend={5.1}
           icon="shopping-cart"
         />
         <MetricCard
           title="Unique Users"
           value={uniqueUsersUsed.length}
           description="Distinct customers"
-          trend={9.4}
+          // trend={9.4}
           icon="users"
         />
       </motion.div>
 
       {/* Charts */}
-      <motion.div variants={itemVariants}>
+      {/* <motion.div variants={itemVariants}>
         <Tabs defaultValue="redemptions">
           <TabsList className="grid w-full grid-cols-4 mb-4">
             <TabsTrigger value="redemptions">Redemptions</TabsTrigger>
@@ -361,7 +295,7 @@ export default function DealAnalyticsDashboard({ deal }: { deal: Deal }) {
             </Card>
           </TabsContent>
         </Tabs>
-      </motion.div>
+      </motion.div> */}
     </motion.div>
   );
 }

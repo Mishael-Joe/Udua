@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
         if (item.selectedSize && item.selectedSize.size !== undefined) {
           // Size-based product
           const size = product.sizes.find(
-            (s) => s.size === item.selectedSize.size
+            (s: { size: number }) => s.size === item.selectedSize.size
           );
           if (!size) {
             validationErrors.push(

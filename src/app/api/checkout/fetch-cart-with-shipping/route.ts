@@ -4,6 +4,7 @@ import Cart from "@/lib/models/cart.model";
 import Store from "@/lib/models/store.model";
 import { getUserDataFromToken } from "@/lib/helpers/getUserDataFromToken";
 import { currencyOperations } from "@/lib/utils";
+import { CombinedProduct, Product } from "@/types";
 
 /**
  * POST: Fetch cart items grouped by store with available shipping methods
@@ -47,7 +48,33 @@ export async function POST(request: NextRequest) {
     let totalOriginalPrice = 0;
 
     // Group cart items by storeID
-    const storeProductGroups = {};
+    const storeProductGroups: Record<
+      string,
+      {
+        selectedSize: Product["sizes"];
+        product: CombinedProduct[];
+        storeID: string;
+        quantity: number;
+        productType: "physicalproducts" | "digitalproducts";
+        priceAtAdd: number;
+        originalPrice: number;
+        _id: string;
+        dealInfo:
+          | {
+              dealId: string;
+              dealType:
+                | "percentage"
+                | "fixed"
+                | "free_shipping"
+                | "flash_sale"
+                | "buy_x_get_y";
+              value: number;
+              name: string;
+              endDate: Date;
+            }
+          | undefined;
+      }[]
+    > = {};
 
     for (const item of cart.items) {
       const storeID = item.storeID.toString();
@@ -80,8 +107,23 @@ export async function POST(request: NextRequest) {
       totalQuantity += item.quantity;
     }
 
+    // console.log("Grouped cart items by store:", storeProductGroups);
+
     // Fetch shipping methods for each store
-    const storeShippingDetails = {};
+    const storeShippingDetails: Record<
+      string,
+      {
+        name: string;
+        shippingMethods: {
+          name: string;
+          price: number;
+          estimatedDeliveryDays: number;
+          isActive: boolean;
+          description: string;
+          applicableRegions: [];
+        }[];
+      }
+    > = {};
 
     for (const storeID of Object.keys(storeProductGroups)) {
       const store = await Store.findById(storeID).select(
@@ -94,6 +136,8 @@ export async function POST(request: NextRequest) {
         };
       }
     }
+
+    // console.log("Shipping details for stores:", storeShippingDetails);
 
     // Prepare the response with grouped products and shipping methods
     const groupedCart = Object.keys(storeProductGroups).map((storeID) => ({

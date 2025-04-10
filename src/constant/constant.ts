@@ -6,10 +6,10 @@ export const productCategories = [
   "Furniture",
   "Toys",
   "Groceries",
-  "School Supplies",
   "Body Care Products",
   "Fashion",
   "Phone Accessories",
+  "School Supplies",
 ];
 
 export const subCategories: { [key: string]: string[] } = {

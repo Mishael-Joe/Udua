@@ -8,35 +8,10 @@ import { Percent, Truck, Zap, Gift } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import CountdownTimer from "@/components/deals/countdown-timer";
+import { Deal } from "@/types";
 
 interface DealCardProps {
-  deal: {
-    _id: string;
-    name: string;
-    dealType:
-      | "percentage"
-      | "fixed"
-      | "free_shipping"
-      | "flash_sale"
-      | "buy_x_get_y";
-    value: number;
-    startDate: Date | string;
-    endDate: Date | string;
-    products?: {
-      _id: string;
-      name?: string;
-      title?: string;
-      price: number;
-      images?: string[];
-      coverIMG?: string;
-      productType: string;
-      sizes?: {
-        size: string;
-        price: number;
-        quantity: number;
-      }[];
-    }[];
-  };
+  deal: Deal;
   params: { slug: string };
 }
 
@@ -115,7 +90,10 @@ export default function StoreDealCard({ deal, params }: DealCardProps) {
           </div>
         </CardContent>
         <CardFooter className="p-4 pt-0">
-          <Button asChild className="w-full">
+          <Button
+            asChild
+            className="w-full hover:bg-udua-blue-primary bg-blue-500"
+          >
             <Link href={`/store/${params.slug}/deals/${deal._id}`}>
               View Deal
             </Link>
@@ -179,7 +157,10 @@ export default function StoreDealCard({ deal, params }: DealCardProps) {
         </div>
       </CardContent>
       <CardFooter className="p-4 pt-0">
-        <Button asChild className="w-full">
+        <Button
+          asChild
+          className="w-full hover:bg-udua-blue-primary bg-blue-500"
+        >
           <Link href={`/store/${params.slug}/deals/${deal._id}`}>
             View Deal
           </Link>

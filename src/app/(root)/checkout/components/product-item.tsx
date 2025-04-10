@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { currencyOperations, formatNaira } from "@/lib/utils";
 import { Percent, Tag, Zap } from "lucide-react";
-import type { CartProduct } from "../page";
+import { CartProduct } from "@/types";
 
 interface ProductItemProps {
   item: CartProduct;

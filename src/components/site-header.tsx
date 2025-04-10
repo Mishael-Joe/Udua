@@ -34,9 +34,9 @@ export async function SiteHeader() {
         </Suspense>
 
         <div className="flex items-center space-x-1">
-          {/* <div className="hidden md:inline-flex">
+          <div className="hidden md:inline-flex">
             <Categories />
-          </div> */}
+          </div>
           <CartCount />
 
           {/* <ThemeToggle /> */}

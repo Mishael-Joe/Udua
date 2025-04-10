@@ -139,7 +139,7 @@ export default async function DealPage({
           </Link>
         </Button>
 
-        <Button asChild>
+        <Button asChild className="hover:bg-udua-blue-primary bg-blue-500">
           <Link href={`/store/${id}/deals/${deal._id}/analytics`}>
             <BarChart2 className="mr-2 h-4 w-4" />
             View Analytics
@@ -160,7 +160,9 @@ export default async function DealPage({
               <p className="text-muted-foreground mb-4">{deal.description}</p>
             )}
 
-            <Badge className="mb-4 text-base px-3 py-1">{getDealValue()}</Badge>
+            <Badge className="mb-4 text-base px-3 py-1 hover:bg-udua-blue-primary bg-blue-500">
+              {getDealValue()}
+            </Badge>
 
             {isFlashSale && (
               <div className="mb-4 p-3 bg-muted rounded-md">
@@ -314,7 +316,10 @@ export default async function DealPage({
                         )}
                       </div>
 
-                      <Button asChild className="w-full">
+                      <Button
+                        asChild
+                        className="w-full hover:bg-udua-blue-primary bg-blue-500"
+                      >
                         <Link href={`/product/${product._id}`}>
                           View Product
                         </Link>

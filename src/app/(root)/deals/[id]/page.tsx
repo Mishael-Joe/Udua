@@ -8,7 +8,8 @@ import { Gift, Percent, ShoppingBag, Truck, Zap } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronLeft, BarChart2 } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
+import { Deal } from "@/types";
 
 interface ProductSize {
   size: string;
@@ -64,7 +65,11 @@ export default async function DealPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { success, deal, error } = await getDealById(id);
+  const { success, deal, error } = (await getDealById(id)) as {
+    success: boolean;
+    deal: Deal;
+    error: any;
+  };
 
   if (!success || !deal) {
     notFound();
@@ -132,16 +137,9 @@ export default async function DealPage({
     <div className="container mx-auto py-8 px-4">
       <div className="flex justify-between items-center mb-6">
         <Button variant="ghost" asChild>
-          <Link href="/store/deals">
+          <Link href="/deals">
             <ChevronLeft className="mr-2 h-4 w-4" />
             Back to Deals
-          </Link>
-        </Button>
-
-        <Button asChild>
-          <Link href={`/deals/analytics/${deal._id}`}>
-            <BarChart2 className="mr-2 h-4 w-4" />
-            View Analytics
           </Link>
         </Button>
       </div>
@@ -216,7 +214,7 @@ export default async function DealPage({
 
                 if (hasSizes) {
                   // Size-based pricing
-                  const priceRange = getPriceRange(product.sizes);
+                  const priceRange = getPriceRange(product.sizes!);
                   const discountedMin = calculateDiscountedPrice(
                     priceRange.min
                   );
@@ -297,7 +295,7 @@ export default async function DealPage({
                               Available sizes:
                             </p>
                             <div className="flex flex-wrap gap-2">
-                              {product.sizes.map((size, index) => (
+                              {product.sizes!.map((size, index) => (
                                 <div
                                   key={index}
                                   className="text-xs bg-muted px-2 py-1 rounded"

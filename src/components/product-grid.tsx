@@ -1,24 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { BellIcon, XCircle, Zap, Percent, Tag } from "lucide-react";
+import { BellIcon, XCircle } from "lucide-react";
 import { shimmer, toBase64 } from "@/lib/image";
 import { formatNaira } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 import type { ForProductGrid } from "@/types";
-
-interface DealInfo {
-  _id: string;
-  dealType:
-    | "percentage"
-    | "fixed"
-    | "free_shipping"
-    | "flash_sale"
-    | "buy_x_get_y";
-  value: number;
-}
 
 /**
  * ProductGrid Component - Displays a grid of products with optimized rendering
@@ -29,98 +16,8 @@ interface DealInfo {
  * - Price formatting and error handling
  * - Responsive grid layout
  * - SEO-friendly product links
- * - Deal information and discounted prices
  */
 export function ProductGrid({ products }: ForProductGrid) {
-  const [productDeals, setProductDeals] = useState<
-    Record<string, DealInfo | null>
-  >({});
-
-  // Fetch deals for all products
-  useEffect(() => {
-    const fetchDealsForProducts = async () => {
-      const dealPromises = products.map(async (product) => {
-        try {
-          const response = await fetch(`/api/products/${product._id}/deals`);
-          const data = await response.json();
-
-          if (data.success && data.hasDeals) {
-            return { productId: product._id, deal: data.deal };
-          }
-          return { productId: product._id, deal: null };
-        } catch (error) {
-          console.error(
-            `Error fetching deal for product ${product._id}:`,
-            error
-          );
-          return { productId: product._id, deal: null };
-        }
-      });
-
-      const results = await Promise.all(dealPromises);
-
-      const dealsMap = results.reduce((acc, { productId, deal }) => {
-        acc[productId] = deal;
-        return acc;
-      }, {} as Record<string, DealInfo | null>);
-
-      setProductDeals(dealsMap);
-    };
-
-    fetchDealsForProducts();
-  }, [products]);
-
-  // Calculate discounted price
-  const calculateDiscountedPrice = (
-    originalPrice: number,
-    deal: DealInfo | null
-  ) => {
-    if (!deal) return originalPrice;
-
-    if (deal.dealType === "percentage" || deal.dealType === "flash_sale") {
-      return originalPrice - originalPrice * (deal.value / 100);
-    } else if (deal.dealType === "fixed") {
-      return Math.max(0, originalPrice - deal.value);
-    }
-
-    return originalPrice;
-  };
-
-  // Get deal badge
-  const getDealBadge = (deal: DealInfo | null) => {
-    if (!deal) return null;
-
-    let icon = null;
-    let text = "";
-
-    switch (deal.dealType) {
-      case "percentage":
-        icon = <Percent className="h-3 w-3" />;
-        text = `${deal.value}% OFF`;
-        break;
-      case "fixed":
-        icon = <Tag className="h-3 w-3" />;
-        text = `${formatNaira(deal.value)} OFF`;
-        break;
-      case "flash_sale":
-        icon = <Zap className="h-3 w-3" />;
-        text = `${deal.value}% OFF`;
-        break;
-      default:
-        return null;
-    }
-
-    return (
-      <Badge
-        variant="destructive"
-        className="absolute top-2 left-2 z-10 flex items-center gap-1"
-      >
-        {icon}
-        {text}
-      </Badge>
-    );
-  };
-
   // Early return for empty state
   if (products.length === 0) {
     return (
@@ -166,18 +63,14 @@ export function ProductGrid({ products }: ForProductGrid) {
         {products.map((product) => {
           const isPhysicalProduct = product.productType === "physicalproducts";
           const productUrl = `/product/${product._id}`;
-          const basePrice = isPhysicalProduct
+          const price = isPhysicalProduct
             ? product.price ?? product.sizes?.[0]?.price
             : product.price;
-
-          const deal = productDeals[product._id] || null;
-          const discountedPrice = calculateDiscountedPrice(basePrice, deal);
-          const hasDeal = deal !== null;
 
           return (
             <article
               key={product._id}
-              className="group text-sm relative"
+              className="group text-sm"
               aria-labelledby={`product-${product._id}-title`}
             >
               <Link
@@ -187,7 +80,6 @@ export function ProductGrid({ products }: ForProductGrid) {
               >
                 {/* Product Image Container */}
                 <div className="aspect-square w-full overflow-hidden rounded-lg border-2 border-gray-200 bg-gray-100 group-hover:opacity-75 dark:border-gray-800">
-                  {getDealBadge(deal)}
                   <Image
                     placeholder="blur"
                     blurDataURL={`data:image/svg+xml;base64,${toBase64(
@@ -215,23 +107,10 @@ export function ProductGrid({ products }: ForProductGrid) {
                 >
                   {isPhysicalProduct ? product.name : product.title}
                 </h3>
-
-                {basePrice !== null && (
-                  <div className="mt-1 flex items-center gap-2">
-                    <p
-                      className={`font-bold ${
-                        hasDeal ? "text-udua-orange-primary" : ""
-                      }`}
-                      aria-label="Product price"
-                    >
-                      {formatNaira(discountedPrice)}
-                    </p>
-                    {hasDeal && (
-                      <p className="text-xs text-muted-foreground line-through">
-                        {formatNaira(basePrice)}
-                      </p>
-                    )}
-                  </div>
+                {price !== null && (
+                  <p className="mt-1 font-bold" aria-label="Product price">
+                    {formatNaira(price)}
+                  </p>
                 )}
               </Link>
             </article>
@@ -242,14 +121,31 @@ export function ProductGrid({ products }: ForProductGrid) {
   );
 }
 
+{
+  /* This feature is under construction and it is comming soon. #-DEALS */
+}
+
 // "use client";
 
+// import { useState, useEffect } from "react";
 // import Image from "next/image";
 // import Link from "next/link";
-// import { BellIcon, XCircle } from "lucide-react";
+// import { BellIcon, XCircle, Zap, Percent, Tag } from "lucide-react";
 // import { shimmer, toBase64 } from "@/lib/image";
 // import { formatNaira } from "@/lib/utils";
+// import { Badge } from "@/components/ui/badge";
 // import type { ForProductGrid } from "@/types";
+
+// interface DealInfo {
+//   _id: string;
+//   dealType:
+//     | "percentage"
+//     | "fixed"
+//     | "free_shipping"
+//     | "flash_sale"
+//     | "buy_x_get_y";
+//   value: number;
+// }
 
 // /**
 //  * ProductGrid Component - Displays a grid of products with optimized rendering
@@ -260,8 +156,98 @@ export function ProductGrid({ products }: ForProductGrid) {
 //  * - Price formatting and error handling
 //  * - Responsive grid layout
 //  * - SEO-friendly product links
+//  * - Deal information and discounted prices
 //  */
 // export function ProductGrid({ products }: ForProductGrid) {
+//   const [productDeals, setProductDeals] = useState<
+//     Record<string, DealInfo | null>
+//   >({});
+
+//   // Fetch deals for all products
+//   useEffect(() => {
+//     const fetchDealsForProducts = async () => {
+//       const dealPromises = products.map(async (product) => {
+//         try {
+//           const response = await fetch(`/api/products/${product._id}/deals`);
+//           const data = await response.json();
+
+//           if (data.success && data.hasDeals) {
+//             return { productId: product._id, deal: data.deal };
+//           }
+//           return { productId: product._id, deal: null };
+//         } catch (error) {
+//           console.error(
+//             `Error fetching deal for product ${product._id}:`,
+//             error
+//           );
+//           return { productId: product._id, deal: null };
+//         }
+//       });
+
+//       const results = await Promise.all(dealPromises);
+
+//       const dealsMap = results.reduce((acc, { productId, deal }) => {
+//         acc[productId] = deal;
+//         return acc;
+//       }, {} as Record<string, DealInfo | null>);
+
+//       setProductDeals(dealsMap);
+//     };
+
+//     fetchDealsForProducts();
+//   }, [products]);
+
+//   // Calculate discounted price
+//   const calculateDiscountedPrice = (
+//     originalPrice: number,
+//     deal: DealInfo | null
+//   ) => {
+//     if (!deal) return originalPrice;
+
+//     if (deal.dealType === "percentage" || deal.dealType === "flash_sale") {
+//       return originalPrice - originalPrice * (deal.value / 100);
+//     } else if (deal.dealType === "fixed") {
+//       return Math.max(0, originalPrice - deal.value);
+//     }
+
+//     return originalPrice;
+//   };
+
+//   // Get deal badge
+//   const getDealBadge = (deal: DealInfo | null) => {
+//     if (!deal) return null;
+
+//     let icon = null;
+//     let text = "";
+
+//     switch (deal.dealType) {
+//       case "percentage":
+//         icon = <Percent className="h-3 w-3" />;
+//         text = `${deal.value}% OFF`;
+//         break;
+//       case "fixed":
+//         icon = <Tag className="h-3 w-3" />;
+//         text = `${formatNaira(deal.value)} OFF`;
+//         break;
+//       case "flash_sale":
+//         icon = <Zap className="h-3 w-3" />;
+//         text = `${deal.value}% OFF`;
+//         break;
+//       default:
+//         return null;
+//     }
+
+//     return (
+//       <Badge
+//         variant="destructive"
+//         className="absolute top-2 left-2 z-10 flex items-center gap-1"
+//       >
+//         {icon}
+//         {text}
+//       </Badge>
+//     );
+//   };
+
 //   // Early return for empty state
 //   if (products.length === 0) {
 //     return (
@@ -307,14 +293,18 @@ export function ProductGrid({ products }: ForProductGrid) {
 //         {products.map((product) => {
 //           const isPhysicalProduct = product.productType === "physicalproducts";
 //           const productUrl = `/product/${product._id}`;
-//           const price = isPhysicalProduct
+//           const basePrice = isPhysicalProduct
 //             ? product.price ?? product.sizes?.[0]?.price
 //             : product.price;
+
+//           const deal = productDeals[product._id] || null;
+//           const discountedPrice = calculateDiscountedPrice(basePrice, deal);
+//           const hasDeal = deal !== null;
 
 //           return (
 //             <article
 //               key={product._id}
-//               className="group text-sm"
+//               className="group text-sm relative"
 //               aria-labelledby={`product-${product._id}-title`}
 //             >
 //               <Link
@@ -324,6 +314,7 @@ export function ProductGrid({ products }: ForProductGrid) {
 //               >
 //                 {/* Product Image Container */}
 //                 <div className="aspect-square w-full overflow-hidden rounded-lg border-2 border-gray-200 bg-gray-100 group-hover:opacity-75 dark:border-gray-800">
+//                   {getDealBadge(deal)}
 //                   <Image
 //                     placeholder="blur"
 //                     blurDataURL={`data:image/svg+xml;base64,${toBase64(
@@ -351,10 +342,23 @@ export function ProductGrid({ products }: ForProductGrid) {
 //                 >
 //                   {isPhysicalProduct ? product.name : product.title}
 //                 </h3>
-//                 {price !== null && (
-//                   <p className="mt-1 font-bold" aria-label="Product price">
-//                     {formatNaira(price)}
-//                   </p>
+
+//                 {basePrice !== null && (
+//                   <div className="mt-1 flex items-center gap-2">
+//                     <p
+//                       className={`font-bold ${
+//                         hasDeal ? "text-udua-orange-primary" : ""
+//                       }`}
+//                       aria-label="Product price"
+//                     >
+//                       {formatNaira(discountedPrice)}
+//                     </p>
+//                     {hasDeal && (
+//                       <p className="text-xs text-muted-foreground line-through">
+//                         {formatNaira(basePrice)}
+//                       </p>
+//                     )}
+//                   </div>
 //                 )}
 //               </Link>
 //             </article>

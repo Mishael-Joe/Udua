@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import DealAnalyticsDashboard from "@/components/deals/analytics/deal-analytics-dashboard";
-import DealAnalyticsLoading from "@/components/deals/analytics/deal-analytics-loading";
+import DealAnalyticsDashboard from "@/app/(stores)/store/[slug]/component/deals/analytics/deal-analytics-dashboard";
+import DealAnalyticsLoading from "@/app/(stores)/store/[slug]/component/deals/analytics/deal-analytics-loading";
 import { Deal } from "@/types";
 
 export const metadata = {

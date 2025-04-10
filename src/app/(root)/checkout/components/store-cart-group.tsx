@@ -12,7 +12,7 @@ import {
 import { formatNaira } from "@/lib/utils";
 import { Truck, ShoppingBag } from "lucide-react";
 import ProductItem from "./product-item";
-import type { GroupedCart, ShippingMethod } from "../page";
+import { GroupedCart, ShippingMethod } from "@/types";
 
 interface StoreCartGroupProps {
   storeGroup: GroupedCart;

@@ -5,9 +5,10 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DealCard from "./deal-card";
 import { cn } from "@/lib/utils";
+import { Deal } from "@/types";
 
 interface DealCarouselProps {
-  deals: any[];
+  deals: Deal[];
 }
 
 export default function DealCarousel({ deals }: DealCarouselProps) {
@@ -115,12 +116,12 @@ export default function DealCarousel({ deals }: DealCarouselProps) {
       {/* Pagination indicators */}
       <div className="flex justify-center mt-4 gap-1">
         {Array.from({ length: totalSlides }).map((_, index) => (
-          <button
+          <Button
             key={index}
             className={cn(
-              "w-2 h-2 rounded-full transition-all",
+              "w-2 h-2 p-0 rounded-full transition-all",
               index === Math.floor(currentIndex / itemsPerView)
-                ? "bg-primary w-4"
+                ? "bg-udua-orange-primary w-4"
                 : "bg-muted"
             )}
             onClick={() => setCurrentIndex(index * itemsPerView)}

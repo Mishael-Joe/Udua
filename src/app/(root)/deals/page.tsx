@@ -1,6 +1,7 @@
 import DealCard from "@/components/deals/deal-card";
 import { Suspense } from "react";
 import DealsSectionSkeleton from "@/components/deals/deals-section-skeleton";
+import { Deal } from "@/types";
 
 export const metadata = {
   title: "Deals & Promotions | Udua",
@@ -27,10 +28,14 @@ async function getActiveDeals(limit = 50) {
 }
 
 export default async function DealsPage() {
-  const { success, deals, error } = await getActiveDeals(50); // Get more deals for the dedicated page
+  const { success, deals, error } = (await getActiveDeals(50)) as {
+    success: boolean;
+    deals: Deal[];
+    error: any;
+  }; // Get more deals for the dedicated page
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-8 px-4 min-h-screen max-w-7xl">
       <h1 className="text-3xl font-bold mb-2">Deals & Promotions</h1>
       <p className="text-muted-foreground mb-8">
         Discover our latest offers and save big on your favorite products

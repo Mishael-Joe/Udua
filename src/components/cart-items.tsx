@@ -1,14 +1,11 @@
 "use client";
 
-import type React from "react";
-
 import Image from "next/image";
 import Link from "next/link";
-import { X, Minus, Plus, InfoIcon, Tag, Percent, Zap } from "lucide-react";
+import { Clock, X, Minus, Plus, InfoIcon } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import { shimmer, toBase64 } from "@/lib/image";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { CartItemsEmpty } from "@/components/cart-items-empty";
 import { formatNaira } from "@/lib/utils";
 import { useStateContext } from "@/context/stateContext";
@@ -20,38 +17,6 @@ const InfoMessage = ({ children }: { children: React.ReactNode }) => (
     <span className="text-xs">{children}</span>
   </div>
 );
-
-// Deal Badge Component
-const DealBadge = ({ dealInfo }: { dealInfo: any }) => {
-  if (!dealInfo) return null;
-
-  let icon = null;
-  let text = "";
-
-  switch (dealInfo.dealType) {
-    case "percentage":
-      icon = <Percent className="h-3 w-3" />;
-      text = `${dealInfo.value}% OFF`;
-      break;
-    case "fixed":
-      icon = <Tag className="h-3 w-3" />;
-      text = `${formatNaira(dealInfo.value)} OFF`;
-      break;
-    case "flash_sale":
-      icon = <Zap className="h-3 w-3" />;
-      text = `${dealInfo.value}% OFF`;
-      break;
-    default:
-      return null;
-  }
-
-  return (
-    <Badge variant="destructive" className="flex items-center gap-1 mt-1">
-      {icon}
-      {text}
-    </Badge>
-  );
-};
 
 // Memoized Product Image Component
 const ProductImage = ({ src, alt }: { src: string; alt: string }) => {
@@ -65,7 +30,7 @@ const ProductImage = ({ src, alt }: { src: string; alt: string }) => {
       <Image
         placeholder="blur"
         blurDataURL={blurData}
-        src={src || "/placeholder.svg"}
+        src={src}
         alt={alt}
         fill
         className="rounded-md border-2 border-gray-200 object-cover dark:border-gray-800"
@@ -81,7 +46,9 @@ export function CartItems() {
 
   useEffect(() => {
     fetchCartItems();
-  }, [fetchCartItems]);
+  }, []);
+
+  // console.log("cartItems", cartItems);
 
   if (cartItems.length === 0) return <CartItemsEmpty />;
 
@@ -92,13 +59,13 @@ export function CartItems() {
         className="divide-y divide-udua-orang-primary/30 border-y border-udua-orange-primary/30 dark:divide-gray-500 dark:border-gray-500"
       >
         {cartItems.map((product, index) => {
+          // console.log("product", product._id);
+
           const isPhysical = product.productType === "physicalproducts";
 
-          // Use priceAtAdd which includes any deal discounts
-          const price = product.priceAtAdd;
-          const originalPrice = product.originalPrice;
-          const hasDeal = price < originalPrice;
-
+          const price = isPhysical
+            ? product.selectedSize?.price ?? product.product?.price
+            : product.product.price;
           const title = isPhysical
             ? product.product.name
             : product.product.title;
@@ -128,30 +95,17 @@ export function CartItems() {
                       </h3>
                     </div>
 
-                    {/* Price display with deal information */}
                     {price && (
-                      <div className="mt-1">
-                        <p
-                          className={`font-medium ${
-                            hasDeal ? "text-udua-orange-primary" : ""
-                          }`}
-                        >
-                          {formatNaira(price)}
-                        </p>
-                        {hasDeal && (
-                          <>
-                            <p className="text-xs text-gray-500 line-through">
-                              {formatNaira(originalPrice)}
-                            </p>
-                            <DealBadge dealInfo={product.dealInfo} />
-                          </>
-                        )}
-                      </div>
+                      <p className="mt-1 font-medium"> {formatNaira(price)}</p>
                     )}
 
                     {size && (
                       <p className="mt-1 text-sm font-medium">Size: {size}</p>
                     )}
+
+                    {/* {!isPhysical && (
+                      <p className="mt-1 text-sm font-medium">File Type: PDF</p>
+                    )} */}
                   </div>
 
                   <div className="mt-4 sm:mt-0 sm:pr-9">
@@ -196,12 +150,12 @@ export function CartItems() {
                   </div>
                 </div>
 
-                {/* Item total price */}
-                {product.quantity > 1 && (
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    Item total: {formatNaira(price * product.quantity)}
+                {/* {isPhysical && (
+                  <p className="mt-4 flex space-x-2 text-sm">
+                    <Clock className="h-5 w-5 shrink-0" />
+                    <span>Ships in 4 days</span>
                   </p>
-                )}
+                )} */}
               </div>
             </li>
           );
@@ -248,14 +202,21 @@ const QuantityButton = ({
   </Button>
 );
 
+{
+  /* This feature is under construction and it is comming soon. #-DEALS */
+}
+
 // "use client";
+
+// import type React from "react";
 
 // import Image from "next/image";
 // import Link from "next/link";
-// import { Clock, X, Minus, Plus, InfoIcon } from "lucide-react";
+// import { X, Minus, Plus, InfoIcon, Tag, Percent, Zap } from "lucide-react";
 // import { useEffect, useMemo } from "react";
 // import { shimmer, toBase64 } from "@/lib/image";
 // import { Button } from "@/components/ui/button";
+// import { Badge } from "@/components/ui/badge";
 // import { CartItemsEmpty } from "@/components/cart-items-empty";
 // import { formatNaira } from "@/lib/utils";
 // import { useStateContext } from "@/context/stateContext";
@@ -267,6 +228,38 @@ const QuantityButton = ({
 //     <span className="text-xs">{children}</span>
 //   </div>
 // );
+
+// // Deal Badge Component
+// const DealBadge = ({ dealInfo }: { dealInfo: any }) => {
+//   if (!dealInfo) return null;
+
+//   let icon = null;
+//   let text = "";
+
+//   switch (dealInfo.dealType) {
+//     case "percentage":
+//       icon = <Percent className="h-3 w-3" />;
+//       text = `${dealInfo.value}% OFF`;
+//       break;
+//     case "fixed":
+//       icon = <Tag className="h-3 w-3" />;
+//       text = `${formatNaira(dealInfo.value)} OFF`;
+//       break;
+//     case "flash_sale":
+//       icon = <Zap className="h-3 w-3" />;
+//       text = `${dealInfo.value}% OFF`;
+//       break;
+//     default:
+//       return null;
+//   }
+
+//   return (
+//     <Badge variant="destructive" className="flex items-center gap-1 mt-1">
+//       {icon}
+//       {text}
+//     </Badge>
+//   );
+// };
 
 // // Memoized Product Image Component
 // const ProductImage = ({ src, alt }: { src: string; alt: string }) => {
@@ -280,7 +273,7 @@ const QuantityButton = ({
 //       <Image
 //         placeholder="blur"
 //         blurDataURL={blurData}
-//         src={src}
+//         src={src || "/placeholder.svg"}
 //         alt={alt}
 //         fill
 //         className="rounded-md border-2 border-gray-200 object-cover dark:border-gray-800"
@@ -296,9 +289,7 @@ const QuantityButton = ({
 
 //   useEffect(() => {
 //     fetchCartItems();
-//   }, []);
-
-//   // console.log("cartItems", cartItems);
+//   }, [fetchCartItems]);
 
 //   if (cartItems.length === 0) return <CartItemsEmpty />;
 
@@ -309,13 +300,13 @@ const QuantityButton = ({
 //         className="divide-y divide-udua-orang-primary/30 border-y border-udua-orange-primary/30 dark:divide-gray-500 dark:border-gray-500"
 //       >
 //         {cartItems.map((product, index) => {
-//           // console.log("product", product._id);
-
 //           const isPhysical = product.productType === "physicalproducts";
 
-//           const price = isPhysical
-//             ? product.selectedSize?.price ?? product.product?.price
-//             : product.product.price;
+//           // Use priceAtAdd which includes any deal discounts
+//           const price = product.priceAtAdd;
+//           const originalPrice = product.originalPrice;
+//           const hasDeal = price < originalPrice;
+
 //           const title = isPhysical
 //             ? product.product.name
 //             : product.product.title;
@@ -345,17 +336,30 @@ const QuantityButton = ({
 //                       </h3>
 //                     </div>
 
+//                     {/* Price display with deal information */}
 //                     {price && (
-//                       <p className="mt-1 font-medium"> {formatNaira(price)}</p>
+//                       <div className="mt-1">
+//                         <p
+//                           className={`font-medium ${
+//                             hasDeal ? "text-udua-orange-primary" : ""
+//                           }`}
+//                         >
+//                           {formatNaira(price)}
+//                         </p>
+//                         {hasDeal && (
+//                           <>
+//                             <p className="text-xs text-gray-500 line-through">
+//                               {formatNaira(originalPrice)}
+//                             </p>
+//                             <DealBadge dealInfo={product.dealInfo} />
+//                           </>
+//                         )}
+//                       </div>
 //                     )}
 
 //                     {size && (
 //                       <p className="mt-1 text-sm font-medium">Size: {size}</p>
 //                     )}
-
-//                     {/* {!isPhysical && (
-//                       <p className="mt-1 text-sm font-medium">File Type: PDF</p>
-//                     )} */}
 //                   </div>
 
 //                   <div className="mt-4 sm:mt-0 sm:pr-9">
@@ -400,12 +404,12 @@ const QuantityButton = ({
 //                   </div>
 //                 </div>
 
-//                 {/* {isPhysical && (
-//                   <p className="mt-4 flex space-x-2 text-sm">
-//                     <Clock className="h-5 w-5 shrink-0" />
-//                     <span>Ships in 4 days</span>
+//                 {/* Item total price */}
+//                 {product.quantity > 1 && (
+//                   <p className="mt-2 text-sm text-muted-foreground">
+//                     Item total: {formatNaira(price * product.quantity)}
 //                   </p>
-//                 )} */}
+//                 )}
 //               </div>
 //             </li>
 //           );
