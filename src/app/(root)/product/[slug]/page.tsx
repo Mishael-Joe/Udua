@@ -14,18 +14,13 @@
 
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { Separator } from "@/components/ui/separator";
-
-// Component imports
-import { ProductGallery } from "@/components/product-gallery";
-import { ProductInfo } from "@/components/product-info";
-import { ProductSpecification } from "@/components/product-specification";
-import ProductReviewComponent from "@/components/product-review";
-import { ProductPageSkeleton } from "@/components/skeletons/product-page-skeleton";
+import { ProductDetailSkeleton } from "@/components/skeletons/product-page-skeleton";
 
 // Data fetching
 import { fetchProductData } from "@/lib/actions/product.action";
 import { formatNaira } from "@/lib/utils";
+import { ProductDetailPage } from "@/components/product-detail-page";
+import ProductNotFoundPage from "@/components/product-not-found";
 
 // Types
 interface Props {
@@ -86,17 +81,21 @@ export default async function ProductPage(props: Props) {
     return notFound();
   }
 
-  // Handle case where product data is missing
+  /**
+   * Render error state if product not found
+   * Handle case where product data is missing
+   */
+
   if (!product?.productData) {
-    return notFound();
+    return <ProductNotFoundPage />;
   }
 
   const isPhysicalProduct =
     product.productData.productType === "physicalproducts";
 
   return (
-    <Suspense fallback={<ProductPageSkeleton />}>
-      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+    <Suspense fallback={<ProductDetailSkeleton />}>
+      <main className="mx-auto max-w-7xl px-4 py-6">
         {/* Structured Data for SEO */}
         <script type="application/ld+json">
           {JSON.stringify({
@@ -121,86 +120,10 @@ export default async function ProductPage(props: Props) {
           })}
         </script>
 
-        <article className="mx-auto max-w-6xl">
-          {/* Breadcrumbs */}
-          {/* <nav className="mb-6 text-sm text-muted-foreground">
-            <ol className="flex items-center space-x-2">
-              <li>
-                <a href="/" className="hover:text-foreground transition-colors">
-                  Home
-                </a>
-              </li>
-              <li>/</li>
-              <li>
-                <a
-                  href={isPhysicalProduct ? "/shop" : "/ebooks"}
-                  className="hover:text-foreground transition-colors"
-                >
-                  {isPhysicalProduct ? "Shop" : "E-Books"}
-                </a>
-              </li>
-              <li>/</li>
-              <li className="text-foreground font-medium truncate max-w-[200px]">
-                {product.productData.name || product.productData.title}
-              </li>
-            </ol>
-          </nav> */}
-
-          {/* Product Main Section */}
-          <section
-            aria-labelledby="product-heading"
-            className="grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-8"
-          >
-            <h1 id="product-heading" className="sr-only">
-              {product.productData.name || product.productData.title}
-            </h1>
-
-            <ProductGallery
-              product={product.productData}
-              isLikedProduct={product.isLikedProduct}
-            />
-
-            <ProductInfo product={product.productData} />
-          </section>
-
-          {/* Specifications */}
-          {isPhysicalProduct && (
-            <section aria-labelledby="specifications-heading" className="mt-16">
-              <Separator className="mb-8" />
-              <h2
-                id="specifications-heading"
-                className="text-2xl font-bold mb-6"
-              >
-                Product Details
-              </h2>
-              <ProductSpecification product={product.productData} />
-            </section>
-          )}
-
-          {/* Reviews */}
-          {isPhysicalProduct && (
-            <section aria-labelledby="reviews-heading" className="mt-16">
-              <Separator className="mb-8" />
-              <h2 id="reviews-heading" className="text-2xl font-bold mb-6">
-                Customer Reviews
-              </h2>
-              <Suspense
-                fallback={
-                  <div className="rounded-lg border border-border p-8">
-                    <div className="h-8 w-48 bg-muted rounded animate-pulse mb-6"></div>
-                    <div className="space-y-4">
-                      <div className="h-4 bg-muted rounded animate-pulse"></div>
-                      <div className="h-4 bg-muted rounded animate-pulse w-5/6"></div>
-                      <div className="h-4 bg-muted rounded animate-pulse w-4/6"></div>
-                    </div>
-                  </div>
-                }
-              >
-                <ProductReviewComponent product={product.productData} />
-              </Suspense>
-            </section>
-          )}
-        </article>
+        <ProductDetailPage
+          item={product.productData}
+          isLikedProduct={product.isLikedProduct}
+        />
       </main>
     </Suspense>
   );

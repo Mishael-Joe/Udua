@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Suspense } from "react";
 import Image from "next/image";
 import { useState } from "react";
+import { Button } from "./ui/button";
 
 function SearchBar() {
   const pathname = usePathname();
@@ -13,7 +14,8 @@ function SearchBar() {
   const defaultSearchQuery = searchParams.get("search") ?? "";
   const [query, setQuery] = useState(defaultSearchQuery);
 
-  const displaySearchInput = pathname.endsWith("/");
+  // const displaySearchInput = pathname.endsWith("/");
+  const displaySearchInput = pathname.startsWith("/");
 
   const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -41,7 +43,7 @@ function SearchBar() {
               defaultValue={query}
               onChange={(e) => setQuery(e.target.value)}
             />
-            <button className="absolute h-9 w-9 right-0 bg-udua-orange-primary rounded-r">
+            <Button className="absolute h-9 w-9 right-0 bg-udua-orange-primary rounded-l-xs rounded-r p-0 hover:bg-udua-orange-primary">
               <div className="flex justify-center items-center">
                 <Image
                   src={"/svg-icons/search-gray.svg"}
@@ -50,7 +52,7 @@ function SearchBar() {
                   alt={"search-icon"}
                 />
               </div>
-            </button>
+            </Button>
           </form>
         )}
       </div>

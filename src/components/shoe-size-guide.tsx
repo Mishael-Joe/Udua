@@ -41,7 +41,12 @@ export function FootWearSizeGuide() {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <p className=" text-xs hover:underline">Size Guide</p>
+          <Button
+            size={"sm"}
+            className="p-0 bg-transparent hover:bg-transparent shadow-none text-udua-deep-gray-primary text-xs hover:underline"
+          >
+            Size Guide
+          </Button>
         </DialogTrigger>
         <ScrollArea>
           <DialogContent className="sm:max-w-6xl h-full">

@@ -80,21 +80,22 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
       });
 
       if (response.status === 200) {
-        toast({
-          title: `Product added to cart`,
-          description: `Quantity: ${quantity}`,
-          action: (
-            <Link href="/cart">
-              <Button variant="link" className="gap-x-2 whitespace-nowrap">
-                <span>Open cart</span>
-                <ArrowRight className="h-5 w-5" />
-              </Button>
-            </Link>
-          ),
-        });
+        // toast({
+        //   title: `Product added to cart`,
+        //   description: `Quantity: ${quantity}`,
+        //   action: (
+        //     <Link href="/cart">
+        //       <Button variant="link" className="gap-x-2 whitespace-nowrap">
+        //         <span>Open cart</span>
+        //         <ArrowRight className="h-5 w-5" />
+        //       </Button>
+        //     </Link>
+        //   ),
+        // });
 
         // Fetch the updated cart items after adding/updating the cart.
         fetchCartItems();
+        return true;
       }
 
       // Axios returns the data in response.data
@@ -110,6 +111,8 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
       } else {
         console.error("Error adding to cart:", error.message);
       }
+
+      return false;
     }
   };
 

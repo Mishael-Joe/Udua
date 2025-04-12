@@ -97,7 +97,7 @@ export default function OrderSummary({
                 <div className="flex items-center space-x-3">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 text-gray-500 flex-shrink-0"
+                    className="h-4 w-4 text-gray-500 shrink-0"
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
@@ -115,7 +115,7 @@ export default function OrderSummary({
                 <div className="flex items-center space-x-3">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 text-gray-500 flex-shrink-0"
+                    className="h-4 w-4 text-gray-500 shrink-0"
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
@@ -127,7 +127,7 @@ export default function OrderSummary({
                 <div className="flex items-start space-x-3">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 text-gray-500 flex-shrink-0 mt-0.5"
+                    className="h-4 w-4 text-gray-500 shrink-0 mt-0.5"
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
@@ -275,7 +275,7 @@ export default function OrderSummary({
 //                 <div className="flex items-center space-x-3">
 //                   <svg
 //                     xmlns="http://www.w3.org/2000/svg"
-//                     className="h-4 w-4 text-gray-500 flex-shrink-0"
+//                     className="h-4 w-4 text-gray-500 shrink-0"
 //                     viewBox="0 0 20 20"
 //                     fill="currentColor"
 //                   >
@@ -293,7 +293,7 @@ export default function OrderSummary({
 //                 <div className="flex items-center space-x-3">
 //                   <svg
 //                     xmlns="http://www.w3.org/2000/svg"
-//                     className="h-4 w-4 text-gray-500 flex-shrink-0"
+//                     className="h-4 w-4 text-gray-500 shrink-0"
 //                     viewBox="0 0 20 20"
 //                     fill="currentColor"
 //                   >
@@ -305,7 +305,7 @@ export default function OrderSummary({
 //                 <div className="flex items-start space-x-3">
 //                   <svg
 //                     xmlns="http://www.w3.org/2000/svg"
-//                     className="h-4 w-4 text-gray-500 flex-shrink-0 mt-0.5"
+//                     className="h-4 w-4 text-gray-500 shrink-0 mt-0.5"
 //                     viewBox="0 0 20 20"
 //                     fill="currentColor"
 //                   >

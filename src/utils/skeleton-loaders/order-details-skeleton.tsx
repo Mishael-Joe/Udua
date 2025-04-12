@@ -31,7 +31,7 @@ const OrderDetailsSkeleton = () => {
         </header>
 
         {/* Order Summary Skeleton */}
-        <div className="p-4 border rounded-md bg-white shadow">
+        <div className="p-4 border rounded-md bg-white shadow-sm">
           <div className="mb-2">
             <div className="h-4 w-28 bg-gray-200 rounded" />
             <div className="h-3 w-40 bg-gray-200 rounded mt-1" />
@@ -52,7 +52,7 @@ const OrderDetailsSkeleton = () => {
         </div>
 
         {/* Products List Skeleton */}
-        <div className="p-4 border rounded-md bg-white shadow">
+        <div className="p-4 border rounded-md bg-white shadow-sm">
           {/* Header for products card */}
           <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
             <div className="h-4 w-20 bg-gray-200 rounded" />

@@ -108,7 +108,7 @@ const EditProfile = () => {
     <div className="max-w-7xl mx-auto px-4 md:px-3 py-8">
       <div className="grid md:grid-cols-[280px_1fr] gap-6">
         {/* Navigation Sidebar */}
-        <aside className="bg-card rounded-lg shadow-sm hidden md:inline-block">
+        <aside className="bg-card rounded-lg shadow-xs hidden md:inline-block">
           <Aside1 />
         </aside>
 

@@ -47,7 +47,7 @@ const menuItems = (slug: string) => [
   { title: "Home", url: `/store/${slug}/my-store`, icon: Home },
   { title: "Orders", url: `/store/${slug}/dash-board`, icon: FileBoxIcon },
   { title: "Payout", url: `/store/${slug}/payout`, icon: WalletIcon },
-  { title: "Deals", url: `/store/${slug}/deals`, icon: Handshake },
+  // { title: "Deals", url: `/store/${slug}/deals`, icon: Handshake },
 ];
 
 const inventoryItems = (slug: string) => [
@@ -160,7 +160,7 @@ export function AppSidebar({ storeName, params }: SidebarProps) {
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 side="top"
-                className="w-[--radix-popper-anchor-width]"
+                className="w-(--radix-popper-anchor-width)"
               >
                 <DropdownMenuItem onClick={signOut} className="cursor-pointer">
                   <span>Sign out</span>

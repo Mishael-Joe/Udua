@@ -1039,7 +1039,7 @@ export default CreateProduct;
 //                               name="name"
 //                               value={physicalProduct.name}
 //                               onChange={(e) => handleChange(e)}
-//                               className="block w-full px-4 py-2 mt-2 text-gray-700 dark:text-white placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+//                               className="block w-full px-4 py-2 mt-2 text-gray-700 dark:text-white placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-hidden focus:ring-3 focus:ring-blue-300"
 //                               type="text"
 //                               placeholder="Product Name"
 //                               aria-label="Product Name"
@@ -1094,7 +1094,7 @@ export default CreateProduct;
 //                               name="price"
 //                               value={physicalProduct.price}
 //                               onChange={handleChange}
-//                               className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 dark:text-white bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+//                               className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 dark:text-white bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-hidden focus:ring-3 focus:ring-blue-300"
 //                               type="text"
 //                               placeholder="Product Price"
 //                               aria-label="Product Price"
@@ -1109,7 +1109,7 @@ export default CreateProduct;
 //                               name="productQuantity"
 //                               value={physicalProduct.productQuantity}
 //                               onChange={handleChange}
-//                               className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 dark:text-white bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+//                               className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 dark:text-white bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-hidden focus:ring-3 focus:ring-blue-300"
 //                               type="text"
 //                               placeholder="Product Quantity"
 //                               aria-label="Product Quantity"
@@ -1143,7 +1143,7 @@ export default CreateProduct;
 //                                   " "
 //                                 )} // Replace underscores with spaces
 //                                 onChange={handleChange}
-//                                 className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:text-slate-200 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+//                                 className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:text-slate-200 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-hidden focus:ring-3 focus:ring-blue-300"
 //                               >
 //                                 <option value="" disabled>
 //                                   Select a Category
@@ -1172,7 +1172,7 @@ export default CreateProduct;
 //                                   name="subCategory"
 //                                   value={physicalProduct.subCategory}
 //                                   onChange={handleChange}
-//                                   className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:text-slate-200 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+//                                   className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:text-slate-200 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-hidden focus:ring-3 focus:ring-blue-300"
 //                                 >
 //                                   <option value="" disabled>
 //                                     Select a Sub-Category
@@ -1326,7 +1326,7 @@ export default CreateProduct;
 //                             <Input
 //                               name="images"
 //                               onChange={(e) => handleChange(e)}
-//                               className="block absolute h-full w-full border-dashed px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+//                               className="block absolute h-full w-full border-dashed px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-hidden focus:ring-3 focus:ring-blue-300"
 //                               type="file"
 //                               multiple
 //                               accept="image/*"
@@ -1364,7 +1364,7 @@ export default CreateProduct;
 //                             name="storePassword"
 //                             value={physicalProduct.storePassword}
 //                             onChange={(e) => handleChange(e)}
-//                             className="block w-full px-4 py-2 mt-2 text-gray-700 dark:text-white placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+//                             className="block w-full px-4 py-2 mt-2 text-gray-700 dark:text-white placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-hidden focus:ring-3 focus:ring-blue-300"
 //                             type="password"
 //                             placeholder="Your Store Password"
 //                             aria-label="Your Store Password"
@@ -1454,7 +1454,7 @@ export default CreateProduct;
 //                               name="title"
 //                               value={digitalProduct.title}
 //                               onChange={(e) => handleDigitalProductChange(e)}
-//                               className="block w-full px-4 py-2 mt-2 text-gray-700 dark:text-white placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+//                               className="block w-full px-4 py-2 mt-2 text-gray-700 dark:text-white placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-hidden focus:ring-3 focus:ring-blue-300"
 //                               type="text"
 //                               placeholder="Book Title"
 //                               aria-label="Title of the Book"
@@ -1470,7 +1470,7 @@ export default CreateProduct;
 //                               name="author"
 //                               value={digitalProduct.author}
 //                               onChange={(e) => handleDigitalProductChange(e)}
-//                               className="block w-full px-4 py-2 mt-2 text-gray-700 dark:text-white placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+//                               className="block w-full px-4 py-2 mt-2 text-gray-700 dark:text-white placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-hidden focus:ring-3 focus:ring-blue-300"
 //                               type="text"
 //                               placeholder="Book Author"
 //                               aria-label="Author of the Book"
@@ -1509,7 +1509,7 @@ export default CreateProduct;
 //                               name="price"
 //                               value={digitalProduct.price}
 //                               onChange={(e) => handleDigitalProductChange(e)}
-//                               className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 dark:text-white bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+//                               className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 dark:text-white bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-hidden focus:ring-3 focus:ring-blue-300"
 //                               type="text"
 //                               placeholder="Price"
 //                               aria-label="Price"
@@ -1525,7 +1525,7 @@ export default CreateProduct;
 //                               name="publisher"
 //                               value={digitalProduct.publisher}
 //                               onChange={(e) => handleDigitalProductChange(e)}
-//                               className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 dark:text-white bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+//                               className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 dark:text-white bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-hidden focus:ring-3 focus:ring-blue-300"
 //                               type="text"
 //                               placeholder="Publisher"
 //                               aria-label="Publisher"
@@ -1549,7 +1549,7 @@ export default CreateProduct;
 //                                 name="category"
 //                                 value={digitalProduct.category} // Replace underscores with spaces
 //                                 onChange={handleDigitalProductChange}
-//                                 className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:text-slate-200 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+//                                 className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:text-slate-200 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-hidden focus:ring-3 focus:ring-blue-300"
 //                               >
 //                                 <option value="" disabled>
 //                                   Select a Category
@@ -1585,7 +1585,7 @@ export default CreateProduct;
 //                                   name="subcategory"
 //                                   value={digitalProduct.subcategory}
 //                                   onChange={handleDigitalProductChange}
-//                                   className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:text-slate-200 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+//                                   className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:text-slate-200 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-hidden focus:ring-3 focus:ring-blue-300"
 //                                 >
 //                                   <option value="" disabled>
 //                                     Select a Sub-Category
@@ -1631,7 +1631,7 @@ export default CreateProduct;
 //                             name="language"
 //                             value={digitalProduct.language}
 //                             onChange={(e) => handleDigitalProductChange(e)}
-//                             className="block w-full px-4 py-2 text-gray-700 placeholder-gray-500 dark:text-white bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+//                             className="block w-full px-4 py-2 text-gray-700 placeholder-gray-500 dark:text-white bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-hidden focus:ring-3 focus:ring-blue-300"
 //                             type="text"
 //                             placeholder="Written in what Language"
 //                             aria-label="what Language"
@@ -1646,7 +1646,7 @@ export default CreateProduct;
 //                             name="isbn"
 //                             value={digitalProduct.isbn}
 //                             onChange={(e) => handleDigitalProductChange(e)}
-//                             className="block w-full px-4 py-2 text-gray-700 placeholder-gray-500 dark:text-white bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+//                             className="block w-full px-4 py-2 text-gray-700 placeholder-gray-500 dark:text-white bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-hidden focus:ring-3 focus:ring-blue-300"
 //                             type="text"
 //                             placeholder="ISBN"
 //                             aria-label="ISBN"
@@ -1702,7 +1702,7 @@ export default CreateProduct;
 //                             <Input
 //                               name="coverIMG"
 //                               onChange={(e) => handleDigitalProductChange(e)}
-//                               className="block absolute h-full w-full border-dashed px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+//                               className="block absolute h-full w-full border-dashed px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-hidden focus:ring-3 focus:ring-blue-300"
 //                               type="file"
 //                               accept="image/*"
 //                               placeholder="cover Image"
@@ -1740,7 +1740,7 @@ export default CreateProduct;
 //                             name="storePassword"
 //                             value={digitalProduct.storePassword}
 //                             onChange={(e) => handleDigitalProductChange(e)}
-//                             className="block w-full px-4 py-2 mt-2 text-gray-700 dark:text-white placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
+//                             className="block w-full px-4 py-2 mt-2 text-gray-700 dark:text-white placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-hidden focus:ring-3 focus:ring-blue-300"
 //                             type="password"
 //                             placeholder="Your Store Password"
 //                             aria-label="Your Store Password"

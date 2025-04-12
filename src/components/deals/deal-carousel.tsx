@@ -75,7 +75,7 @@ export default function DealCarousel({ deals }: DealCarouselProps) {
           {deals.map((deal, index) => (
             <div
               key={deal._id}
-              className="flex-shrink-0 px-2"
+              className="shrink-0 px-2"
               style={{ width: itemWidth ? `${itemWidth}px` : "100%" }}
             >
               <DealCard deal={deal} />

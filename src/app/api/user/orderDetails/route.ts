@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { connectToDB } from "@/lib/mongoose";
 import Order from "@/lib/models/order.model";
+import Deal from "@/lib/models/deal.model";
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,6 +10,7 @@ export async function POST(request: NextRequest) {
 
     await connectToDB();
 
+    const deal = await Deal.findOne({}).select("_id");
     // Find the order and populate products within each subOrder
     const orderDetail = await Order.findById(orderID)
       .populate({

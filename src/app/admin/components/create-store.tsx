@@ -108,7 +108,7 @@ function CreateStorePage({ admin }: { admin?: AdminData }) {
       <h1 className="text-2xl font-bold mb-2 text-center">Create New Store</h1>
       <p className="mb-4 text-center">Welcome, {admin?.name}!</p>
 
-      <div className="max-w-lg mx-auto shadow space-y-4">
+      <div className="max-w-lg mx-auto shadow-sm space-y-4">
         <p className="text-center pt-4 text-gray-500 dark:text-gray-400">
           Provide the store details.
         </p>

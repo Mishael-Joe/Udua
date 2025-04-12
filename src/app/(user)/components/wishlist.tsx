@@ -127,14 +127,14 @@ export function Wishlist() {
     <div className="max-w-7xl mx-auto px-4 md:px-3 py-8">
       <div className="grid md:grid-cols-[280px_1fr] gap-6">
         {/* Navigation Sidebar */}
-        <aside className="bg-card rounded-lg shadow-sm hidden md:inline-block">
+        <aside className="bg-card rounded-lg shadow-xs hidden md:inline-block">
           <Aside1 />
         </aside>
 
         {/* Main Content */}
         <main className="space-y-6">
           {/* Wishlist Header */}
-          <section className="bg-card rounded-lg p-6 shadow-sm">
+          <section className="bg-card rounded-lg p-6 shadow-xs">
             <div className="flex items-center justify-between mb-6">
               <h1 className="text-2xl font-bold flex items-center gap-2">
                 <Heart className="w-6 h-6" />
@@ -171,7 +171,7 @@ export function Wishlist() {
                           )
                         }
                         disabled={removingId === product.productId._id}
-                        className="absolute top-2 right-2 z-10 p-2 bg-background rounded-full shadow hover:bg-red-100 transition-colors"
+                        className="absolute top-2 right-2 z-10 p-2 bg-background rounded-full shadow-sm hover:bg-red-100 transition-colors"
                         aria-label="Remove from wishlist"
                         size={`icon`}
                       >
@@ -209,7 +209,7 @@ export function Wishlist() {
                 })}
               </div>
             ) : (
-              <div className="flex flex-1 items-center justify-center rounded-lg border-2 border-dashed shadow-sm h-[300px] border-udua-orange-primary/30">
+              <div className="flex flex-1 items-center justify-center rounded-lg border-2 border-dashed shadow-xs h-[300px] border-udua-orange-primary/30">
                 <div className="flex flex-col items-center gap-1 text-center p-8">
                   <XCircle className="h-10 w-10 text-udua-orange-primary" />
                   <h3 className="mt-4 text-lg font-semibold">

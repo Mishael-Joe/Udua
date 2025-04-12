@@ -90,7 +90,7 @@ function SignUp() {
   };
 
   const inputClass =
-    "w-full px-4 py-2 mt-2 bg-background border rounded-lg focus:ring-2 focus:ring-udua-blue-primary focus:outline-none";
+    "w-full px-4 py-2 mt-2 bg-background border rounded-lg focus:ring-2 focus:ring-udua-blue-primary focus:outline-hidden";
 
   return (
     <main className="min-h-screen bg-udua-blue-primary/20">
@@ -441,7 +441,7 @@ export default SignUp;
 //                       {/* <FormLabel>First Name</FormLabel> */}
 //                       <FormControl>
 //                         <Input
-//                           className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:!ring-udua-blue-primary focus:!outline-none focus:!ring-1 focus:!ring-opacity-90 border-udua-blue-primary focus:border-transparent"
+//                           className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:ring-udua-blue-primary! focus:outline-hidden! focus:ring-1! focus:ring-opacity-90! border-udua-blue-primary focus:border-transparent"
 //                           type="text"
 //                           placeholder="Your First Name"
 //                           aria-label="name"
@@ -462,7 +462,7 @@ export default SignUp;
 //                       {/* <FormLabel>Last Name</FormLabel> */}
 //                       <FormControl>
 //                         <Input
-//                           className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:!ring-udua-blue-primary focus:!outline-none focus:!ring-1 focus:!ring-opacity-90 border-udua-blue-primary focus:border-transparent"
+//                           className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:ring-udua-blue-primary! focus:outline-hidden! focus:ring-1! focus:ring-opacity-90! border-udua-blue-primary focus:border-transparent"
 //                           type="text"
 //                           placeholder="Your Last Name"
 //                           aria-label="name"
@@ -483,7 +483,7 @@ export default SignUp;
 //                       {/* <FormLabel>Other Names</FormLabel> */}
 //                       <FormControl>
 //                         <Input
-//                           className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:!ring-udua-blue-primary focus:!outline-none focus:!ring-1 focus:!ring-opacity-90 border-udua-blue-primary focus:border-transparent"
+//                           className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:ring-udua-blue-primary! focus:outline-hidden! focus:ring-1! focus:ring-opacity-90! border-udua-blue-primary focus:border-transparent"
 //                           type="text"
 //                           placeholder="Other Names"
 //                           aria-label="name"
@@ -504,7 +504,7 @@ export default SignUp;
 //                       {/* <FormLabel>Email</FormLabel> */}
 //                       <FormControl>
 //                         <Input
-//                           className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:!ring-udua-blue-primary focus:!outline-none focus:!ring-1 focus:!ring-opacity-90 border-udua-blue-primary focus:border-transparent"
+//                           className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:ring-udua-blue-primary! focus:outline-hidden! focus:ring-1! focus:ring-opacity-90! border-udua-blue-primary focus:border-transparent"
 //                           type="email"
 //                           placeholder="Your Email"
 //                           aria-label="Your Email"
@@ -525,7 +525,7 @@ export default SignUp;
 //                       {/* <FormLabel>Password</FormLabel> */}
 //                       <FormControl>
 //                         <Input
-//                           className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:!ring-udua-blue-primary focus:!outline-none focus:!ring-1 focus:!ring-opacity-90 border-udua-blue-primary focus:border-transparent"
+//                           className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:ring-udua-blue-primary! focus:outline-hidden! focus:ring-1! focus:ring-opacity-90! border-udua-blue-primary focus:border-transparent"
 //                           type="password"
 //                           placeholder="Enter your password"
 //                           aria-label="password"
@@ -546,7 +546,7 @@ export default SignUp;
 //                       {/* <FormLabel>Confirm Password</FormLabel> */}
 //                       <FormControl>
 //                         <Input
-//                           className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:!ring-udua-blue-primary focus:!outline-none focus:!ring-1 focus:!ring-opacity-90 border-udua-blue-primary focus:border-transparent"
+//                           className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:ring-udua-blue-primary! focus:outline-hidden! focus:ring-1! focus:ring-opacity-90! border-udua-blue-primary focus:border-transparent"
 //                           type="password"
 //                           placeholder="confirm your password"
 //                           aria-label="confirm your password"
@@ -567,7 +567,7 @@ export default SignUp;
 //                       {/* <FormLabel>Your Address</FormLabel> */}
 //                       <FormControl>
 //                         <Input
-//                           className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:!ring-udua-blue-primary focus:!outline-none focus:!ring-1 focus:!ring-opacity-90 border-udua-blue-primary focus:border-transparent"
+//                           className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:ring-udua-blue-primary! focus:outline-hidden! focus:ring-1! focus:ring-opacity-90! border-udua-blue-primary focus:border-transparent"
 //                           type="text"
 //                           placeholder="Enter your Address"
 //                           aria-label="Enter your Address"
@@ -588,7 +588,7 @@ export default SignUp;
 //                       {/* <FormLabel>Phone Number</FormLabel> */}
 //                       <FormControl>
 //                         <Input
-//                           className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:!ring-udua-blue-primary focus:!outline-none focus:!ring-1 focus:!ring-opacity-90 border-udua-blue-primary focus:border-transparent"
+//                           className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:ring-udua-blue-primary! focus:outline-hidden! focus:ring-1! focus:ring-opacity-90! border-udua-blue-primary focus:border-transparent"
 //                           type="text"
 //                           placeholder="090******35"
 //                           aria-label="Enter your phone number"
@@ -609,7 +609,7 @@ export default SignUp;
 //                       {/* <FormLabel>City Of Residence</FormLabel> */}
 //                       <FormControl>
 //                         <Input
-//                           className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:!ring-udua-blue-primary focus:!outline-none focus:!ring-1 focus:!ring-opacity-90 border-udua-blue-primary focus:border-transparent"
+//                           className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:ring-udua-blue-primary! focus:outline-hidden! focus:ring-1! focus:ring-opacity-90! border-udua-blue-primary focus:border-transparent"
 //                           type="text"
 //                           placeholder="Enter your city of Residence"
 //                           aria-label="Enter your city of Residence"
@@ -630,7 +630,7 @@ export default SignUp;
 //                       {/* <FormLabel>State of Residence</FormLabel> */}
 //                       <FormControl>
 //                         <Input
-//                           className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:!ring-udua-blue-primary focus:!outline-none focus:!ring-1 focus:!ring-opacity-90 border-udua-blue-primary focus:border-transparent"
+//                           className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:ring-udua-blue-primary! focus:outline-hidden! focus:ring-1! focus:ring-opacity-90! border-udua-blue-primary focus:border-transparent"
 //                           type="text"
 //                           placeholder="Enter your state of Residence"
 //                           aria-label="Enter your state of Residence"
@@ -651,7 +651,7 @@ export default SignUp;
 //                       {/* <FormLabel>postalCode</FormLabel> */}
 //                       <FormControl>
 //                         <Input
-//                           className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:!ring-udua-blue-primary focus:!outline-none focus:!ring-1 focus:!ring-opacity-90 border-udua-blue-primary focus:border-transparent"
+//                           className="block w-full px-4 py-2 mt-2 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-slate-200 text-black focus:ring-udua-blue-primary! focus:outline-hidden! focus:ring-1! focus:ring-opacity-90! border-udua-blue-primary focus:border-transparent"
 //                           type="text"
 //                           placeholder="Enter your postal Code"
 //                           aria-label="Enter your postal Code"
@@ -663,7 +663,7 @@ export default SignUp;
 //                   )}
 //                 />
 
-//                 <Button className="px-6 py-2 mt-2 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50 w-full">
+//                 <Button className="px-6 py-2 mt-2 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400 focus:outline-hidden focus:ring-3 focus:ring-blue-300 focus:ring-opacity-50 w-full">
 //                   Sign Up
 //                 </Button>
 

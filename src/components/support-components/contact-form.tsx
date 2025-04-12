@@ -165,7 +165,7 @@ export default ContactForm;
 //         </p>
 //       ) : (
 //         <form
-//           className="max-w-xl mx-auto rounded-lg shadow-sm"
+//           className="max-w-xl mx-auto rounded-lg shadow-xs"
 //           onSubmit={handleSubmit}
 //         >
 //           {/* Name Input */}

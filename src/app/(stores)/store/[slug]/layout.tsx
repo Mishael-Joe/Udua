@@ -70,14 +70,6 @@ export default async function RootLayout(props: {
               </main>
             </SidebarInset>
           </SidebarProvider>
-          {/* <div className="grid min-h-screen max-w-7xl mx-auto md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-            <div className="hidden border-r bg-muted/10 md:block">
-              <div className="flex h-full max-h-screen flex-col gap-2">
-                <StoreAside params={params} />
-              </div>
-            </div>
-            {children}
-          </div> */}
           <TailwindIndicator />
         </ThemeProvider>
       </body>

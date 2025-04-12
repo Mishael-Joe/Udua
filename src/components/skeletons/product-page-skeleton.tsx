@@ -8,6 +8,83 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 
+/**
+ * Product Detail Skeleton Component for loading state
+ */
+export const ProductDetailSkeleton = () => (
+  <div className="max-w-7xl mx-auto px-4 py-8">
+    <Skeleton className="h-6 w-64 mb-6" />
+
+    <div className="grid md:grid-cols-2 gap-8 mb-12">
+      {/* Image Skeleton */}
+      <div className="space-y-4">
+        <Skeleton className="aspect-square w-full rounded-lg" />
+        <div className="flex gap-2">
+          {[...Array(4)].map((_, i) => (
+            <Skeleton key={i} className="h-20 w-20 rounded-md" />
+          ))}
+        </div>
+      </div>
+
+      {/* Details Skeleton */}
+      <div className="space-y-6">
+        <div>
+          <Skeleton className="h-8 w-3/4 mb-2" />
+          <Skeleton className="h-4 w-1/2" />
+        </div>
+
+        <Skeleton className="h-5 w-32" />
+
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-24" />
+          <Skeleton className="h-4 w-40" />
+        </div>
+
+        <Skeleton className="h-6 w-20" />
+
+        <div className="space-y-3">
+          <Skeleton className="h-5 w-24" />
+          <div className="flex flex-wrap gap-2">
+            {[...Array(5)].map((_, i) => (
+              <Skeleton key={i} className="h-8 w-16 rounded-md" />
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <Skeleton className="h-5 w-24" />
+          <div className="flex items-center">
+            <Skeleton className="h-10 w-10 rounded-md" />
+            <Skeleton className="h-10 w-12 mx-2" />
+            <Skeleton className="h-10 w-10 rounded-md" />
+          </div>
+        </div>
+
+        <div className="flex gap-3">
+          <Skeleton className="h-12 flex-1 rounded-md" />
+          <Skeleton className="h-12 w-12 rounded-md" />
+          <Skeleton className="h-12 w-12 rounded-md" />
+        </div>
+      </div>
+    </div>
+
+    <Skeleton className="h-12 w-full mb-4" />
+    <Skeleton className="h-40 w-full mb-12" />
+
+    <Skeleton className="h-8 w-48 mb-4" />
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+      {[...Array(4)].map((_, i) => (
+        <div key={i} className="space-y-2">
+          <Skeleton className="aspect-square w-full rounded-lg" />
+          <Skeleton className="h-5 w-3/4" />
+          <Skeleton className="h-4 w-1/2" />
+          <Skeleton className="h-5 w-1/3" />
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
 export function ProductPageSkeleton() {
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">

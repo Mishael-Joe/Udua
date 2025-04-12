@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { productCategories, subCategories } from "@/constant/constant";
+import { Button } from "./ui/button";
 
 // Convert category name with underscores to display format
 export const formatCategoryName = (name: string): string => {
@@ -77,7 +78,7 @@ export default function Categories() {
       <li className="group relative">
         <button
           onClick={() => handleCategoryChange(category.toLowerCase())}
-          className="flex w-full items-center gap-2 px-3 py-1.5 text-sm hover:text-udua-orange-primary dark:hover:text-udua-orange-primary"
+          className="flex w-full items-center gap-2 px-3 py-1.5 text-sm hover:text-udua-orange-primary dark:hover:text-udua-orange-primary cursor-pointer"
         >
           {getCategoryIcon(category)}
           {category}
@@ -96,7 +97,7 @@ export default function Categories() {
                           .replace(/\s+/g, "-")}`
                       )
                     }
-                    className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 hover:text-udua-orange-primary dark:hover:bg-gray-700 dark:hover:text-udua-orange-primary"
+                    className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 hover:text-udua-orange-primary dark:hover:bg-gray-700 dark:hover:text-udua-orange-primary cursor-pointer"
                   >
                     {sub}
                   </button>
@@ -111,9 +112,9 @@ export default function Categories() {
 
   return (
     <div className="relative">
-      <button
+      <Button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1 rounded-md px-4 py-2 text-sm font-medium hover:text-udua-orange-primary focus:outline-none"
+        className="flex items-center gap-1 rounded-md px-4 py-2 text-sm font-medium hover:text-udua-orange-primary focus:outline-hidden bg-transparent hover:bg-transparent text-udua-deep-gray-primary shadow-none"
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
@@ -123,10 +124,10 @@ export default function Categories() {
             isOpen ? "rotate-180" : ""
           }`}
         />
-      </button>
+      </Button>
 
       {isOpen && (
-        <div className="absolute left-0 z-10 mt-1 w-[220px] origin-top-left rounded-md border bg-white shadow-lg focus:outline-none dark:bg-gray-800">
+        <div className="absolute left-0 z-10 mt-1 w-[220px] origin-top-left rounded-md border bg-white shadow-lg focus:outline-hidden dark:bg-gray-800">
           <ul className="flex flex-col gap-1 p-2">
             {productCategories.map((category) => (
               <CategoryItem key={category} category={category} />

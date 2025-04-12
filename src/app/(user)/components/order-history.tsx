@@ -57,10 +57,10 @@ export function OrderHistory() {
     return (
       <div className="max-w-7xl mx-auto px-4 md:px-3 py-8">
         <div className="grid md:grid-cols-[280px_1fr] gap-6">
-          <aside className="bg-card rounded-lg shadow-sm hidden md:inline-block">
+          <aside className="bg-card rounded-lg shadow-xs hidden md:inline-block">
             <Aside1 />
           </aside>
-          <Card className="bg-card rounded-lg shadow-sm p-6">
+          <Card className="bg-card rounded-lg shadow-xs p-6">
             <h2 className="text-xl font-bold text-destructive">{error}</h2>
             <Button className="mt-4" onClick={() => window.location.reload()}>
               Try Again
@@ -74,12 +74,12 @@ export function OrderHistory() {
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-3 py-8">
       <div className="grid md:grid-cols-[280px_1fr] gap-6">
-        <aside className="bg-card rounded-lg shadow-sm hidden md:inline-block">
+        <aside className="bg-card rounded-lg shadow-xs hidden md:inline-block">
           <Aside1 />
         </aside>
 
         <main className="space-y-6">
-          <Card className="bg-card rounded-lg shadow-sm">
+          <Card className="bg-card rounded-lg shadow-xs">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-xl sm:text-2xl font-bold">
@@ -178,7 +178,7 @@ export function OrderHistory() {
                 </div>
               ) : (
                 // ... (keep existing empty state)
-                <div className="flex flex-1 items-center justify-center rounded-lg border-2 border-dashed shadow-sm h-[300px]">
+                <div className="flex flex-1 items-center justify-center rounded-lg border-2 border-dashed shadow-xs h-[300px]">
                   <div className="flex flex-col items-center gap-1 text-center p-8">
                     <XCircle className="h-10 w-10 text-muted-foreground" />
                     <h3 className="mt-4 text-lg font-semibold">
@@ -203,12 +203,12 @@ export function OrderHistory() {
   // return (
   //   <div className="max-w-7xl mx-auto px-4 md:px-3 py-8">
   //     <div className="grid md:grid-cols-[280px_1fr] gap-6">
-  //       <aside className="bg-card rounded-lg shadow-sm hidden md:inline-block">
+  //       <aside className="bg-card rounded-lg shadow-xs hidden md:inline-block">
   //         <Aside1 />
   //       </aside>
 
   //       <main className="space-y-6">
-  //         <Card className="bg-card rounded-lg shadow-sm">
+  //         <Card className="bg-card rounded-lg shadow-xs">
   //           <CardHeader>
   //             <div className="flex items-center justify-between">
   //               <CardTitle className="text-2xl font-bold">
@@ -296,7 +296,7 @@ export function OrderHistory() {
   //                 })}
   //               </div>
   //             ) : (
-  //               <div className="flex flex-1 items-center justify-center rounded-lg border-2 border-dashed shadow-sm h-[300px]">
+  //               <div className="flex flex-1 items-center justify-center rounded-lg border-2 border-dashed shadow-xs h-[300px]">
   //                 <div className="flex flex-col items-center gap-1 text-center p-8">
   //                   <XCircle className="h-10 w-10 text-muted-foreground" />
   //                   <h3 className="mt-4 text-lg font-semibold">

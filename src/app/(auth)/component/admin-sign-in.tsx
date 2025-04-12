@@ -128,7 +128,7 @@ function AdminSignIn() {
                         <FormLabel>Your Email</FormLabel>
                         <FormControl>
                           <Input
-                            className="block w-full px-4 py-2 mt-2 dark:text-slate-200 text-black placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:!ring-udua-blue-primary focus:!outline-none focus:!ring-1 focus:!ring-opacity-90 border-udua-blue-primary focus:border-transparent"
+                            className="block w-full px-4 py-2 mt-2 dark:text-slate-200 text-black placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:ring-udua-blue-primary! focus:outline-hidden! focus:ring-1! focus:ring-opacity-90! border-udua-blue-primary focus:border-transparent"
                             type="email"
                             placeholder="Your Email"
                             aria-label="Your Email"
@@ -149,7 +149,7 @@ function AdminSignIn() {
                         <FormLabel>Password</FormLabel>
                         <FormControl>
                           <Input
-                            className="block w-full px-4 py-2 mt-2 dark:text-slate-200 text-black placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:!ring-udua-blue-primary focus:!outline-none focus:!ring-1 focus:!ring-opacity-90 border-udua-blue-primary focus:border-transparent"
+                            className="block w-full px-4 py-2 mt-2 dark:text-slate-200 text-black placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:ring-udua-blue-primary! focus:outline-hidden! focus:ring-1! focus:ring-opacity-90! border-udua-blue-primary focus:border-transparent"
                             type="password"
                             placeholder="Enter the admin's password"
                             aria-label="Enter the admin's password"

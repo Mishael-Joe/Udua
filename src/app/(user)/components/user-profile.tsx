@@ -90,14 +90,14 @@ const Profile = () => {
     <div className="max-w-7xl mx-auto px-4 md:px-3 py-8">
       <div className="grid md:grid-cols-[280px_1fr] gap-6">
         {/* Navigation Sidebar */}
-        <aside className="bg-card rounded-lg shadow-sm hidden md:inline-block">
+        <aside className="bg-card rounded-lg shadow-xs hidden md:inline-block">
           <Aside1 />
         </aside>
 
         {/* Main Content */}
         <main className="space-y-6">
           {/* Profile Header */}
-          <section className="bg-card rounded-lg p-6 shadow-sm">
+          <section className="bg-card rounded-lg p-6 shadow-xs">
             <div className="flex items-center justify-between mb-6">
               <h1 className="sm:text-2xl font-bold flex items-center gap-2">
                 <User className="w-6 h-6" />
@@ -211,7 +211,7 @@ interface StoreSectionProps {
 }
 
 const StoreSection = ({ storeId, userName }: StoreSectionProps) => (
-  <section className="bg-card rounded-lg p-6 shadow-sm">
+  <section className="bg-card rounded-lg p-6 shadow-xs">
     <div className="flex items-center gap-4 mb-4">
       <Building className="w-8 h-8 text-primary" />
       <h2 className="text-xl font-bold">Store Management</h2>
@@ -236,7 +236,7 @@ const StoreSection = ({ storeId, userName }: StoreSectionProps) => (
 );
 
 const VerificationSection = () => (
-  <section className="bg-card rounded-lg p-6 shadow-sm border border-yellow-100">
+  <section className="bg-card rounded-lg p-6 shadow-xs border border-yellow-100">
     <div className="flex items-center gap-4 mb-4">
       <ShieldCheck className="w-8 h-8 text-yellow-600" />
       <h2 className="text-xl font-bold">Account Verification</h2>
@@ -262,7 +262,7 @@ interface RecentProductsProps {
 }
 
 const RecentProductsSection = ({ products, blurData }: RecentProductsProps) => (
-  <section className="bg-card rounded-lg p-6 shadow-sm">
+  <section className="bg-card rounded-lg p-6 shadow-xs">
     <div className="flex items-center gap-4 mb-6">
       <Eye className="w-8 h-8 text-primary" />
       <h2 className="text-xl font-bold">Recently Viewed</h2>
