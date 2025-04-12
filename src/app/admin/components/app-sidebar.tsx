@@ -134,7 +134,7 @@ export function AppSidebar({ userName }: { userName: string }) {
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 side="top"
-                className="w-[--radix-popper-anchor-width]"
+                className="w-(--radix-popper-anchor-width)"
               >
                 <DropdownMenuItem onClick={signOut} className="cursor-pointer">
                   <span>Sign out</span>

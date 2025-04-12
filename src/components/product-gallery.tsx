@@ -5,7 +5,6 @@ import Image from "next/image";
 import { shimmer, toBase64 } from "@/lib/image";
 import type { ForProductGallery } from "@/types";
 import { Heart, Loader, Store } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import Link from "next/link";
 import { addProductToRecentlyViewed } from "@/lib/helpers/recently-viewed";
@@ -13,17 +12,13 @@ import GLightbox from "glightbox";
 import "glightbox/dist/css/glightbox.min.css";
 
 // Constants for consistent image handling
-const ASPECT_RATIO = 1; // 1:1 square aspect ratio for all product images
 const IMAGE_QUALITY = 90;
 
 export function ProductGallery({ product, isLikedProduct }: ForProductGallery) {
   const { toast } = useToast();
-  const router = useRouter();
   const [selectedImage, setSelectedImage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
   const [like, setLike] = useState(isLikedProduct);
-  console.log("isLikedProduct", isLikedProduct);
   const images =
     product.productType === "physicalproducts"
       ? product.images

@@ -14,7 +14,7 @@ interface ProductCardProps {
   product: CombinedProduct;
 }
 export const RecentProductsSection = ({ products }: RecentProductsProps) => (
-  <section className="bg-card rounded-lg p-6 shadow-sm">
+  <section className="bg-card rounded-lg p-6 shadow-xs">
     <div className="flex items-center gap-4 mb-6">
       <Eye className="w-6 h-6 text-primary" />
       <h2 className="text-xl font-bold">Recently Viewed</h2>

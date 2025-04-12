@@ -98,14 +98,14 @@ export default function StoreProfile({ id }: { id: string }) {
                 {/* Stats Container */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 mt-4">
                   <div className="flex items-center gap-2 w-full sm:w-auto">
-                    <Users className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+                    <Users className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
                     <span className="text-sm sm:text-base font-medium">
                       {followers?.length.toLocaleString()} Follower
                       {(followers.length > 1 || followers.length === 0) && "s"}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 w-full sm:w-auto">
-                    <Package className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+                    <Package className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
                     <span className="text-sm sm:text-base font-medium">
                       {products?.length.toLocaleString()} Products
                     </span>

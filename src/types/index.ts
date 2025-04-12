@@ -116,6 +116,15 @@ export type CombinedProduct = {
   price: number;
   type: string;
   subcategory: string;
+
+  // Deal information
+  activeDeal?: {
+    dealId: string;
+    dealType: string;
+    value: number;
+    name: string;
+    endsAt?: string;
+  };
 };
 
 export type Store = {
@@ -334,7 +343,7 @@ export type ContextType = {
       quantity: number;
     } | null,
     selectedColor: string | null
-  ) => void;
+  ) => Promise<boolean | undefined>;
   cartItems: CartItems[];
   totalPrice: number;
   // shippingFee: number;

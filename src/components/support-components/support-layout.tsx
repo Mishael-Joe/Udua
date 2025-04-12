@@ -26,7 +26,7 @@ const SupportLayout = ({ children }: SupportLayoutProps) => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-grow container mx-auto py-10 px-4">{children}</main>
+      <main className="grow container mx-auto py-10 px-4">{children}</main>
     </div>
   );
 };

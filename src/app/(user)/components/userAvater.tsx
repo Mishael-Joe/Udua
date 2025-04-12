@@ -55,7 +55,7 @@ function UserAvatar({ name }: UserAvatarProps) {
               {userName}
             </span>
           ) : (
-            <User2Icon className="hover:!bg-transparent hover:!text-udua-orange-primary !delay-75 !transition-all !ease-in-out" />
+            <User2Icon className="hover:bg-transparent! hover:text-udua-orange-primary! delay-75! transition-all! ease-in-out!" />
           )}
         </DropdownMenuTrigger>
         <DropdownMenuContent>
@@ -64,17 +64,17 @@ function UserAvatar({ name }: UserAvatarProps) {
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator className=" border" />
               <Link href={`/profile`}>
-                <DropdownMenuItem className=" cursor-pointer hover:!bg-transparent hover:!text-udua-orange-primary !delay-75 !transition-all !ease-in-out hover:font-semibold">
+                <DropdownMenuItem className=" cursor-pointer hover:bg-transparent! hover:text-udua-orange-primary! delay-75! transition-all! ease-in-out! hover:font-semibold">
                   Profile
                 </DropdownMenuItem>
               </Link>
               <Link href={`/wishlist`}>
-                <DropdownMenuItem className=" cursor-pointer hover:!bg-transparent hover:!text-udua-orange-primary !delay-75 !transition-all !ease-in-out hover:font-semibold">
+                <DropdownMenuItem className=" cursor-pointer hover:bg-transparent! hover:text-udua-orange-primary! delay-75! transition-all! ease-in-out! hover:font-semibold">
                   Wishlist
                 </DropdownMenuItem>
               </Link>
               <Link href={`/order-history`}>
-                <DropdownMenuItem className=" cursor-pointer hover:!bg-transparent hover:!text-udua-orange-primary !delay-75 !transition-all !ease-in-out hover:font-semibold">
+                <DropdownMenuItem className=" cursor-pointer hover:bg-transparent! hover:text-udua-orange-primary! delay-75! transition-all! ease-in-out! hover:font-semibold">
                   Orders
                 </DropdownMenuItem>
               </Link>

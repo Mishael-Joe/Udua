@@ -339,3 +339,36 @@ export function formatDate(
   // Format the date using Intl.DateTimeFormat for localization
   return new Intl.DateTimeFormat("en-US", options).format(parsedDate);
 }
+
+/**
+ * Helper function to calculate time remaining until a date
+ */
+export function getTimeRemaining(endDateStr: string): string {
+  const endDate = new Date(endDateStr);
+  const now = new Date();
+
+  const diffMs = endDate.getTime() - now.getTime();
+
+  if (diffMs <= 0) return "Ended";
+
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const diffHours = Math.floor(
+    (diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+  );
+
+  if (diffDays > 0) {
+    return `${diffDays} day${diffDays > 1 ? "s" : ""} ${diffHours} hour${
+      diffHours > 1 ? "s" : ""
+    }`;
+  }
+
+  const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+  if (diffHours > 0) {
+    return `${diffHours} hour${diffHours > 1 ? "s" : ""} ${diffMinutes} min${
+      diffMinutes > 1 ? "s" : ""
+    }`;
+  }
+
+  return `${diffMinutes} minute${diffMinutes > 1 ? "s" : ""}`;
+}

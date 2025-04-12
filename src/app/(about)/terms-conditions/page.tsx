@@ -100,7 +100,7 @@
 //       <div className="lg:flex lg:gap-12">
 //         {/* Table of Contents - Side Navigation */}
 //         <nav className="lg:w-80 xl:w-96 mb-12 lg:mb-0 lg:sticky lg:top-20 lg:self-start">
-//           <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-sm">
+//           <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-xs">
 //             <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
 //               Table of Contents
 //             </h2>
@@ -234,14 +234,14 @@
 
 //             <HighlightBox title="4.2 Refund Policy" color="green">
 //               <div className="grid md:grid-cols-2 gap-6">
-//                 <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+//                 <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-xs">
 //                   <h4 className="font-medium mb-2">Refund Components</h4>
 //                   <ul className="list-disc pl-6 space-y-2">
 //                     <li>Full product price</li>
 //                     <li>Shipping costs (where applicable)</li>
 //                   </ul>
 //                 </div>
-//                 <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+//                 <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-xs">
 //                   <h4 className="font-medium mb-2">Processing Methods</h4>
 //                   <ul className="list-disc pl-6 space-y-2">
 //                     <li>Original payment method</li>
@@ -267,7 +267,7 @@
 //           </SectionContainer>
 
 //           <SectionContainer id="payments" title="5. Payment Methods">
-//             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+//             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xs">
 //               <h3 className="text-lg font-semibold mb-6">
 //                 Accepted Payment Options
 //               </h3>
@@ -509,7 +509,7 @@
 //               <div className="space-y-4">
 //                 <div className="flex items-start gap-3">
 //                   <svg
-//                     className="w-5 h-5 flex-shrink-0 text-yellow-600 dark:text-yellow-400"
+//                     className="w-5 h-5 shrink-0 text-yellow-600 dark:text-yellow-400"
 //                     fill="currentColor"
 //                     viewBox="0 0 20 20"
 //                   >
@@ -741,7 +741,7 @@
 //               <div className="space-y-6">
 //                 <div className="flex items-start gap-4">
 //                   <svg
-//                     className="w-6 h-6 text-yellow-600 flex-shrink-0"
+//                     className="w-6 h-6 text-yellow-600 shrink-0"
 //                     fill="currentColor"
 //                     viewBox="0 0 20 20"
 //                   >
@@ -758,7 +758,7 @@
 //                   </div>
 //                 </div>
 
-//                 <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+//                 <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xs">
 //                   <h4 className="font-medium mb-3">User Obligations</h4>
 //                   <div className="grid md:grid-cols-2 gap-6">
 //                     <div>
@@ -813,7 +813,7 @@
 //               <div className="space-y-6">
 //                 <div className="flex items-start gap-4">
 //                   <svg
-//                     className="w-6 h-6 text-green-600 flex-shrink-0"
+//                     className="w-6 h-6 text-green-600 shrink-0"
 //                     fill="currentColor"
 //                     viewBox="0 0 20 20"
 //                   >
@@ -901,7 +901,7 @@
 
 //             <HighlightBox title="13.3-13.5 Financial Caps" color="yellow">
 //               <div className="space-y-6">
-//                 <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+//                 <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xs">
 //                   <h4 className="font-medium mb-4">Liability Structure</h4>
 //                   <div className="grid md:grid-cols-2 gap-6">
 //                     <div>
@@ -944,7 +944,7 @@
 //             <HighlightBox title="13.6 Legal Entity Protection" color="blue">
 //               <div className="flex items-start gap-4">
 //                 <svg
-//                   className="w-6 h-6 text-blue-600 flex-shrink-0"
+//                   className="w-6 h-6 text-blue-600 shrink-0"
 //                   fill="currentColor"
 //                   viewBox="0 0 20 20"
 //                 >
@@ -1056,7 +1056,7 @@
 //             <HighlightBox title="16.1 Comprehensive Agreement" color="green">
 //               <div className="flex items-start gap-4">
 //                 <svg
-//                   className="w-6 h-6 text-green-600 flex-shrink-0"
+//                   className="w-6 h-6 text-green-600 shrink-0"
 //                   fill="currentColor"
 //                   viewBox="0 0 20 20"
 //                 >
@@ -1082,7 +1082,7 @@
 //             <HighlightBox title="17.1 Amendment Process" color="blue">
 //               <div className="flex items-start gap-4">
 //                 <svg
-//                   className="w-6 h-6 text-blue-600 flex-shrink-0"
+//                   className="w-6 h-6 text-blue-600 shrink-0"
 //                   fill="currentColor"
 //                   viewBox="0 0 20 20"
 //                 >
@@ -1112,7 +1112,7 @@
 
 //           {/* Contact Section */}
 //           <SectionContainer id="contact" title="18. Contact Us">
-//             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+//             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xs">
 //               <p className="text-gray-600 dark:text-gray-400">
 //                 For any inquiries regarding these Terms and Conditions:
 //               </p>

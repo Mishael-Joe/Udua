@@ -15,17 +15,9 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { shimmer, toBase64 } from "@/lib/image";
-
-interface Product {
-  _id: string;
-  name?: string;
-  title?: string;
-  price: number;
-  images?: string[];
-  coverIMG?: string[];
-  productType: string;
-  slug: string;
-}
+import axios from "axios";
+import { formatNaira } from "@/lib/utils";
+import { CombinedProduct } from "@/types";
 
 interface RelatedProductsProps {
   productId: string;
@@ -38,7 +30,7 @@ export function RelatedProducts({
   category,
   productType,
 }: RelatedProductsProps) {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<CombinedProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -47,11 +39,12 @@ export function RelatedProducts({
       try {
         // In a real implementation, you would fetch from your API
         // This is a placeholder for demonstration
-        const response = await fetch(
+        const response = await axios.get(
           `/api/related-products?id=${productId}&category=${category}&type=${productType}`
         );
-        const data = await response.json();
-        setProducts(data.products || []);
+        const data = response.data;
+        console.log("Related Products Data:", data);
+        setProducts(data.relatedProducts || []);
       } catch (error) {
         console.error("Failed to fetch related products:", error);
       } finally {
@@ -59,44 +52,7 @@ export function RelatedProducts({
       }
     }
 
-    // Simulate API call with dummy data for demonstration
-    setTimeout(() => {
-      setProducts([
-        {
-          _id: "1",
-          name: "Related Product 1",
-          price: 12500,
-          images: ["/placeholder.svg?height=400&width=400"],
-          productType: "physicalproducts",
-          slug: "related-product-1",
-        },
-        {
-          _id: "2",
-          name: "Related Product 2",
-          price: 9900,
-          images: ["/placeholder.svg?height=400&width=400"],
-          productType: "physicalproducts",
-          slug: "related-product-2",
-        },
-        {
-          _id: "3",
-          name: "Related Product 3",
-          price: 15000,
-          images: ["/placeholder.svg?height=400&width=400"],
-          productType: "physicalproducts",
-          slug: "related-product-3",
-        },
-        {
-          _id: "4",
-          name: "Related Product 4",
-          price: 8500,
-          images: ["/placeholder.svg?height=400&width=400"],
-          productType: "physicalproducts",
-          slug: "related-product-4",
-        },
-      ]);
-      setLoading(false);
-    }, 1000);
+    fetchRelatedProducts();
   }, [productId, category, productType]);
 
   const visibleProducts = products.slice(currentIndex, currentIndex + 4);
@@ -119,7 +75,7 @@ export function RelatedProducts({
     return (
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[...Array(4)].map((_, i) => (
-          <Card key={i} className="border shadow-sm">
+          <Card key={i} className="border shadow-xs">
             <CardContent className="p-2">
               <Skeleton className="aspect-square w-full rounded-md" />
             </CardContent>
@@ -139,10 +95,18 @@ export function RelatedProducts({
 
   return (
     <div className="relative">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-bold">Related Products</h2>
+        {/* <Button variant="ghost" size="sm" asChild>
+          <Link href={`/products/${category || ""}`}>
+            View All <ChevronRight className="ml-1 h-4 w-4" />
+          </Link>
+        </Button> */}
+      </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {visibleProducts.map((product) => (
-          <Link href={`/product/${product.slug}`} key={product._id}>
-            <Card className="border shadow-sm hover:shadow-md transition-shadow">
+          <Link href={`/product/${product._id}`} key={product._id}>
+            <Card className="border shadow-xs hover:shadow-md transition-shadow">
               <CardContent className="p-2">
                 <div className="aspect-square relative rounded-md overflow-hidden">
                   <Image
@@ -167,7 +131,9 @@ export function RelatedProducts({
                   {product.name || product.title}
                 </h3>
                 <p className="text-sm font-semibold mt-1">
-                  ₦{new Intl.NumberFormat().format(product.price)}
+                  {product.sizes && product.sizes.length > 0
+                    ? formatNaira(product.sizes[0].price)
+                    : formatNaira(product.price)}
                 </p>
               </CardFooter>
             </Card>

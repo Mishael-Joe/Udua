@@ -115,7 +115,7 @@ export default function BrandProfile({ params }: PageProps) {
       {/* Store Header */}
       <Card className="mb-6">
         <CardContent className="p-0">
-          <div className="relative h-48 bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100 rounded-t-lg">
+          <div className="relative h-48 bg-linear-to-r from-blue-100 via-purple-100 to-pink-100 rounded-t-lg">
             <div className="absolute -bottom-8 left-0 right-0 sm:left-6 px-4 flex flex-col sm:flex-row items-start sm:items-end gap-4">
               <div className="bg-background p-4 rounded-lg shadow-lg w-full max-w-full sm:flex-1 sm:max-w-fit sm:min-w-0">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
@@ -130,14 +130,14 @@ export default function BrandProfile({ params }: PageProps) {
                 {/* Stats Container */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 mt-4">
                   <div className="flex items-center gap-2 w-full sm:w-auto">
-                    <Users className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+                    <Users className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
                     <span className="text-sm sm:text-base font-medium">
                       {followers.length} Follower
                       {(followers.length > 1 || followers.length === 0) && "s"}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 w-full sm:w-auto">
-                    <Package className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+                    <Package className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
                     <span className="text-sm sm:text-base font-medium">
                       {products?.length.toLocaleString()} Products
                     </span>

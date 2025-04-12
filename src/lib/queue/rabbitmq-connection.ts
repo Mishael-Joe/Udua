@@ -61,7 +61,18 @@ export class RabbitMQConnection extends EventEmitter {
       console.log("Connecting to RabbitMQ...");
 
       // Connect to RabbitMQ
-      this.connection = await amqp.connect(this.uri);
+      // this.connection = await amqp.connect(this.uri);
+      // In your establishConnection method
+      this.connection = await amqp.connect(this.uri, {
+        // Add SSL options for production
+        ...(process.env.NODE_ENV === "production"
+          ? {
+              ssl: {
+                rejectUnauthorized: true,
+              },
+            }
+          : {}),
+      });
 
       // Reset reconnect attempts on successful connection
       this.reconnectAttempts = 0;

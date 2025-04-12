@@ -3,13 +3,13 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import SearchBar from "./search-bar";
 import CartCount from "./cart-count";
 import { Suspense } from "react";
-import { cookies, type UnsafeUnwrappedCookies } from "next/headers";
+import { cookies } from "next/headers";
 import UserAvatar from "../app/(user)/components/userAvater";
 import Sheets from "./sheet";
 import Categories from "./left-sidebar";
 
 export async function SiteHeader() {
-  const cookieStore = (await cookies()) as unknown as UnsafeUnwrappedCookies;
+  const cookieStore = (await cookies()) as unknown as any;
   const name: string | undefined = cookieStore.get("userName")?.value;
 
   return (

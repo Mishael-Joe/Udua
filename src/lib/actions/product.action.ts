@@ -363,7 +363,7 @@ export async function fetchProductData(id: string) {
 
     // First, attempt to find the product by ID in the Product schema
     const foundProduct = await Product.findById(id).select(
-      "_id name price images sizes productQuantity description specifications storeID productType"
+      "_id name price images sizes productQuantity description specifications category storeID productType"
     );
 
     if (foundProduct) {
@@ -373,7 +373,7 @@ export async function fetchProductData(id: string) {
     // If no product is found, attempt to find it in the EBook schema
     if (!productData) {
       const foundEBook = await EBook.findById(id).select(
-        "_id title author description price fileType fileSize publisher coverIMG language productType storeID"
+        "_id title author description price fileType fileSize category publisher coverIMG language productType storeID"
       );
 
       // console.log("foundEBook", foundEBook);

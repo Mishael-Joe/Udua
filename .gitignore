@@ -12,6 +12,7 @@
 # next.js
 /.next/
 /out/
+/dist
 
 # production
 /build
@@ -35,3 +36,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+*.test.ts
+*.test.tsx
+
+# additional files to ignore
+jest.config.ts
+jest.setup.ts
+tsconfig.test.json
+ecosystem.config.js

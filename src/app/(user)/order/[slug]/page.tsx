@@ -242,7 +242,7 @@ export default function OrderDetailsPage(props: {
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-3 py-8">
       <div className="grid md:grid-cols-[280px_1fr] gap-6">
-        <aside className="bg-card rounded-lg shadow-sm hidden md:inline-block">
+        <aside className="bg-card rounded-lg shadow-xs hidden md:inline-block">
           <div className="flex h-full flex-col gap-2">
             <Aside1 />
           </div>
@@ -250,7 +250,7 @@ export default function OrderDetailsPage(props: {
 
         <main className="space-y-6">
           {/* Header Section */}
-          <div className="bg-card rounded-lg shadow-sm p-6">
+          <div className="bg-card rounded-lg shadow-xs p-6">
             <div className="flex items-center justify-between mb-6">
               <h1 className="text-2xl font-bold flex items-center gap-2">
                 <Package className="h-6 w-6 text-primary" />
@@ -395,7 +395,7 @@ export default function OrderDetailsPage(props: {
           </div>
 
           {/* Stores Accordion */}
-          <Card className="bg-card rounded-lg shadow-sm">
+          <Card className="bg-card rounded-lg shadow-xs">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <ShoppingBag className="h-5 w-5 text-primary" />
@@ -958,7 +958,7 @@ const ReviewDialog = ({
                   <button
                     key={value}
                     onClick={() => setRating(value)}
-                    className="focus:outline-none transition-transform hover:scale-110"
+                    className="focus:outline-hidden transition-transform hover:scale-110"
                     aria-label={`Rate ${value} stars`}
                     type="button"
                   >
@@ -1255,7 +1255,7 @@ const ReviewDialog = ({
 //   return (
 //     <div className="max-w-7xl mx-auto px-4 md:px-3 py-8">
 //       <div className="grid md:grid-cols-[280px_1fr] gap-6">
-//         <aside className="bg-card rounded-lg shadow-sm hidden md:inline-block">
+//         <aside className="bg-card rounded-lg shadow-xs hidden md:inline-block">
 //           <div className="flex h-full flex-col gap-2">
 //             <Aside1 />
 //           </div>
@@ -1263,7 +1263,7 @@ const ReviewDialog = ({
 
 //         <main className="space-y-6">
 //           {/* Header Section */}
-//           <div className="bg-card rounded-lg shadow-sm p-6">
+//           <div className="bg-card rounded-lg shadow-xs p-6">
 //             <div className="flex items-center justify-between mb-6">
 //               <h1 className="text-2xl font-bold flex items-center gap-2">
 //                 Order Details
@@ -1332,7 +1332,7 @@ const ReviewDialog = ({
 //           </div>
 
 //           {/* Stores Accordion */}
-//           <Card className="bg-card rounded-lg shadow-sm">
+//           <Card className="bg-card rounded-lg shadow-xs">
 //             <CardHeader>
 //               <CardTitle className="text-lg">
 //                 {totalProducts} Items from {orderDetails.stores.length} Stores
@@ -1703,7 +1703,7 @@ const ReviewDialog = ({
 //                   <button
 //                     key={value}
 //                     onClick={() => setRating(value)}
-//                     className="focus:outline-none transition-transform hover:scale-110"
+//                     className="focus:outline-hidden transition-transform hover:scale-110"
 //                     aria-label={`Rate ${value} stars`}
 //                     type="button"
 //                   >
