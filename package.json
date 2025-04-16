@@ -65,6 +65,7 @@
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "lucide-react": "^0.376.0",
+    "module-alias": "^2.2.3",
     "mongoose": "^8.12.1",
     "msw": "^2.7.4",
     "next": "15.1.6",
@@ -116,5 +117,8 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2"
+  },
+  "_moduleAliases": {
+    "@": "dist/src"
   }
 }

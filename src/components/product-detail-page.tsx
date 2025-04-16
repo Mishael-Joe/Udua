@@ -301,7 +301,7 @@ export function ProductDetailPage({
   return (
     <div className="">
       {/* Breadcrumb Navigation */}
-      <Breadcrumb className="mb-6">
+      <Breadcrumb className="mb-6 hidden md:flex">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
@@ -327,7 +327,7 @@ export function ProductDetailPage({
               </Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
-          {product.productType === "" && (
+          {product.productType === "physicalproducts" && (
             <>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
@@ -339,7 +339,7 @@ export function ProductDetailPage({
       </Breadcrumb>
 
       {/* Back Button (Mobile) */}
-      <Button
+      {/* <Button
         variant="ghost"
         size="sm"
         className="mb-4 md:hidden"
@@ -347,7 +347,7 @@ export function ProductDetailPage({
       >
         <ArrowLeft className="h-4 w-4 mr-2" />
         Back
-      </Button>
+      </Button> */}
 
       <div className="grid md:grid-cols-2 gap-8 mb-12">
         {/* Product Images */}

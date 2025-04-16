@@ -11,9 +11,11 @@ export const ResetPassword = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const token = searchParams.get("token") || "";
+  const ref = searchParams.get("ref") || "";
   const [newPassword, setNewPassword] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -41,9 +43,10 @@ export const ResetPassword = () => {
     }
 
     try {
-      const response = await axios.post("/api/auth/resetPassword", {
+      const response = await axios.post("/api/auth/reset-password", {
         token,
         newPassword,
+        ref,
       });
 
       if (response.data.success === true || response.status === 200) {
@@ -76,16 +79,6 @@ export const ResetPassword = () => {
       <section className="w-full">
         <div className="w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800">
           <div className="px-6 py-4">
-            <div className="flex justify-center mx-auto">
-              {/* <Image
-              className="w-auto h-7 sm:h-8"
-              src="https://merakiui.com/images/logo.svg"
-              width={`60`}
-              height={`60`}
-              alt=""
-            /> */}
-            </div>
-
             <h3 className="mt-3 text-xl font-medium text-center text-gray-600 dark:text-gray-200">
               Reset My Password
             </h3>
@@ -94,30 +87,41 @@ export const ResetPassword = () => {
               Provide your new Password.
             </p>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* <label htmlFor="password">Password:</label> */}
               <input
                 className="block w-full px-4 py-2 mt-4 dark:text-slate-200 text-black placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400"
                 aria-label="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="Enter new password"
                 required
               />
 
-              {/* <label htmlFor="confirm password">Confirm Password:</label> */}
               <input
                 className="block w-full px-4 py-2 mt-2 dark:text-slate-200 text-black placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400"
                 aria-label="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="confirm password"
                 required
               />
+
+              <div className="flex items-center justify-between mt-4">
+                <label className="inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="form-checkbox h-5 w-5 text-purple-600"
+                    onChange={() => setShowPassword(!showPassword)}
+                  />
+                  <span className="ml-2 text-gray-700 dark:text-gray-200">
+                    Show Password
+                  </span>
+                </label>
+              </div>
               <Button
                 type="submit"
-                className="items-end w-full bg-purple-500 hover:bg-purple-600"
+                className="items-end w-full bg-blue-500 hover:bg-udua-blue-primary"
               >
                 {!isLoading && "Reset Password"}
                 {isLoading && (

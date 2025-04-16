@@ -4,6 +4,7 @@ import bcryptjs from "bcryptjs";
 import { Admin } from "@/lib/models/admin.model";
 import { ROLES, type Role } from "@/lib/rbac/permissions";
 import { verifyAdminToken, getAdminPermissions } from "@/lib/rbac/jwt-utils";
+import { logAdminAction } from "@/lib/audit/audit-logger";
 
 export async function POST(request: NextRequest) {
   try {
@@ -88,6 +89,19 @@ export async function POST(request: NextRequest) {
     });
 
     await newAdmin.save();
+
+    // Log this action
+    await logAdminAction(
+      tokenData,
+      {
+        action: "CREATE_ADMIN",
+        myModule: "ADMIN_MANAGEMENT",
+        resourceId: newAdmin._id.toString(),
+        resourceType: "Admin",
+        details: { newAdmin },
+      },
+      request
+    );
 
     return NextResponse.json(
       {

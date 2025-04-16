@@ -29,6 +29,7 @@ function CreateStorePage({ admin }: { admin?: AdminData }) {
     confirmPassword: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
 
   const handleChange = (e: FormEvent<HTMLInputElement>) => {
@@ -161,7 +162,7 @@ function CreateStorePage({ admin }: { admin?: AdminData }) {
           <input
             className="block w-full px-4 py-2 mt-2 dark:text-slate-200 text-black placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400"
             aria-label="Store Unique Id"
-            type="password"
+            type={showPassword ? "text" : "password"}
             name="defaultPassword"
             value={store.defaultPassword}
             onChange={handleChange}
@@ -172,13 +173,24 @@ function CreateStorePage({ admin }: { admin?: AdminData }) {
           <input
             className="block w-full px-4 py-2 mt-2 dark:text-slate-200 text-black placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400"
             aria-label="Store Unique Id"
-            type="password"
+            type={showPassword ? "text" : "password"}
             name="confirmPassword"
             value={store.confirmPassword}
             onChange={handleChange}
             placeholder="confirm Password"
             required
           />
+          <div className="flex items-center justify-between mb-4">
+            <label className="inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                className="form-checkbox h-5 w-5 text-blue-600"
+                checked={showPassword}
+                onChange={() => setShowPassword(!showPassword)}
+              />
+              <span className="ml-2 text-gray-700">Show Password</span>
+            </label>
+          </div>
           <Button
             type="submit"
             className="items-end w-full bg-blue-500 hover:bg-udua-blue-primary"

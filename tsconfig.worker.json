@@ -5,7 +5,11 @@
     "moduleResolution": "NodeNext",
     "outDir": "dist",
     "noEmit": false,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["workers/**/*", "lib/**/*"]
 }

@@ -1,3 +1,4 @@
+import "module-alias/register";
 import rabbitMQConnection from "@/lib/queue/rabbitmq-connection";
 import { QUEUE_CONFIG } from "@/lib/queue/queue-config";
 import { connectToDB } from "@/lib/mongoose";

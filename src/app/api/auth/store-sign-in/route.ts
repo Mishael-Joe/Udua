@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
   try {
     connectToDB();
     // Check if the user exist
-    const store = await Store.findOne({ uniqueID });
+    const store = await Store.findOne({ uniqueId: uniqueID });
     if (!store) {
       return NextResponse.json(
         { error: "Make sure you provide the right store ID" },

@@ -43,7 +43,7 @@ export const StateContext: React.FC<StateContextProps> = ({ children }) => {
           "Error getting user data from token: jwt must be provided" &&
         !preventRedirect
       ) {
-        router.push("/sign-in");
+        return false;
       }
       console.error("Error fetching Cart Items:", error);
     }
