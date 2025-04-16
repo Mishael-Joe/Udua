@@ -29,7 +29,7 @@ function UserAvatar({ name }: UserAvatarProps) {
     try {
       const response = await axios.get("/api/auth/signOut");
       if (response.status === 200) {
-        router.refresh();
+        router.push("/sign-in");
       }
       // console.log(`response`, response);
 

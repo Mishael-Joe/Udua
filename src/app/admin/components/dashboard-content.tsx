@@ -19,32 +19,32 @@ function DashboardContent({ admin }: { admin?: any }) {
           />
         ) : null}
 
-        {admin.roles.includes("order_admin") ||
+        {/* {admin.roles.includes("order_admin") ||
         admin.roles.includes("super_admin") ? (
           <DashboardCard
             title="Orders"
             description="View and manage customer orders"
             link="/admin/orders"
           />
-        ) : null}
+        ) : null} */}
 
-        {admin.roles.includes("store_admin") ||
+        {/* {admin.roles.includes("store_admin") ||
         admin.roles.includes("super_admin") ? (
           <DashboardCard
             title="Stores"
             description="Manage and verify stores"
             link="/admin/stores"
           />
-        ) : null}
+        ) : null} */}
 
-        {admin.roles.includes("customer_support_admin") ||
+        {/* {admin.roles.includes("customer_support_admin") ||
         admin.roles.includes("super_admin") ? (
           <DashboardCard
             title="Customer Support"
             description="Handle customer tickets and inquiries"
             link="/admin/customer-tickets"
           />
-        ) : null}
+        ) : null} */}
 
         {admin.roles.includes("finance_admin") ||
         admin.roles.includes("super_admin") ? (

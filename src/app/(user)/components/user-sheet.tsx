@@ -15,7 +15,7 @@ function UserSheets() {
           </Button>
         </SheetTrigger>
         <SheetContent side="right" className="p-0 overflow-auto">
-          <nav className="text-lg font-medium">
+          <nav className=" font-medium h-full">
             <Aside1 />
           </nav>
         </SheetContent>

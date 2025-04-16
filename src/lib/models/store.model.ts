@@ -124,8 +124,8 @@ const StoreSchema = new mongoose.Schema(
     uniqueId: { type: String, unique: true, required: true }, // Unique store link ID
     recipientCode: { type: String }, // Recommended by PayStack. visit @ `https://paystack.com/docs/transfers/creating-transfer-recipients/#save-the-recipient-code` for more details.
     description: { type: String },
-    forgotpasswordToken: String,
-    forgotpasswordTokenExpiry: Date,
+    forgotpasswordToken: { type: String },
+    forgotpasswordTokenExpiry: { type: Date },
     availableBalance: {
       type: Number,
       default: 0,

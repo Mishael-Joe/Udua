@@ -3,14 +3,32 @@ import { NextRequest, NextResponse } from "next/server";
 import User from "@/lib/models/user.model";
 import Store from "@/lib/models/store.model";
 import bcryptjs from "bcryptjs";
+import { logAdminAction } from "@/lib/audit/audit-logger";
+import { verifyAdminToken } from "@/lib/rbac/jwt-utils";
 
 export async function POST(request: NextRequest) {
   const requestBody = await request.json();
   const { store } = requestBody;
-  console.log("store", store);
 
   try {
     await connectToDB();
+
+    // Verify that the requester is authorized
+    const adminToken = request.cookies.get("adminToken")?.value;
+    if (!adminToken) {
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 }
+      );
+    }
+
+    const tokenData = await verifyAdminToken(adminToken);
+    if (!tokenData) {
+      return NextResponse.json(
+        { error: "Invalid or expired token" },
+        { status: 401 }
+      );
+    }
 
     const user = await User.findById(store.storeOwner);
 
@@ -46,6 +64,19 @@ export async function POST(request: NextRequest) {
     await User.findByIdAndUpdate(store.storeOwner, {
       $push: { stores: { storeId: res._id } },
     });
+
+    // Log this action
+    await logAdminAction(
+      tokenData,
+      {
+        action: "CREATE_STORE",
+        myModule: "STORE_CREATION",
+        resourceId: res._id.toString(),
+        resourceType: "stores",
+        details: { res },
+      },
+      request
+    );
 
     return NextResponse.json(
       { message: "Store creation successful", res },

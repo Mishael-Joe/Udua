@@ -26,7 +26,7 @@ function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/"; // Default to '/'
+  const callbackUrl = searchParams.get("callbackUrl") || "/"; // Default to Home-page
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof userSignInInfoValidation>>({
@@ -118,7 +118,6 @@ function SignIn() {
                   className="space-y-8"
                 >
                   <FormField
-                    // className="w-full mt-4"
                     control={form.control}
                     name="email"
                     render={({ field }) => (
@@ -139,7 +138,6 @@ function SignIn() {
                   />
 
                   <FormField
-                    // className="w-full mt-4"
                     control={form.control}
                     name="password"
                     render={({ field }) => (
@@ -161,7 +159,7 @@ function SignIn() {
 
                   <div className="flex items-center justify-between mt-4">
                     <Link
-                      href="/forgot-password"
+                      href="/forgot-password?ref=user"
                       className="text-sm text-gray-600 dark:text-gray-200 hover:text-udua-blue-primary hover:underline"
                     >
                       Forgot Password?

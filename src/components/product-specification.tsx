@@ -86,9 +86,6 @@ export function ProductDetailsComponent({
     [description, specifications]
   );
 
-  // Move conditional return after hooks
-  if (!specifications) return null;
-
   return (
     <Tabs defaultValue="description" className="mb-12">
       <TabsList className="w-full justify-start border-b rounded-none h-auto p-0">

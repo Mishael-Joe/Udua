@@ -160,7 +160,7 @@ function StoreSignIn() {
 
                   <div className="flex items-center justify-between mt-4">
                     <Link
-                      href="/forgot-password"
+                      href="/forgot-password?ref=store"
                       className="text-sm text-gray-600 dark:text-gray-200 hover:text-udua-blue-primary hover:underline"
                     >
                       Forgot Password?

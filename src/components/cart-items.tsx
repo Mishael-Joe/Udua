@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Clock, X, Minus, Plus, InfoIcon } from "lucide-react";
-import { useEffect, useMemo } from "react";
+import { X, Minus, Plus, InfoIcon } from "lucide-react";
+import { useMemo } from "react";
 import { shimmer, toBase64 } from "@/lib/image";
 import { Button } from "@/components/ui/button";
 import { CartItemsEmpty } from "@/components/cart-items-empty";
@@ -41,14 +41,7 @@ const ProductImage = ({ src, alt }: { src: string; alt: string }) => {
 };
 
 export function CartItems() {
-  const { onRemove, cartItems, toggleCartItemQuantity, fetchCartItems } =
-    useStateContext();
-
-  useEffect(() => {
-    fetchCartItems();
-  }, []);
-
-  // console.log("cartItems", cartItems);
+  const { onRemove, cartItems, toggleCartItemQuantity } = useStateContext();
 
   if (cartItems.length === 0) return <CartItemsEmpty />;
 

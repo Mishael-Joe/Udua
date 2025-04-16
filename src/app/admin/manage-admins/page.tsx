@@ -519,7 +519,11 @@ function ManageAdminsPage() {
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={submitting}>
+              <Button
+                type="submit"
+                disabled={submitting}
+                className="bg-blue-500 hover:bg-udua-blue-primary"
+              >
                 {submitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -540,131 +544,3 @@ function ManageAdminsPage() {
 export default withAdminAuth(ManageAdminsPage, {
   requiredPermissions: [PERMISSIONS.MANAGE_ADMINS],
 });
-
-// "use client";
-
-// import { withAdminAuth } from "../components/auth/with-admin-auth";
-// import { PERMISSIONS } from "@/lib/rbac/permissions";
-// import { useState, useEffect } from "react";
-// import axios from "axios";
-
-// interface AdminUser {
-//   _id: string;
-//   name: string;
-//   email: string;
-//   roles: string[];
-//   isActive: boolean;
-//   lastLogin?: string;
-// }
-
-// function ManageAdminsPage() {
-//   const [admins, setAdmins] = useState<AdminUser[]>([]);
-//   const [loading, setLoading] = useState(true);
-
-//   useEffect(() => {
-//     const fetchAdmins = async () => {
-//       try {
-//         const response = await axios.get("/api/admin/admins");
-//         setAdmins(response.data.admins);
-//       } catch (error) {
-//         console.error("Error fetching admins:", error);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchAdmins();
-//   }, []);
-
-//   return (
-//     <div className="p-6">
-//       <h1 className="text-2xl font-bold mb-6">Manage Admins</h1>
-
-//       <div className="mb-4 flex justify-end">
-//         <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-//           Add New Admin
-//         </button>
-//       </div>
-
-//       {loading ? (
-//         <div className="flex justify-center">
-//           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-//         </div>
-//       ) : (
-//         <div className="overflow-x-auto">
-//           <table className="min-w-full bg-white border">
-//             <thead>
-//               <tr className="bg-gray-100">
-//                 <th className="py-2 px-4 border text-left">Name</th>
-//                 <th className="py-2 px-4 border text-left">Email</th>
-//                 <th className="py-2 px-4 border text-left">Roles</th>
-//                 <th className="py-2 px-4 border text-left">Status</th>
-//                 <th className="py-2 px-4 border text-left">Last Login</th>
-//                 <th className="py-2 px-4 border text-left">Actions</th>
-//               </tr>
-//             </thead>
-//             <tbody>
-//               {admins.map((admin) => (
-//                 <tr key={admin._id}>
-//                   <td className="py-2 px-4 border">{admin.name}</td>
-//                   <td className="py-2 px-4 border">{admin.email}</td>
-//                   <td className="py-2 px-4 border">
-//                     {admin.roles.map((role) => (
-//                       <span
-//                         key={role}
-//                         className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1 mb-1"
-//                       >
-//                         {role.replace("_", " ")}
-//                       </span>
-//                     ))}
-//                   </td>
-//                   <td className="py-2 px-4 border">
-//                     <span
-//                       className={`px-2 py-1 rounded text-xs ${
-//                         admin.isActive
-//                           ? "bg-green-100 text-green-800"
-//                           : "bg-red-100 text-red-800"
-//                       }`}
-//                     >
-//                       {admin.isActive ? "Active" : "Inactive"}
-//                     </span>
-//                   </td>
-//                   <td className="py-2 px-4 border">
-//                     {admin.lastLogin
-//                       ? new Date(admin.lastLogin).toLocaleString()
-//                       : "Never"}
-//                   </td>
-//                   <td className="py-2 px-4 border">
-//                     <button className="text-blue-500 hover:text-blue-700 mr-2">
-//                       Edit
-//                     </button>
-//                     <button className="text-red-500 hover:text-red-700">
-//                       {admin.isActive ? "Deactivate" : "Activate"}
-//                     </button>
-//                   </td>
-//                 </tr>
-//               ))}
-//             </tbody>
-//           </table>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
-// export default withAdminAuth(ManageAdminsPage, {
-//   requiredPermissions: [PERMISSIONS.MANAGE_ADMINS],
-// });
-
-// import { Suspense } from "react";
-// import ManageAdmins from "../components/manage-admins";
-
-// export default async function Page() {
-//   return (
-//     <div className="py-4">
-//       <Suspense fallback={"Admin dashboard"}>
-//         <ManageAdmins />
-//       </Suspense>
-//     </div>
-//   );
-// }

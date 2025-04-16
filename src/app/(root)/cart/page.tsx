@@ -6,11 +6,27 @@ import React, { useEffect, useCallback, useState } from "react";
 import axios from "axios";
 import { CombinedProduct } from "@/types";
 import { RecentProductsSection } from "@/components/recently-viewed-products";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useStateContext } from "@/context/stateContext";
 
 export default function Page() {
+  const { fetchCartItems } = useStateContext();
+  const [cartItemStatus, setcartItemStatus] = useState(true);
   const [recentlyViewedProducts, setRecentlyViewedProducts] = useState<
     CombinedProduct[]
   >([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const status = await fetchCartItems();
+
+      if (status) {
+        setcartItemStatus(status);
+      }
+    };
+    fetchData();
+  }, []);
 
   // Memoized product IDs fetcher
   const getProductIds = useCallback((key: string) => {
@@ -47,6 +63,15 @@ export default function Page() {
         <h1 className="text-xl font-bold tracking-tight sm:text-2xl">
           Shopping Cart
         </h1>
+
+        {!cartItemStatus && (
+          <Alert variant="destructive" className="mt-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Please, Login to access your cart.
+            </AlertDescription>
+          </Alert>
+        )}
 
         <form className="mt-6 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
           <section

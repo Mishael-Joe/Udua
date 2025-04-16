@@ -89,7 +89,6 @@ const dealSchema = new Schema<IDeal, IDealModel>(
     usageCount: { type: Number, default: 0 },
     autoApply: { type: Boolean, default: false },
     applyToSizes: { type: [String] },
-    // Fix the duplicate index issue by removing index from field definition
     code: { type: String, sparse: true, trim: true, uppercase: true },
 
     // Buy X Get Y specific fields
@@ -118,8 +117,6 @@ const dealSchema = new Schema<IDeal, IDealModel>(
 
 // Add index for faster lookups
 dealSchema.index({ storeID: 1, isActive: 1 });
-// Define the code index with unique and sparse options
-dealSchema.index({ code: 1 }, { unique: true, sparse: true });
 dealSchema.index({ startDate: 1, endDate: 1 });
 
 // Add validation for code format if provided

@@ -350,7 +350,7 @@ export type ContextType = {
   totalQuantity: number;
   // deliveryMethod: string;
   // grandTotalPrice: number;
-  fetchCartItems: () => void;
+  fetchCartItems: () => Promise<boolean | undefined>;
   // clearItemsInCart: () => void;
   incrementQuantity: () => void;
   decrementQuantity: () => void;
